@@ -1,0 +1,318 @@
+
+Spectre (R) Circuit Simulator
+Version 21.1.0.509.isr12 64bit -- 24 Sep 2022
+Copyright (C) 1989-2022 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+[redacted environment/license line]
+Memory  available: 121.1078 GB  physical: 134.5838 GB
+Linux   : CentOS Linux release 7.9.2009 (Core)
+CPU Type: Intel(R) Xeon(R) Gold 6248R CPU @ 3.00GHz
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3718.7] ( 48 ),  2 [1200.1] ( 50 ),  4 [1199.9] ( 52 )
+                 6 [1199.9] ( 54 ),  8 [1199.9] ( 56 ), 10 [1200.1] ( 58 )
+                12 [1205.7] ( 60 ), 14 [1199.9] ( 62 ), 16 [1200.1] ( 64 )
+                18 [1200.1] ( 66 ), 20 [1200.1] ( 68 ), 22 [1200.1] ( 70 )
+                24 [1200.1] ( 72 ), 26 [1200.1] ( 74 ), 28 [1199.9] ( 76 )
+                30 [1199.9] ( 78 ), 32 [1200.1] ( 80 ), 34 [1199.9] ( 82 )
+                36 [1200.1] ( 84 ), 38 [1199.9] ( 86 ), 40 [1199.9] ( 88 )
+                42 [1199.9] ( 90 ), 44 [1199.9] ( 92 ), 46 [1200.1] ( 94 )
+        1:       1 [1274.0] ( 49 ),  3 [1200.1] ( 51 ),  5 [1199.9] ( 53 )
+                 7 [1200.1] ( 55 ),  9 [2467.9] ( 57 ), 11 [3687.9] ( 59 )
+                13 [3700.6] ( 61 ), 15 [1200.1] ( 63 ), 17 [1200.1] ( 65 )
+                19 [1200.1] ( 67 ), 21 [1200.1] ( 69 ), 23 [1200.1] ( 71 )
+                25 [1200.1] ( 73 ), 27 [1199.9] ( 75 ), 29 [1199.9] ( 77 )
+                31 [1200.1] ( 79 ), 33 [1200.1] ( 81 ), 35 [1199.9] ( 83 )
+                37 [1200.1] ( 85 ), 39 [1199.9] ( 87 ), 41 [1200.1] ( 89 )
+                43 [1200.1] ( 91 ), 45 [1199.9] ( 93 ), 47 [1200.1] ( 95 )
+        
+System load averages (1min, 5min, 15min) : 3.9 %, 3.6 %, 3.2 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/RUN/redacted' on HOST at 9:31:38 PM, Tue Oct 27, 2026 (process id: 125917).
+Current working directory: /RUN/redacted
+Command line:
+    /home/cadence/spectre/SPECTRE211Hotfix/tools/bin/spectre -64  \
+        /RUN/redacted  \
+        +escchars +log  \
+        /RUN/redacted  \
+        -format psfascii -raw  \
+        /RUN/redacted  \
+        +preset=cx +mt=1 -preset_override -maxw 5 -maxn 5 +logstatus
+
+Licensing Information:
+[redacted environment/license line]
+
+Licensing Information:
+[21:31:39.430489] Periodic Lic check successful
+
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libphilips_o_sh.so ...
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /RUN/redacted
+
+Notice from spectre during circuit read-in.
+    Pre_Configuration file used: /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.precfg
+    Pre_Configuration file used: /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.cfg
+    Pre_Configuration file used: /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.cfg
+
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.precfg
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.cfg
+Reading file:  /RUN/redacted
+Reading file:  /RUN/redacted
+
+Warning from spectre during AHDL read-in.
+    WARNING (VACOMP-2435): The environment variable CDS_AHDLCMI_ENABLE is no longer supported. Therefore, the simulator will use the default compiled C code flow.
+
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/ahdl/constants.vams
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/ahdl/disciplines.vams
+Reading file:  /RUN/redacted
+Reading file:  /MODEL/redacted.scs
+Reading file:  /MODEL/redacted.scs
+Reading file:  /MODEL/redacted.scs
+Reading file:  /MODEL/redacted.scs
+Reading file:  /RUN/redacted
+Reading file:  /RUN/redacted
+Reading file:  /RUN/redacted
+Time for NDB Parsing: CPU = 9.46436 s, elapsed = 9.91435 s.
+Time accumulated: CPU = 9.65817 s, elapsed = 9.91436 s.
+Peak resident memory used = 243 Mbytes.
+
+Reading file:  /MODEL/redacted.scs
+
+Notice from spectre during circuit read-in.
+    "/RUN/redacted" 2: Redeclaration of the global node `0'.
+
+Created directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//4d37f8ca93899446f6ebddf0906b69b6.manual8_sample.ahdlcmi/ (775)
+Reading file:  /RUN/redacted
+Created directory ./test.ahdlSimDB//4d37f8ca93899446f6ebddf0906b69b6.manual8_sample.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /RUN/redacted to directory ./test.ahdlSimDB//4d37f8ca93899446f6ebddf0906b69b6.manual8_sample.ahdlcmi/Linux-64/
+Finished copying files from /RUN/redacted to ./test.ahdlSimDB//4d37f8ca93899446f6ebddf0906b69b6.manual8_sample.ahdlcmi/Linux-64/.
+The simulator has reused the existing Verilog-A libraries for this simulation run. If you do not want to use these libraries, set the 'CDS_AHDL_REUSE_LIB' environment variable to 'NO' and rerun the simulation.
+Existing shared object for module manual8_sample is up to date.
+Installed compiled interface for manual8_sample.
+Opening directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//494a27de7c4b5e7c65e2f7a8e7283526.manual8_cmp.ahdlcmi/ (775)
+Reading file:  /RUN/redacted
+Created directory ./test.ahdlSimDB//494a27de7c4b5e7c65e2f7a8e7283526.manual8_cmp.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /RUN/redacted to directory ./test.ahdlSimDB//494a27de7c4b5e7c65e2f7a8e7283526.manual8_cmp.ahdlcmi/Linux-64/
+Finished copying files from /RUN/redacted to ./test.ahdlSimDB//494a27de7c4b5e7c65e2f7a8e7283526.manual8_cmp.ahdlcmi/Linux-64/.
+Existing shared object for module manual8_cmp is up to date.
+Installed compiled interface for manual8_cmp.
+Opening directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//b0d5b1088360c9080239621347c81e63.manual8_sar.ahdlcmi/ (775)
+Reading file:  /RUN/redacted
+Created directory ./test.ahdlSimDB//b0d5b1088360c9080239621347c81e63.manual8_sar.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /RUN/redacted to directory ./test.ahdlSimDB//b0d5b1088360c9080239621347c81e63.manual8_sar.ahdlcmi/Linux-64/
+Finished copying files from /RUN/redacted to ./test.ahdlSimDB//b0d5b1088360c9080239621347c81e63.manual8_sar.ahdlcmi/Linux-64/.
+Existing shared object for module manual8_sar is up to date.
+Installed compiled interface for manual8_sar.
+
+Warning from spectre during hierarchy flattening.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `342' has also been specified at line `1582' in file `/MODEL/redacted.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1582' has also been specified at line `1816' in file `/MODEL/redacted.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1816' has also been specified at line `1929' in file `/MODEL/redacted.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1929' has also been specified at line `1970' in file `/MODEL/redacted.scs'. As a result, the last specified value will be used for simulation.
+
+Reading file:  /MODEL/redacted.scs
+
+
+Time for Elaboration: CPU = 240.2 ms, elapsed = 320.17 ms.
+Time accumulated: CPU = 9.89861 s, elapsed = 10.2348 s.
+Peak resident memory used = 276 Mbytes.
+
+
+Time for EDB Visiting: CPU = 13.269 ms, elapsed = 39.793 ms.
+Time accumulated: CPU = 9.91197 s, elapsed = 10.2746 s.
+Peak resident memory used = 278 Mbytes.
+
+  *********************************************************
+  ** TMI Share Library                   Version is V102031.180001 (Jan 30 2019 14:22:45)
+  ** Built OS                            Version is Red Hat Enterprise Linux AS release 4 (Nahant Update 6)
+  ** Built compiler                      Version is gcc version 4.1.2 20070626 (Red Hat 4.1.2-14)
+  *********************************************************
+
+Notice from spectre during topology check.
+    Only one connection to the following 15 nodes:
+        DO_7
+        DO_6
+        DO_5
+        DO_4
+        DO_3
+        Further occurrences of this notice will be suppressed.
+Notice from spectre during initial setup.
+    Multithreading is disabled due to the size of the design being too small.
+
+
+Global user options:
+            vabstol = 1e-08
+            iabstol = 1e-14
+               temp = -40
+               save = selected
+           currents = selected
+          tmioutput = /RUN/redacted
+            degfile = /RUN/redacted
+        scalefactor = 0.9
+             reltol = 1e-06
+               tnom = 27
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 55
+          capacitor 16    
+        manual8_cmp 1     
+     manual8_sample 2     
+        manual8_sar 1     
+        tmibsimbulk 28    
+            vsource 7     
+
+Analysis and control statement inventory:
+               tran 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 2     
+
+
+Notice from spectre during initial setup.
+    Spectre X preset=cx enabled.
+    Spectre X preset_override enabled.
+    1 notice suppressed.
+
+Time for parsing: CPU = 17.256 ms, elapsed = 17.9141 ms.
+Time accumulated: CPU = 9.92938 s, elapsed = 10.2927 s.
+Peak resident memory used = 281 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+   -   (Spectre X) Multi-threading. The recommended number of threads is 1, consider adding +mt=1 on command line.
+~~~~~~~~~~~~~~~~~~~~~~
+
+******************************************************
+Transient Analysis `tran_test': time = (0 s -> 820 ns)
+******************************************************
+DC simulation time: CPU = 12.161 ms, elapsed = 12.192 ms.
+
+Opening the PSFASCII file /RUN/redacted ...
+Important parameter values:
+    start = 0 s
+    outputstart = 0 s
+    stop = 820 ns
+    step = 820 ps
+    maxstep = 20 ps
+    ic = all
+    useprevic = no
+    skipdc = no
+    reltol = 100e-09
+    abstol(V) = 10 nV
+    abstol(I) = 10 fA
+    temp = -40 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = conservative_sigglobal
+    method = gear2only
+    lteratio = 10
+    relref = sigglobal
+    cmin = 0 F
+    gmin = 1 pS
+    rabsshort = 1 mOhm
+
+
+Notice from spectre during transient analysis `tran_test'.
+    Multithreading is disabled due to the size of the design being too small.
+
+
+Output and IC/nodeset summary:
+                 save   133     (current)
+                 save   55      (voltage)
+
+
+Notice from spectre at time = 95.0439 ps during transient analysis `tran_test'.
+    Newton iteration fails to converge at time = 95.0439 ps step = 10e-21 s.
+        Disaster recovery algorithm is enabled to search for a converged solution.
+Notice from spectre at time = 127.383 ps during transient analysis `tran_test'.
+    Newton iteration fails to converge at time = 127.383 ps step = 9.99999e-21 s.
+        Disaster recovery algorithm is enabled to search for a converged solution.
+Notice from spectre at time = 138.928 ps during transient analysis `tran_test'.
+    Newton iteration fails to converge at time = 138.928 ps step = 9.99999e-21 s.
+        Disaster recovery algorithm is enabled to search for a converged solution.
+Notice from spectre at time = 148.303 ps during transient analysis `tran_test'.
+    Newton iteration fails to converge at time = 148.303 ps step = 9.99999e-21 s.
+        Disaster recovery algorithm is enabled to search for a converged solution.
+Notice from spectre at time = 151.272 ps during transient analysis `tran_test'.
+    Newton iteration fails to converge at time = 151.272 ps step = 9.99999e-21 s.
+        Disaster recovery algorithm is enabled to search for a converged solution.
+        Further occurrences of this notice will be suppressed.
+Error found by spectre at time = 1.14929 ns during transient analysis `tran_test'.
+    ERROR (SPECTRE-16927): Cannot run the simulation because transient analysis has reached the maximum allowed number of timesteps with timestep size of 'minstep', in a period of 5% of stop time. Use the 'max_minstep_nonconv' option to adjust the maximum allowed number of convergence failures with 'minstep', and rerun the simulation.
+Last acceptable solution computed at 1.14929 ns.
+
+The values for those nodes that did not converge on the last Newton iteration are given below.  The manner in which the convergence criteria were not satisfied is also given.
+            Failed test: | Value | > RelTol*Ref + AbsTol
+
+ Top 10 Solution too large Convergence failure:
+    I(VVDD:p) = -974.594 pA, previously -997.926 pA.
+        update too large:  | 46.6654 pA | > 787.575 aA + 10 fA
+    I(XADC.XP.XD.M4:1) = -337.134 pA, previously -350.774 pA.
+        update too large:  | 27.2798 pA | > 723.829 aA + 10 fA
+    I(XADC.XP.XD.M4:4) = -13.4724 pA, previously -1.25885 pA.
+        update too large:  | -24.4269 pA | > 691.463 aA + 10 fA
+    I(XADC.XP.XD.M5:1) = -168.567 pA, previously -175.387 pA.
+        update too large:  | 13.6399 pA | > 706.972 aA + 10 fA
+    I(XADC.XP.XD.M5:4) = -6.73804 pA, previously -631.289 fA.
+        update too large:  | -12.2135 pA | > 690.789 aA + 10 fA
+    I(XADC.XP.XD.M6:1) = -84.5015 pA, previously -87.6936 pA.
+        update too large:  | 6.38412 pA | > 698.566 aA + 10 fA
+    I(XADC.XP.XD.M6:4) = -3.3 pA, previously -315.454 fA.
+        update too large:  | -5.96907 pA | > 690.446 aA + 10 fA
+    I(XADC.XP.XD.M8:1) = -42.1833 pA, previously -43.8468 pA.
+        update too large:  | 3.32699 pA | > 694.334 aA + 10 fA
+    I(XADC.XP.XD.M2:2) = -41.884 pA, previously -43.3105 pA.
+        update too large:  | 2.85289 pA | > 694.304 aA + 10 fA
+    I(XADC.XP.XD.M2:4) = -116.843 pA, previously -115.417 pA.
+        update too large:  | -2.8529 pA | > 701.8 aA + 10 fA
+
+The following set of suggestions might help you avoid convergence difficulties.  
+
+ 1. Enable diagnostic messages using the `+diagnose' option.
+
+ 2. Evaluate and resolve any notice, warning, or error messages.
+ 3. Use realistic device models. Check all component parameters, particularly nonlinear device model parameters, to ensure that they are reasonable.
+ 4. Small floating resistors connected to high impedance nodes can cause convergence difficulties. Avoid very small floating resistors, particularly small parasitic resistors in semiconductors. Instead, use voltage sources or iprobes to measure current.
+ 5. Ensure that a complete set of parasitic capacitors is used on nonlinear devices to avoid jumps in the solution waveforms. On MOS models, specify nonzero source and drain areas.
+ 6. Perform sanity check on the parameter values by using the parameter range checker (use ``+param param-limits-file'' as a command line argument) and heed any warnings.  Print the minimum and maximum parameter value by using `info' analysis.  Ensure that the bounds given for instance, model, output, temperature-dependent, and operating-point (if possible) parameters are reasonable.
+
+ 7. Check the direction of both independent and dependent current sources. Convergence problems might result if current sources are connected such that they force current backward through diodes.
+ 8. Use the `cmin' parameter to install a small capacitor from every node in the circuit to ground.  This usually eliminates any jump in the solution.
+ 9. Loosen tolerances, particularly absolute tolerances like `iabstol' (on options statement). If tolerances are set too tight, they might preclude convergence.
+10. Try to simplify the nonlinear component models to avoid regions that might contribute to convergence problems in the model.
+
+Analysis `tran_test' was terminated prematurely due to an error.
+
+Notice from spectre.
+    195 notices suppressed.
+
+Licensing Information:
+Lic Summary:
+[redacted environment/license line]
+[21:32:37.457379] Feature usage summary:
+[redacted environment/license line]
+[redacted environment/license line]
+
+
+Aggregate audit (9:32:37 PM, Tue Oct 27, 2026):
+Time used: CPU = 58.5 s, elapsed = 59 s, util. = 99.2%.
+Time spent in licensing: elapsed = 261 ms.
+Peak memory used = 285 Mbytes.
+Simulation started at: 9:31:38 PM, Tue Oct 27, 2026, ended at: 9:32:37 PM, Tue Oct 27, 2026, with elapsed time (wall clock): 59 s.
+spectre completes with 1 error, 5 warnings, and 17 notices.

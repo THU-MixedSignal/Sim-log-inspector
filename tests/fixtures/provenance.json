@@ -1,0 +1,100 @@
+{
+  "a_fft": {
+    "original_sha256": "987fea31d607b8cde8189480181f84caf5ad4e31ee34234ba5f1ed7059fe8b2f",
+    "fixture_sha256": "4a3dda531c4c78a2e8c80960dd341986cd37975deec4901dd4c479467c14b21d",
+    "sanitization": "line-preserving environment/license/model path redaction; numbers and diagnostic codes unchanged; license server search path redacted (2026-11-02, v0.3)",
+    "source_kind": "real collected Spectre 21.1.0.509 log",
+    "log_status": {
+      "original_sha256": "755fe0ead3f5e1e38bdbcb1f6d6d3189c29723dba3a6ac57401314c063c92f15",
+      "fixture_sha256": "755fe0ead3f5e1e38bdbcb1f6d6d3189c29723dba3a6ac57401314c063c92f15",
+      "sanitization": "none needed: timestamps, analysis name and START/PASS/FAIL only",
+      "source_kind": "real collected Spectre raw/logStatus",
+      "analysis": "tran_perf"
+    }
+  },
+  "b_fft": {
+    "original_sha256": "c51da19ed30772a4a5cedea45dd9dbaf875e90c72c2b4ef4b9d7e501b46b3817",
+    "fixture_sha256": "43538862afdcca7260fd6404559a6439d77f7f6ffc1f3330bfa7b7dc87547b75",
+    "sanitization": "line-preserving environment/license/model path redaction; numbers and diagnostic codes unchanged; license server search path redacted (2026-11-02, v0.3)",
+    "source_kind": "real collected Spectre 21.1.0.509 log",
+    "log_status": {
+      "original_sha256": "10026e932a4b2b5ff4d252e1dee9f2968636d802f78186d59b010509bc9f5263",
+      "fixture_sha256": "10026e932a4b2b5ff4d252e1dee9f2968636d802f78186d59b010509bc9f5263",
+      "sanitization": "none needed: timestamps, analysis name and START/PASS/FAIL only",
+      "source_kind": "real collected Spectre raw/logStatus",
+      "analysis": "tran_perf"
+    }
+  },
+  "noise": {
+    "original_sha256": "4f9b6bb16534abedecfcb898e9dd3f577bd6cb8a25a0a76365a2b223b64f8638",
+    "fixture_sha256": "937bb183ef49d0dbb2f4f6035a6f917b89223137167ac723da2218e70229a67c",
+    "sanitization": "line-preserving environment/license/model path redaction; numbers and diagnostic codes unchanged; license server search path redacted (2026-11-02, v0.3)",
+    "source_kind": "real collected Spectre 21.1.0.509 log",
+    "log_status": {
+      "original_sha256": "86299fca89e0b36e1b8782a613524bbddf19497ac72ccb50701a754cd9c56332",
+      "fixture_sha256": "86299fca89e0b36e1b8782a613524bbddf19497ac72ccb50701a754cd9c56332",
+      "sanitization": "none needed: timestamps, analysis name and START/PASS/FAIL only",
+      "source_kind": "real collected Spectre raw/logStatus",
+      "analysis": "tran_perf"
+    }
+  },
+  "static": {
+    "original_sha256": "c62b924c5ec81e997f4e695eaf7e638ab213e526e0324329a8642eeeb450f881",
+    "fixture_sha256": "01ebbc12769736c226c8e51c0f7c9b09eaef3d1541b4926cc86f55070ec0b926",
+    "sanitization": "line-preserving environment/license/model path redaction; numbers and diagnostic codes unchanged; license server search path redacted (2026-11-02, v0.3)",
+    "source_kind": "real collected Spectre 21.1.0.509 log",
+    "log_status": {
+      "original_sha256": "06ffdd831f3704af75c96453f6d2c48690fd9692238e5d56e3f4a171e2fa94d2",
+      "fixture_sha256": "06ffdd831f3704af75c96453f6d2c48690fd9692238e5d56e3f4a171e2fa94d2",
+      "sanitization": "none needed: timestamps, analysis name and START/PASS/FAIL only",
+      "source_kind": "real collected Spectre raw/logStatus",
+      "analysis": "tran_perf"
+    }
+  },
+  "minstep": {
+    "original_sha256": "1f2ee62c424106c14bc077c272317e0513530d0d84b7c60c5d93b44ce548c112",
+    "fixture_sha256": "ea240d68d4079f57365ea06a496af621d259ba57cb250a2932b4f28ba82e6a2d",
+    "sanitization": "line-preserving environment/license/model path redaction; numbers and diagnostic codes unchanged; license server search path redacted (2026-11-02, v0.3)",
+    "source_kind": "real collected Spectre 21.1.0.509 log",
+    "log_status": {
+      "original_sha256": "566aa3efb1d679d5766cc6afcc99b9f27fc2a941734a4226e8b3fc9cfc9fdaec",
+      "fixture_sha256": "566aa3efb1d679d5766cc6afcc99b9f27fc2a941734a4226e8b3fc9cfc9fdaec",
+      "sanitization": "none needed: timestamps, analysis name and START/PASS/FAIL only",
+      "source_kind": "real collected Spectre raw/logStatus",
+      "analysis": "tran_test"
+    }
+  },
+  "compile": {
+    "original_sha256": "de9d2c971671a08edbb31d382c2cf107109965fd52f04bc66bd3323b71336793",
+    "fixture_sha256": "eb2f38aa404bb124575bcea006e675044fd96c5258dcfd423bc815f5557ba95f",
+    "sanitization": "line-preserving environment/license/model path redaction; numbers and diagnostic codes unchanged; license server search path redacted (2026-11-02, v0.3)",
+    "source_kind": "real collected Spectre 21.1.0.509 log",
+    "log_status": {
+      "source_kind": "none: the run stopped before Spectre created its raw directory",
+      "analysis": "tran_test"
+    }
+  },
+  "output_limit": {
+    "original_sha256": "733564024ea41b1a0a2b307d930be11d317c42b49a158f4486c70c5428e2b6e0",
+    "fixture_sha256": "e3f1936e7928041647295076768766de6e9ab9f528fe39d91aedcb91f697652a",
+    "sanitization": "line-preserving environment/license/model path redaction; numbers and diagnostic codes unchanged; license server search path redacted (2026-11-02, v0.3)",
+    "source_kind": "real collected Spectre 21.1.0.509 log",
+    "log_status": {
+      "original_sha256": "029f322cdc9c1d10d866b478160d4a66d6fa0c2e1c3bf6b92196702f870fff70",
+      "fixture_sha256": "029f322cdc9c1d10d866b478160d4a66d6fa0c2e1c3bf6b92196702f870fff70",
+      "sanitization": "none needed: timestamps, analysis name and START/PASS/FAIL only",
+      "source_kind": "real collected Spectre raw/logStatus",
+      "analysis": "tran_test"
+    }
+  },
+  "license": {
+    "original_sha256": "4a44822edc3747ab540435328d552ee78d96812a5282da9cf0c5d6a38047dab0",
+    "fixture_sha256": "f73423277272a485fc13c44e2234d70c892f6b21acc29b99ba8bc49f30921402",
+    "sanitization": "line-preserving environment/license/model path redaction; numbers and diagnostic codes unchanged; license server search path redacted (2026-11-02, v0.3)",
+    "source_kind": "real collected Spectre 21.1.0.509 log",
+    "log_status": {
+      "source_kind": "none: the run stopped before Spectre created its raw directory",
+      "analysis": "tran_test"
+    }
+  }
+}

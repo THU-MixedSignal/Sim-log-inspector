@@ -1,0 +1,75 @@
+{
+  "description": "8 组脱敏真实日志。watch 规则只是示例：哪些告警意味着应尽早停掉仿真，由你们按实验判据填写。baseline 指定同一测试台的参考 run，用于列出参考 run 中没有出现过的编号。",
+  "quiet_after_s": 1800,
+  "watch": [
+    {
+      "name": "SOA 越限（示例规则）",
+      "code": "CMI-275*"
+    },
+    {
+      "name": "瞬态不收敛（示例规则）",
+      "text": "Newton iteration fails to converge"
+    },
+    {
+      "name": "测试台报告 valid=0（示例规则）",
+      "key": "TB:reported_valid=0"
+    }
+  ],
+  "runs": [
+    {
+      "id": "a_fft",
+      "log": "../tests/fixtures/a_fft.log",
+      "state": "../tests/fixtures/a_fft.state.json",
+      "log_status": "../tests/fixtures/a_fft.logStatus",
+      "analysis": "tran_perf"
+    },
+    {
+      "id": "b_fft",
+      "log": "../tests/fixtures/b_fft.log",
+      "state": "../tests/fixtures/b_fft.state.json",
+      "log_status": "../tests/fixtures/b_fft.logStatus",
+      "analysis": "tran_perf",
+      "baseline": "a_fft"
+    },
+    {
+      "id": "noise",
+      "log": "../tests/fixtures/noise.log",
+      "state": "../tests/fixtures/noise.state.json",
+      "log_status": "../tests/fixtures/noise.logStatus",
+      "analysis": "tran_perf",
+      "baseline": "a_fft"
+    },
+    {
+      "id": "static",
+      "log": "../tests/fixtures/static.log",
+      "state": "../tests/fixtures/static.state.json",
+      "log_status": "../tests/fixtures/static.logStatus",
+      "analysis": "tran_perf",
+      "baseline": "a_fft"
+    },
+    {
+      "id": "minstep",
+      "log": "../tests/fixtures/minstep.log",
+      "state": "../tests/fixtures/minstep.state.json",
+      "log_status": "../tests/fixtures/minstep.logStatus",
+      "analysis": "tran_test"
+    },
+    {
+      "id": "compile",
+      "log": "../tests/fixtures/compile.log",
+      "state": "../tests/fixtures/compile.state.json"
+    },
+    {
+      "id": "output_limit",
+      "log": "../tests/fixtures/output_limit.log",
+      "state": "../tests/fixtures/output_limit.state.json",
+      "log_status": "../tests/fixtures/output_limit.logStatus",
+      "analysis": "tran_test"
+    },
+    {
+      "id": "license",
+      "log": "../tests/fixtures/license.log",
+      "state": "../tests/fixtures/license.state.json"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# Sanitized fixture logs are byte-exact evidence with recorded SHA-256 hashes:
+# never convert their line endings or flag whitespace that belongs to the log.
+tests/fixtures/** -text -whitespace

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spectre 运行监视</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/style.css">
+<script src="/app.js" defer></script>
+</head>
+<body>
+<header class="bar">
+  <h1 class="brand">Spectre 运行监视</h1>
+  <p class="collector" id="collector" role="status">正在连接查看器</p>
+  <div class="bar-actions">
+    <button id="notify" class="quiet-button" type="button" aria-pressed="false">开启提醒</button>
+    <button id="pause" class="quiet-button" type="button" aria-pressed="false">暂停刷新</button>
+  </div>
+</header>
+<div id="banner" class="banner" role="alert" hidden></div>
+<main class="layout">
+  <nav class="rail" aria-label="运行列表">
+    <p class="rail-count" id="rail-count"></p>
+    <section id="attention-group" class="rail-group" aria-labelledby="attention-title" hidden>
+      <h2 id="attention-title" class="rail-title">需要关注</h2>
+      <ul id="attention-list" class="runs"></ul>
+    </section>
+    <section id="other-group" class="rail-group" aria-labelledby="other-title" hidden>
+      <h2 id="other-title" class="rail-title">其余运行</h2>
+      <ul id="other-list" class="runs"></ul>
+    </section>
+  </nav>
+  <article class="detail" id="detail">
+    <p class="empty-state" id="empty">清单里还没有运行。用 <code>python -m simcheck run 清单.json</code> 开始采集。</p>
+    <div id="run-view" hidden>
+      <header class="run-head">
+        <div class="run-title-line">
+          <h2 class="run-title" id="run-title"></h2>
+          <span class="status-chip" id="run-status"></span>
+          <span id="run-attention" class="chips"></span>
+          <button id="ack" class="quiet-button" type="button" hidden>标为已读</button>
+        </div>
+        <dl class="facts" id="facts"></dl>
+      </header>
+      <figure class="timeline" id="timeline">
+        <svg id="timeline-svg" class="timeline-svg" aria-labelledby="timeline-caption" role="img"></svg>
+        <figcaption id="timeline-caption" class="timeline-caption"></figcaption>
+        <ul class="legend" aria-label="图例">
+          <li><span class="shape sev-critical" aria-hidden="true">■</span>错误 / 致命</li>
+          <li><span class="shape sev-warning" aria-hidden="true">▲</span>警告</li>
+          <li><span class="shape sev-notice" aria-hidden="true">●</span>提示（仅命中规则时标出）</li>
+          <li><span class="shape sev-info" aria-hidden="true">◆</span>测试台报告</li>
+          <li><span class="shape ring" aria-hidden="true">◎</span>命中关注规则</li>
+        </ul>
+      </figure>
+      <section id="watch" class="watch" aria-label="关注规则与参考对比"></section>
+      <div class="tabs" role="tablist" aria-label="运行详情">
+        <button class="tab" role="tab" id="tab-problems" aria-controls="panel-problems" data-tab="problems">问题</button>
+        <button class="tab" role="tab" id="tab-measurements" aria-controls="panel-measurements" data-tab="measurements">测量</button>
+        <button class="tab" role="tab" id="tab-settings" aria-controls="panel-settings" data-tab="settings">设置</button>
+        <button class="tab" role="tab" id="tab-integrity" aria-controls="panel-integrity" data-tab="integrity">完整性</button>
+      </div>
+      <section class="panel" role="tabpanel" id="panel-problems" aria-labelledby="tab-problems"></section>
+      <section class="panel" role="tabpanel" id="panel-measurements" aria-labelledby="tab-measurements" hidden>
+        <table class="data-table" id="measure-table">
+          <thead><tr><th scope="col">帧</th><th scope="col">码字</th><th scope="col">TB valid</th><th scope="col">首次采集</th><th scope="col"><span class="sr-only">原文</span></th></tr></thead>
+          <tbody id="measure-body"></tbody>
+        </table>
+        <p class="panel-note" id="measure-note"></p>
+        <button id="measure-earlier" class="quiet-button" type="button">加载更早的 50 条</button>
+      </section>
+      <section class="panel" role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden></section>
+      <section class="panel" role="tabpanel" id="panel-integrity" aria-labelledby="tab-integrity" hidden></section>
+    </div>
+  </article>
+</main>
+<p class="foot">只读查看，不启动、不停止任何仿真。“已结束”只表示所检查的证据正常结束，不代表电气或码字合格。</p>
+<div id="live" class="sr-only" aria-live="polite"></div>
+<div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+</body>
+</html>

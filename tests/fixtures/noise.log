@@ -1,0 +1,1432 @@
+
+Spectre (R) Circuit Simulator
+Version 21.1.0.509.isr12 64bit -- 24 Sep 2022
+Copyright (C) 1989-2022 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+[redacted environment/license line]
+Memory  available: 89.9077 GB  physical: 134.5838 GB
+Linux   : CentOS Linux release 7.9.2009 (Core)
+CPU Type: Intel(R) Xeon(R) Gold 6248R CPU @ 3.00GHz
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3699.8] ( 48 ),  2 [3697.3] ( 50 ),  4 [3697.3] ( 52 )
+                 6 [3697.3] ( 54 ),  8 [3699.8] ( 56 ), 10 [3699.8] ( 58 )
+                12 [1200.1] ( 60 ), 14 [3697.3] ( 62 ), 16 [1200.1] ( 64 )
+                18 [3697.1] ( 66 ), 20 [1199.9] ( 68 ), 22 [1414.3] ( 70 )
+                24 [1199.9] ( 72 ), 26 [1200.1] ( 74 ), 28 [3697.3] ( 76 )
+                30 [1200.1] ( 78 ), 32 [1200.1] ( 80 ), 34 [3611.6] ( 82 )
+                36 [3699.8] ( 84 ), 38 [1915.1] ( 86 ), 40 [1199.9] ( 88 )
+                42 [1199.9] ( 90 ), 44 [1232.3] ( 92 ), 46 [1862.4] ( 94 )
+        1:       1 [2735.2] ( 49 ),  3 [3689.9] ( 51 ),  5 [3599.9] ( 53 )
+                 7 [1199.9] ( 55 ),  9 [3689.9] ( 57 ), 11 [3692.9] ( 59 )
+                13 [3279.8] ( 61 ), 15 [3689.9] ( 63 ), 17 [3689.9] ( 65 )
+                19 [3689.8] ( 67 ), 21 [3689.9] ( 69 ), 23 [3689.9] ( 71 )
+                25 [1199.9] ( 73 ), 27 [1753.4] ( 75 ), 29 [1199.9] ( 77 )
+                31 [3695.1] ( 79 ), 33 [3690.9] ( 81 ), 35 [3689.9] ( 83 )
+                37 [3661.9] ( 85 ), 39 [3690.9] ( 87 ), 41 [3694.7] ( 89 )
+                43 [1200.1] ( 91 ), 45 [3689.8] ( 93 ), 47 [1200.1] ( 95 )
+        
+System load averages (1min, 5min, 15min) : 21.3 %, 21.0 %, 20.2 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/RUN/redacted' on HOST at 8:00:58 PM, Thur Oct 29, 2026 (process id: 203935).
+Current working directory: /RUN/redacted
+Command line:
+    /home/cadence/spectre/SPECTRE211Hotfix/tools/bin/spectre -64  \
+        /RUN/redacted  \
+        +escchars +log  \
+        /RUN/redacted  \
+        -format psfascii -raw  \
+        /RUN/redacted  \
+        +preset=mx +mt=4 -preset_override +lqtimeout 60 -maxw 5 -maxn 5  \
+        +logstatus
+
+Licensing Information:
+[redacted environment/license line]
+
+Licensing Information:
+[20:00:58.024289] Periodic Lic check successful
+
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libphilips_o_sh.so ...
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /RUN/redacted
+
+Notice from spectre during circuit read-in.
+    Pre_Configuration file used: /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.precfg
+    Pre_Configuration file used: /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.cfg
+    Pre_Configuration file used: /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.cfg
+
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.precfg
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/configs/preset_over.cfg
+Reading file:  /MODEL/redacted.scs
+Reading file:  /MODEL/redacted.scs
+Reading file:  /MODEL/redacted.scs
+Reading file:  /MODEL/redacted.scs
+Reading file:  /RUN/redacted
+Reading file:  /MODEL/redacted.scs
+Reading file:  /RUN/redacted
+Reading file:  /RUN/redacted
+Reading file:  /RUN/redacted
+
+Warning from spectre during AHDL read-in.
+    WARNING (VACOMP-2435): The environment variable CDS_AHDLCMI_ENABLE is no longer supported. Therefore, the simulator will use the default compiled C code flow.
+
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/ahdl/constants.vams
+Reading file:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/ahdl/disciplines.vams
+Time for NDB Parsing: CPU = 10.6339 s, elapsed = 11.0699 s.
+Time accumulated: CPU = 10.8618 s, elapsed = 11.0699 s.
+Peak resident memory used = 263 Mbytes.
+
+Reading file:  /MODEL/redacted.scs
+
+Warning from spectre in `sar_adc8_join_r4', during circuit read-in.
+    WARNING (SFE-2453): The global node `VDD!' and sub circuit terminal `VDD!' will be treated as the sub circuit terminal.
+    WARNING (SFE-2453): The global node `0' and sub circuit terminal `0' will be treated as the sub circuit terminal.
+
+Created directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//322a88ef25967a5a101d5f1cf708359f.r4_perf_monitor.ahdlcmi/ (775)
+Reading file:  /RUN/redacted
+Created directory ./test.ahdlSimDB//322a88ef25967a5a101d5f1cf708359f.r4_perf_monitor.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /RUN/redacted to directory ./test.ahdlSimDB//322a88ef25967a5a101d5f1cf708359f.r4_perf_monitor.ahdlcmi/Linux-64/
+Finished copying files from /RUN/redacted to ./test.ahdlSimDB//322a88ef25967a5a101d5f1cf708359f.r4_perf_monitor.ahdlcmi/Linux-64/.
+The simulator has reused the existing Verilog-A libraries for this simulation run. If you do not want to use these libraries, set the 'CDS_AHDL_REUSE_LIB' environment variable to 'NO' and rerun the simulation.
+Existing shared object for module r4_perf_monitor is up to date.
+Installed compiled interface for r4_perf_monitor.
+Reading link:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/ahdl/discipline.h
+Reading link:  /home/cadence/spectre/SPECTRE211Hotfix/tools.lnx86/spectre/etc/ahdl/constants.h
+
+Warning from spectre during hierarchy flattening.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `272' has also been specified at line `1582' in file `/MODEL/redacted.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1582' has also been specified at line `1816' in file `/MODEL/redacted.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1816' has also been specified at line `1929' in file `/MODEL/redacted.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1929' has also been specified at line `1970' in file `/MODEL/redacted.scs'. As a result, the last specified value will be used for simulation.
+
+Reading file:  /MODEL/redacted.scs
+
+
+Opening directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//bsource_c73fd1.va.bsource_c73fd1.ahdlcmi/ (775)
+Reading file:  /RUN/redacted
+Created directory ./test.ahdlSimDB//bsource_c73fd1.va.bsource_c73fd1.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /RUN/redacted to directory ./test.ahdlSimDB//bsource_c73fd1.va.bsource_c73fd1.ahdlcmi/Linux-64/
+Finished copying files from /RUN/redacted to ./test.ahdlSimDB//bsource_c73fd1.va.bsource_c73fd1.ahdlcmi/Linux-64/.
+Existing shared object for module bsource_c73fd1 is up to date.
+Installed compiled interface for bsource_c73fd1.
+Opening directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/ (775)
+Reading file:  /home/USER/passive_ac01.ahdlSimDB/bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/obj/optimize/5.0/libahdlcmi_bsource_rupoly_89fec3.so
+Created directory ./test.ahdlSimDB//bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /home/USER/passive_ac01.ahdlSimDB/bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/ to directory ./test.ahdlSimDB//bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/
+Finished copying files from /home/USER/passive_ac01.ahdlSimDB/bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/ to ./test.ahdlSimDB//bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/.
+Existing shared object for module bsource_rupoly_89fec3 is up to date.
+Installed compiled interface for bsource_rupoly_89fec3.
+Opening directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/ (775)
+Reading file:  /home/USER/sar_aps_probe.ahdlSimDB/bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/obj/optimize/5.0/libahdlcmi_bsource_0ac3b1.so
+Created directory ./test.ahdlSimDB//bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /home/USER/sar_aps_probe.ahdlSimDB/bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/ to directory ./test.ahdlSimDB//bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/
+Finished copying files from /home/USER/sar_aps_probe.ahdlSimDB/bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/ to ./test.ahdlSimDB//bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/.
+Existing shared object for module bsource_0ac3b1 is up to date.
+Installed compiled interface for bsource_0ac3b1.
+Time for Elaboration: CPU = 544.407 ms, elapsed = 674.318 ms.
+Time accumulated: CPU = 11.4064 s, elapsed = 11.7444 s.
+Peak resident memory used = 309 Mbytes.
+
+
+Notice from spectre during hierarchy flattening.
+    The value 'psf' specified for the 'checklimitdest' option will no longer be supported in future releases. Use 'spectre -h' to see other recommended values for the 'checklimitdest' option.
+
+
+Time for EDB Visiting: CPU = 152.067 ms, elapsed = 178.875 ms.
+Time accumulated: CPU = 11.5586 s, elapsed = 11.9234 s.
+Peak resident memory used = 317 Mbytes.
+
+  *********************************************************
+  ** TMI Share Library                   Version is V102031.180001 (Jan 30 2019 14:22:45)
+  ** Built OS                            Version is Red Hat Enterprise Linux AS release 4 (Nahant Update 6)
+  ** Built compiler                      Version is gcc version 4.1.2 20070626 (Red Hat 4.1.2-14)
+  *********************************************************
+
+Global user options:
+         psfversion = 1.4.0
+             method = gear2only
+            vabstol = 1e-08
+            iabstol = 1e-13
+               temp = 27
+               gmin = 1e-12
+             rforce = 1
+           maxnotes = 5
+           maxwarns = 5
+             digits = 5
+               cols = 80
+             pivrel = 0.001
+     checklimitdest = psf
+               save = selected
+          tmioutput = /RUN/redacted
+            degfile = /RUN/redacted
+        scalefactor = 0.9
+             reltol = 1e-06
+               tnom = 27
+             scalem = 1
+              scale = 1
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 1753
+     bsource_0ac3b1 85    
+     bsource_c73fd1 380   
+bsource_rupoly_89fec3 380   
+          capacitor 475   
+    r4_perf_monitor 1     
+           resistor 4     
+        tmibsimbulk 1977  
+            vsource 6     
+
+Analysis and control statement inventory:
+               tran 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+
+Notice from spectre during initial setup.
+    Spectre X preset=mx enabled.
+    Spectre X preset_override enabled.
+
+Licensing Information:
+[20:01:10.244777] Periodic Lic check successful
+
+
+Notice from spectre.
+    Multithreading enabled: 4 threads in the system with 96 available processors.
+
+Time for parsing: CPU = 145.245 ms, elapsed = 135.62 ms.
+Time accumulated: CPU = 11.704 s, elapsed = 12.0591 s.
+Peak resident memory used = 328 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+   -   (Spectre X) Multi-threading. The recommended number of threads is [2, 4], consider adding +mt=2 or +mt=4 on command line.
+~~~~~~~~~~~~~~~~~~~~~~
+
+**********************************************************
+Transient Analysis `tran_perf': time = (0 s -> 103.259 us)
+**********************************************************
+Finding DC approximate solution failed with try_fast_op=yes, continue running with try_fast_op=no.
+Trying Fast DC 0 for initial conditions.
+
+Notice from spectre during IC analysis, during transient analysis `tran_perf'.
+    GminDC = 1 pS is large enough to noticeably affect the DC solution.
+        dV(XDUT.TOPP) = -63.9355 mV
+        Use the `gmin_check' option to eliminate or expand this report.
+    Bad pivoting is found during DC analysis. Option dc_pivot_check=yes is recommended for possible improvement of convergence.
+
+DC simulation time: CPU = 1.61985 s, elapsed = 501.816 ms.
+
+Opening the PSFASCII file /RUN/redacted ...
+Important parameter values:
+    start = 0 s
+    outputstart = 0 s
+    stop = 103.259 us
+    step = 103.259 ns
+    maxstep = 10 ps
+    ic = all
+    useprevic = no
+    skipdc = no
+    reltol = 1e-06
+    abstol(V) = 10 nV
+    abstol(I) = 100 fA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = moderate
+    method = trap
+    lteratio = 10
+    relref = allglobal
+    cmin = 0 F
+    gmin = 1 pS
+    rabsshort = 1 mOhm
+    trannoisemethod = default
+    noisefmax = 2 GHz
+    noisefmin = 10 kHz
+    noiseseed = 101
+
+
+Output and IC/nodeset summary:
+                 save   4       (current)
+                 save   12      (voltage)
+
+
+Warning from spectre at time = 60.096 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vbd(=-992.644 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MM4: Vbd(=-992.644 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=992.644 mV) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0961 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgd(=-991.867 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vbd(=-995.984 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vgd(=-991.867 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MM4: Vbd(=-995.984 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=995.984 mV) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0963 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgd(=-995.439 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vbd(=-999.639 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vgd(=-995.439 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=999.639 mV) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0964 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgd(=-999.074 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=1.00335 V) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0966 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=1.00717 V) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+Warning from spectre at time = 60.0971 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-994.782 mV) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0973 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-999.836 mV) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0974 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-1.00486 V) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0976 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-1.00986 V) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0977 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-1.01433 V) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+Warning from spectre at time = 60.1033 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2751): XDUT.XCTRL.XTIM.XCLOCK.X001.XLIB.MM4: Vds(=990.24 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2751): XDUT.XREF.XREQUEST.X001.XLIB.MM4: Vds(=990.527 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.1035 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2751): XDUT.XCTRL.XTIM.XCLOCK.X001.XLIB.MM4: Vds(=990.809 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2751): XDUT.XREF.XREQUEST.X001.XLIB.MM4: Vds(=991.097 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.1037 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2751): XDUT.XCTRL.XTIM.XCLOCK.X001.XLIB.MM4: Vds(=991.333 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+R4MEAS,0,231,8,8,8,16,231,1,0.000293618887555,1.00084441229159e-07,0.736075075035,0.727836253096,0.727817916822,2.91792599345e-08
+
+Warning from spectre at time = 206.435 ns during transient analysis `tran_perf'.
+    WARNING (SPECTRE-16780): LTE tolerance was temporarily relaxed to step over a discontinuity in the signal: XDUT.XCTRL.XTIM.X006.X001.XLIB.net10. Check the design or use '+diagnose' to get more information.
+R4MEAS,1,43,8,8,8,16,43,1,0.000351054597849,2.00084414765105e-07,-0.602201201515,-0.589161458693,-0.589172040713,2.93118313859e-08
+R4MEAS,2,183,8,8,8,16,183,1,0.00027945156107,3.00084416094668e-07,0.409835815086,0.39309658074,0.393167769896,2.92361444281e-08
+R4MEAS,3,105,8,8,8,16,105,1,0.000382733429603,4.00084385716558e-07,-0.177662401056,-0.158899249834,-0.158856443257,2.92416862255e-08
+R4MEAS,4,115,8,8,8,16,115,1,0.000247511731484,5.00084440867486e-07,-0.0717655157127,-0.0905121952198,-0.0905256085197,2.92626701818e-08
+R4MEAS,5,175,8,8,8,16,175,1,0.000258389806652,6.00084400454081e-07,0.314224914882,0.331456019877,0.331460091447,2.92433486575e-08
+.R4MEAS,6,51,8,8,8,16,51,1,0.000356200791469,7.00084423126748e-07,-0.526162359678,-0.539919891953,-0.539982223962,2.92593630217e-08
+R4MEAS,7,227,8,8,8,16,227,1,0.000137711676959,8.00084401415595e-07,0.686994404147,0.695874858086,0.695858541138,2.9234833823e-08
+R4MEAS,8,16,8,8,8,16,16,1,0.000384496190512,9.00084469409416e-07,-0.781097988203,-0.784528080026,-0.784520238654,2.91284644411e-08
+R4MEAS,9,241,8,8,8,16,241,1,0.000368872841208,1.00008440377603e-06,0.799334229656,0.796759076854,0.796792324948,2.91606846489e-08
+R4MEAS,10,23,8,8,8,16,23,1,0.000227346625709,1.1000843927377e-06,-0.739930735463,-0.731825581061,-0.731849174243,2.91833156246e-08
+R4MEAS,11,212,8,8,8,16,212,1,0.000165922409006,1.20008445339104e-06,0.608658717177,0.595596158342,0.595541760035,2.92431645994e-08
+R4MEAS,12,70,8,8,8,16,70,1,0.000175206914204,1.30008439844884e-06,-0.418266108181,-0.401548410026,-0.401544832963,2.9256893691e-08
+R4MEAS,13,151,8,8,8,16,151,1,0.000199458074951,1.40008445833852e-06,0.187249462891,0.16872990908,0.168647763849,2.92918981942e-08
+R4MEAS,14,139,8,8,8,16,139,1,0.000424652124068,1.50008437096373e-06,0.0619578509304,0.0808680407243,0.0808371490398,2.92099265614e-08
+R4MEAS,15,82,8,8,8,16,82,1,0.000248837741188,1.60008449216885e-06,-0.305142730273,-0.322219008318,-0.322263373904,2.93476532295e-08
+R4MEAS,16,203,8,8,8,16,203,1,0.00035308738938,1.70008446403723e-06,0.51869233776,0.532786226287,0.532812423546,2.92656878477e-08
+R4MEAS,17,29,8,8,8,16,29,1,0.000211978453029,1.80008444593552e-06,-0.681861006248,-0.691000267187,-0.691054150364,2.91928675689e-08
+R4MEAS,18,239,8,8,8,16,239,1,0.000262139114992,1.9000844617844e-06,0.778800144414,0.782394830964,0.782402792573,2.91690668554e-08
+R4MEAS,19,14,8,8,8,16,14,1,0.000428213204964,2.00008445514685e-06,-0.800094635897,-0.797998585655,-0.797974169668,2.91469241032e-08
+R4MEAS,20,232,8,8,8,16,232,1,0.000247297572618,2.10008446332235e-06,0.743676002407,0.735613309933,0.735577510562,2.92695069543e-08
+..R4MEAS,21,42,8,8,8,16,42,1,0.000322390895585,2.20008439596831e-06,-0.615023155748,-0.602146845391,-0.602242274219,2.92578156434e-08
+R4MEAS,22,186,8,8,8,16,186,1,0.000300306092987,2.30008442196978e-06,0.426634208035,0.410196586087,0.410178443616,2.92130087118e-08
+R4MEAS,23,102,8,8,8,16,102,1,0.000338855822048,2.40008448802017e-06,-0.196807371697,-0.1782992464,-0.178337867434,2.92541260301e-08
+R4MEAS,24,117,8,8,8,16,117,1,0.000232986823283,2.5000844698288e-06,-0.0521370373617,-0.0711480864026,-0.0711072076817,2.92503024184e-08
+R4MEAS,25,172,8,8,8,16,172,1,0.000265420254953,2.60008431500255e-06,0.296020242982,0.313398147271,0.313415664305,2.92134756417e-08
+R4MEAS,26,53,8,8,8,16,53,1,0.000162308127695,2.70008443335845e-06,-0.511145439762,-0.525228883927,-0.525206514221,2.92319038684e-08
+R4MEAS,27,225,8,8,8,16,225,1,0.000318963772131,2.8000843952961e-06,0.676626061098,0.685951837116,0.685964639182,2.91593900544e-08
+R4MEAS,28,16,8,8,8,16,16,1,0.000343889162193,2.90008445358231e-06,-0.776385023601,-0.780275517988,-0.780252045432,2.91559286329e-08
+R4MEAS,29,241,8,8,8,16,241,1,0.000326754653979,3.00008446011662e-06,0.800734460309,0.798548938222,0.798529362523,2.9145188054e-08
+R4MEAS,30,22,8,8,8,16,22,1,0.00020167136314,3.10008437762598e-06,-0.74730794969,-0.739611579071,-0.739647200918,2.91766632908e-08
+R4MEAS,31,214,8,8,8,16,214,1,0.000351288954499,3.20008437024157e-06,0.62129545348,0.608640997242,0.608667521566,2.92221042516e-08
+R4MEAS,32,68,8,8,8,16,68,1,0.00019282326326,3.30008441546947e-06,-0.434937479045,-0.418466476068,-0.41841928967,2.9222492646e-08
+R4MEAS,33,154,8,8,8,16,154,1,0.000289781952382,3.40008438907152e-06,0.206332817645,0.187626251101,0.187641355043,2.92622255719e-08
+R4MEAS,34,136,8,8,8,16,136,1,0.00029637610034,3.50008440979398e-06,0.0423119688951,0.0612504394641,0.0612411328634,2.92141547955e-08
+R4MEAS,35,84,8,8,8,16,84,1,0.000284520672847,3.6000844900186e-06,-0.286845750149,-0.304310126514,-0.304266605794,2.92254931584e-08
+...R4MEAS,36,201,8,8,8,16,201,1,0.000359729312803,3.70008444787255e-06,0.503520777825,0.51776398396,0.517768297096,2.92067897245e-08
+R4MEAS,37,30,8,8,8,16,30,1,0.000281199424289,3.80008442248097e-06,-0.671288275789,-0.680941883421,-0.680934317582,2.92811229262e-08
+R4MEAS,38,238,8,8,8,16,238,1,0.000386269308684,3.90008438769513e-06,0.773853330912,0.777984119034,0.777990532019,2.91663500843e-08
+R4MEAS,39,14,8,8,8,16,14,1,0.000314538425961,4.0000844467198e-06,-0.801253674867,-0.799385306023,-0.799397977689,2.91725041192e-08
+R4MEAS,40,233,8,8,8,16,233,1,0.000447455809215,4.1000843982852e-06,0.750828248724,0.743305393235,0.743292311266,2.92226827494e-08
+R4MEAS,41,40,8,8,8,16,40,1,0.000301653368822,4.20008438561013e-06,-0.627474778353,-0.615018333927,-0.615061014846,2.91958811973e-08
+R4MEAS,42,188,8,8,8,16,188,1,0.000376648351819,4.30008437173302e-06,0.443174547827,0.42679242453,0.426817718549,2.92091755918e-08
+R4MEAS,43,99,8,8,8,16,99,1,0.000192802193403,4.40008440378009e-06,-0.215829688513,-0.197183898563,-0.197190520266,2.92651403763e-08
+R4MEAS,44,120,8,8,8,16,120,1,0.000299734700937,4.50008434757517e-06,-0.0324805796779,-0.0515333082835,-0.0515181497635,2.9215292042e-08
+R4MEAS,45,170,8,8,8,16,170,1,0.000266468728386,4.60008439103042e-06,0.27763385727,0.295201168341,0.29524326052,2.92790856125e-08
+R4MEAS,46,55,8,8,8,16,55,1,0.000212050263599,4.70008445116556e-06,-0.495820482573,-0.510103992807,-0.510088513527,2.92056415824e-08
+R4MEAS,47,224,8,8,8,16,224,1,0.000233418616085,4.800084402423e-06,0.66584998197,0.675838966794,0.675818796584,2.91501085516e-08
+R4MEAS,48,17,8,8,8,16,17,1,0.000257431786273,4.90008441544513e-06,-0.771204549947,-0.775547257745,-0.775580030069,2.91482028065e-08
+R4MEAS,49,241,8,8,8,16,241,1,0.000355982078958,5.00008439765606e-06,0.801652203214,0.799912050436,0.79996778927,2.91798631694e-08
+R4MEAS,50,21,8,8,8,16,21,1,0.000286656976075,5.10008434648765e-06,-0.754234905465,-0.746926853575,-0.746933612614,2.91923887032e-08
+....R4MEAS,51,216,8,8,8,16,216,1,0.000373919170692,5.20008437833973e-06,0.633559286106,0.621294282714,0.621333139062,2.92144350116e-08
+R4MEAS,52,66,8,8,8,16,66,1,0.000332095095134,5.30008439854342e-06,-0.451346212831,-0.435088866847,-0.435066555141,2.92749195649e-08
+R4MEAS,53,157,8,8,8,16,157,1,0.000185998298139,5.4000844155326e-06,0.225293989648,0.206964918005,0.206996697348,2.92180475551e-08
+R4MEAS,54,133,8,8,8,16,133,1,0.000267496910665,5.50008444535146e-06,0.0226406716585,0.0417319577622,0.0416794799195,2.92353307053e-08
+R4MEAS,55,87,8,8,8,16,87,1,0.000207298220576,5.6000844036917e-06,-0.268377785572,-0.286059012103,-0.286091881174,2.9261468749e-08
+R4MEAS,56,199,8,8,8,16,199,1,0.000253144363547,5.70008440483621e-06,0.488046410961,0.502815245705,0.50282603453,2.91964228627e-08
+R4MEAS,57,32,8,8,8,16,32,1,0.00023199461688,5.80008446642137e-06,-0.660310340057,-0.67036039446,-0.670359679266,2.91375765247e-08
+R4MEAS,58,238,8,8,8,16,238,1,0.000311490732779,5.90008439520412e-06,0.768439925799,0.772971650541,0.77300991169,2.91816573622e-08
+R4MEAS,59,13,8,8,8,16,13,1,0.000221330461996,6.00008442975011e-06,-0.801930073677,-0.800603618008,-0.800558694473,2.9222143618e-08
+R4MEAS,60,234,8,8,8,16,234,1,0.000173285237182,6.10008439813192e-06,0.757528776019,0.750402265513,0.750356255762,2.92817009633e-08
+R4MEAS,61,38,8,8,8,16,38,1,0.000204410800744,6.20008441144659e-06,-0.639548938303,-0.627506526788,-0.627473923444,2.9208583244e-08
+R4MEAS,62,191,8,8,8,16,191,1,0.000318434731856,6.30008437894835e-06,0.45944903528,0.443425316942,0.443449570438,2.92368882412e-08
+R4MEAS,63,97,8,8,8,16,97,1,0.000170574595293,6.40008438360263e-06,-0.234723412754,-0.216410515449,-0.216400927953,2.92705752906e-08
+R4MEAS,64,123,8,8,8,16,123,1,0.000278110456954,6.50008440306594e-06,-0.0128005300167,-0.0319063220236,-0.0319064622242,2.92210526855e-08
+.....R4MEAS,65,167,8,8,8,16,167,1,0.000232231756877,6.60008443795639e-06,0.259080830911,0.276751516456,0.276755339703,2.9237951633e-08
+R4MEAS,66,57,8,8,8,16,57,1,0.000167067373353,6.70008444752943e-06,-0.480197239124,-0.495068559922,-0.495018144813,2.92035750996e-08
+R4MEAS,67,222,8,8,8,16,222,1,0.00036993452658,6.800084445768e-06,0.654672338297,0.66487278704,0.664910137137,2.91775926938e-08
+R4MEAS,68,18,8,8,8,16,18,1,0.000221701678443,6.90008444941698e-06,-0.76555908398,-0.770115010325,-0.770102166874,2.91773183987e-08
+R4MEAS,69,242,8,8,8,16,242,1,0.000359748206366,7.00008442790087e-06,0.802087150987,0.800981573538,0.800978557795,2.92253894622e-08
+R4MEAS,70,20,8,8,8,16,20,1,0.000187619193204,7.10008441796394e-06,-0.760708309424,-0.754003621005,-0.753936333303,2.91919344499e-08
+R4MEAS,71,218,8,8,8,16,218,1,0.000186634602104,7.200084421248e-06,0.645441948125,0.633404565617,0.633450873943,2.92609511656e-08
+R4MEAS,72,63,8,8,8,16,63,1,0.000221191294748,7.30008446436996e-06,-0.467484608908,-0.451626037769,-0.451627738711,2.91860691007e-08
+R4MEAS,73,160,8,8,8,16,160,1,0.000265377653121,7.40008446494483e-06,0.244119940745,0.225760103286,0.225699251706,2.91966935668e-08
+R4MEAS,74,131,8,8,8,16,131,1,0.000258468220784,7.50008450836068e-06,0.00295511255055,0.0220031614188,0.0220519720286,2.93072442432e-08
+R4MEAS,75,89,8,8,8,16,89,1,0.000271896979642,7.60008449210196e-06,-0.249744424803,-0.267572355193,-0.267641261542,2.92665629268e-08
+R4MEAS,76,197,8,8,8,16,197,1,0.000263819184149,7.70008444250211e-06,0.472276612296,0.487036471649,0.487088643008,2.92241525844e-08
+R4MEAS,77,34,8,8,8,16,34,1,0.0002551351702,7.80008444550305e-06,-0.648935482768,-0.659479579594,-0.659508683069,2.92152545866e-08
+R4MEAS,78,237,8,8,8,16,237,1,0.000162433397062,7.90008449054194e-06,0.762563015075,0.767594616893,0.767571149138,2.91985958875e-08
+R4MEAS,79,13,8,8,8,16,13,1,0.000260129764145,8.00008447283132e-06,-0.802123435351,-0.801328581055,-0.801283788355,2.91701482181e-08
+......R4MEAS,80,235,8,8,8,16,235,1,0.000327341606491,8.10008450100633e-06,0.763773710656,0.757154559749,0.75718146856,2.92186363274e-08
+R4MEAS,81,37,8,8,8,16,37,1,0.000187528205489,8.20008453877158e-06,-0.651239179293,-0.639439860547,-0.63944317744,2.9253209546e-08
+R4MEAS,82,193,8,8,8,16,193,1,0.000277360166441,8.30008443044378e-06,0.475447572387,0.459566054141,0.459541897397,2.91765179486e-08
+R4MEAS,83,94,8,8,8,16,94,1,0.000240879585967,8.40008448683727e-06,-0.253478411625,-0.235285240327,-0.235235166609,2.92124475117e-08
+R4MEAS,84,126,8,8,8,16,126,1,0.000241984407297,8.50008451081988e-06,0.0068884169685,-0.0120974810026,-0.0120615324,2.91896545191e-08
+R4MEAS,85,164,8,8,8,16,164,1,0.000187147124506,8.6000844444437e-06,0.240372602431,0.258346904337,0.258323831294,2.92352853586e-08
+R4MEAS,86,59,8,8,8,16,59,1,0.000405962857543,8.70008442440849e-06,-0.464285105751,-0.47934386891,-0.479333964171,2.91990773062e-08
+R4MEAS,87,221,8,8,8,16,221,1,0.000324254550598,8.80008440478669e-06,0.64310144861,0.653719494498,0.653685544998,2.92486110917e-08
+R4MEAS,88,18,8,8,8,16,18,1,0.000225596394213,8.90008448059027e-06,-0.759452458174,-0.764741079389,-0.764822971942,2.93442241591e-08
+R4MEAS,89,242,8,8,8,16,242,1,0.00022286736227,9.00008439653712e-06,0.802038938348,0.801224359801,0.801242948411,2.91996625867e-08
+R4MEAS,90,19,8,8,8,16,19,1,0.000181887656884,9.10008443666243e-06,-0.766723063814,-0.760214096616,-0.760230080752,2.91947739576e-08
+R4MEAS,91,219,8,8,8,16,219,1,0.000385797788574,9.20008439132532e-06,0.656934833392,0.645212342833,0.645218811599,2.92472208747e-08
+R4MEAS,92,61,8,8,8,16,61,1,0.000188345997404,9.30008447356004e-06,-0.483340341462,-0.46767435535,-0.467697388119,2.92023216146e-08
+R4MEAS,93,162,8,8,8,16,162,1,0.000242805910931,9.40008441569375e-06,0.262796711312,0.244790103551,0.244798555856,2.92654475427e-08
+R4MEAS,94,128,8,8,8,16,128,1,0.00026245290412,9.50008439236393e-06,-0.0167281662077,0.00233785502403,0.00235662864161,2.91453851928e-08
+......9R4MEAS,95,92,8,8,8,16,92,1,0.000283799334269,9.600084481753e-06,-0.230962742564,-0.249022514029,-0.249018073971,2.92394454449e-08
+R4MEAS,96,195,8,8,8,16,195,1,0.000322383070444,9.70008438700341e-06,0.4562240458,0.471375067528,0.471347917392,2.92132932995e-08
+R4MEAS,97,35,8,8,8,16,35,1,0.000203309362779,9.80008446131731e-06,-0.637169243575,-0.647987149584,-0.647988000312,2.91808304586e-08
+R4MEAS,98,236,8,8,8,16,236,1,0.000338304301211,9.90008446914935e-06,0.756227547039,0.761492487842,0.761521634747,2.91561607005e-08
+
+Warning from spectre at time = 10.01 us during transient analysis `tran_perf'.
+    WARNING (SPECTRE-16780): LTE tolerance was temporarily relaxed to step over a discontinuity in the signal: XDUT.XCTRL.XTIM.X006.X001.XLIB.net10. Check the design or use '+diagnose' to get more information.
+R4MEAS,99,13,8,8,8,16,13,1,0.000275605662021,1.00000843751233e-05,-0.801833666103,-0.801483853989,-0.801463335501,2.91676733546e-08
+R4MEAS,100,236,8,8,8,16,236,1,0.000224846234697,1.01000844325714e-05,0.769557371149,0.763305499366,0.763358177403,2.92006654632e-08
+R4MEAS,101,35,8,8,8,16,35,1,0.000415846508325,1.02000844495568e-05,-0.662534253436,-0.651094008854,-0.651147143083,2.91989261428e-08
+R4MEAS,102,195,8,8,8,16,195,1,0.000132003488415,1.03000844433058e-05,0.491158990639,0.475677798487,0.475615586507,2.92084597767e-08
+R4MEAS,103,91,8,8,8,16,91,1,0.000250977505167,1.04000844279994e-05,-0.272077228925,-0.253863495907,-0.253826593413,2.92360649188e-08
+R4MEAS,104,129,8,8,8,16,129,1,0.000335165512059,1.05000843522579e-05,0.0265671743615,0.00759039568833,0.00761705503508,2.91937408568e-08
+R4MEAS,105,162,8,8,8,16,162,1,0.000454556354081,1.06000844105184e-05,0.221520461596,0.239684135483,0.239642922377,2.92811895259e-08
+R4MEAS,106,62,8,8,8,16,62,1,0.000258389291406,1.07000844640957e-05,-0.448092137311,-0.463431558229,-0.463417190081,2.92644714403e-08
+R4MEAS,107,219,8,8,8,16,219,1,0.00025722635352,1.08000844782492e-05,0.63114161269,0.642167780132,0.64214574667,2.91882990399e-08
+R4MEAS,108,19,8,8,8,16,19,1,0.000181772264265,1.09000844138517e-05,-0.752889100089,-0.758537444237,-0.758524729384,2.92342479642e-08
+R4MEAS,109,242,8,8,8,16,242,1,0.000389581431639,1.10000843934902e-05,0.801507617146,0.801284729533,0.80123659766,2.91624384806e-08
+......9.R4MEAS,110,18,8,8,8,16,18,1,0.000171653741381,1.11000844394447e-05,-0.772275855395,-0.766434455374,-0.766374459843,2.91866129689e-08
+R4MEAS,111,221,8,8,8,16,221,1,0.00022557838124,1.12000843879943e-05,0.668032366945,0.656700755766,0.656688755547,2.9175638422e-08
+R4MEAS,112,59,8,8,8,16,59,1,0.000149799700663,1.13000843615816e-05,-0.498902768945,-0.48355917083,-0.483572930184,2.92137547661e-08
+R4MEAS,113,165,8,8,8,16,165,1,0.000218244293047,1.14000844602823e-05,0.281317194864,0.26328550521,0.263278839587,2.92315210478e-08
+R4MEAS,114,125,8,8,8,16,125,1,0.000197975570624,1.15000844029459e-05,-0.0364042402773,-0.0174423946877,-0.0174437074492,2.92039587825e-08
+R4MEAS,115,95,8,8,8,16,95,1,0.000294314720021,1.16000843929601e-05,-0.212043656856,-0.230292891081,-0.230263872385,2.92036954091e-08
+R4MEAS,116,192,8,8,8,16,192,1,0.00031675611059,1.17000844571268e-05,0.439894318713,0.455205306011,0.455183292223,2.91608028496e-08
+R4MEAS,117,37,8,8,8,16,37,1,0.000250524580588,1.18000844141838e-05,-0.625020078648,-0.636279689493,-0.636256640374,2.920793106e-08
+R4MEAS,118,235,8,8,8,16,235,1,0.000311100556656,1.19000844129416e-05,0.749436859842,0.755317310298,0.755271176556,2.91808911483e-08
+R4MEAS,119,13,8,8,8,16,13,1,0.000484977425613,1.2000084461915e-05,-0.801060795362,-0.801272424071,-0.801333000677,2.91627304695e-08
+R4MEAS,120,237,8,8,8,16,237,1,0.000237791418309,1.21000843938678e-05,0.774877726506,0.769006638299,0.768998037821,2.91687096492e-08
+R4MEAS,121,33,8,8,8,16,33,1,0.000192026849157,1.22000843789974e-05,-0.673430553735,-0.662473647484,-0.662462957575,2.91769783456e-08
+R4MEAS,122,197,8,8,8,16,197,1,0.000190545396997,1.2300084443625e-05,0.506574323653,0.491256086115,0.491279129079,2.92794188091e-08
+R4MEAS,123,89,8,8,8,16,89,1,0.00020241827165,1.24000844606737e-05,-0.290514114691,-0.272516915522,-0.272530429465,2.92709686433e-08
+......9..R4MEAS,124,131,8,8,8,16,131,1,0.000291777015617,1.25000844830249e-05,0.0462364883212,0.0271733455605,0.0272098295119,2.91980896905e-08
+R4MEAS,125,159,8,8,8,16,159,1,0.000257539795823,1.26000844606802e-05,0.202533049486,0.220715862234,0.220756417292,2.91828624378e-08
+R4MEAS,126,64,8,8,8,16,64,1,0.000309347444667,1.27000845102387e-05,-0.431629106768,-0.447232436462,-0.447220954709,2.9130592495e-08
+R4MEAS,127,217,8,8,8,16,217,1,0.000275621358687,1.28000843973382e-05,0.618803764969,0.630181127345,0.630165021044,2.92062342473e-08
+R4MEAS,128,20,8,8,8,16,20,1,0.000272777479291,1.29000845061634e-05,-0.745870971889,-0.752069236942,-0.752062622208,2.920691209e-08
+R4MEAS,129,241,8,8,8,16,241,1,0.000224532186747,1.30000843826611e-05,0.800493512376,0.800754267874,0.800728991056,2.92898490917e-08
+R4MEAS,130,18,8,8,8,16,18,1,0.000373132168761,1.31000843722508e-05,-0.777363062434,-0.771884846605,-0.771949644262,2.92054635876e-08
+R4MEAS,131,223,8,8,8,16,223,1,0.000172158397163,1.32000844380978e-05,0.678728151987,0.66785653172,0.667828816887,2.92142521294e-08
+R4MEAS,132,56,8,8,8,16,56,1,0.000220312895255,1.33000845307062e-05,-0.514169649008,-0.499182837884,-0.499175370434,2.92602394568e-08
+R4MEAS,133,168,8,8,8,16,168,1,0.000285429635795,1.34000844210715e-05,0.299666442353,0.281607649236,0.281627668934,2.92604545908e-08
+R4MEAS,134,122,8,8,8,16,122,1,0.00018628593233,1.35000844513085e-05,-0.0560592403809,-0.0370620466483,-0.0370622701342,2.92773652054e-08
+R4MEAS,135,97,8,8,8,16,97,1,0.000240679957351,1.36000843906722e-05,-0.192994965028,-0.211274153382,-0.211265987955,2.92276669609e-08
+R4MEAS,136,190,8,8,8,16,190,1,0.000169441857377,1.37000844319262e-05,0.423301410063,0.439008060393,0.438987682562,2.91803629801e-08
+R4MEAS,137,39,8,8,8,16,39,1,0.000151038936118,1.38000843768938e-05,-0.612494321683,-0.624017756307,-0.624009330578,2.92771488701e-08
+R4MEAS,138,234,8,8,8,16,234,1,0.000245132172914,1.3900084469151e-05,0.742193830977,0.748520518921,0.748567890331,2.91612405377e-08
+......9...R4MEAS,139,14,8,8,8,16,14,1,0.000167365814502,1.40000844868803e-05,-0.799805405646,-0.800292726945,-0.800270333575,2.91823755162e-08
+R4MEAS,140,238,8,8,8,16,238,1,0.000328523661583,1.41000844622273e-05,0.779731936128,0.774377974419,0.774363600186,2.9169608033e-08
+R4MEAS,141,32,8,8,8,16,32,1,0.000426707420977,1.42000844180963e-05,-0.683922570652,-0.673326554518,-0.673297683983,2.92163469925e-08
+R4MEAS,142,200,8,8,8,16,200,1,0.000348656270469,1.43000844284249e-05,0.521684247536,0.506601969546,0.506644239342,2.91983744797e-08
+R4MEAS,143,86,8,8,8,16,86,1,0.000217059549159,1.44000844360319e-05,-0.308774792185,-0.290942199733,-0.290956241109,2.92420583313e-08
+R4MEAS,144,134,8,8,8,16,134,1,0.000280800555957,1.45000844535166e-05,0.065874318487,0.0469407312114,0.0469295581898,2.92266250489e-08
+R4MEAS,145,156,8,8,8,16,156,1,0.000329457529106,1.4600084424149e-05,0.183425539825,0.201678150143,0.201653677578,2.92302056914e-08
+R4MEAS,146,66,8,8,8,16,66,1,0.000290038745792,1.47000843841023e-05,-0.414909396702,-0.430618446153,-0.43061691063,2.91723495904e-08
+R4MEAS,147,215,8,8,8,16,215,1,0.000259309910518,1.48000844174704e-05,0.606091740795,0.617790922316,0.617761798925,2.92398210872e-08
+R4MEAS,148,21,8,8,8,16,21,1,0.000294021698163,1.49000843726897e-05,-0.73840546434,-0.744941620913,-0.744922559236,2.92004662519e-08
+R4MEAS,149,241,8,8,8,16,241,1,0.000396508413936,1.50000845059528e-05,0.798996963763,0.79960664752,0.799627819388,2.91618475559e-08
+R4MEAS,150,17,8,8,8,16,17,1,0.000266870258435,1.51000844737811e-05,-0.781982940094,-0.776928827725,-0.776955114976,2.91613604342e-08
+R4MEAS,151,224,8,8,8,16,224,1,0.000294757062179,1.5200084397956e-05,0.689014000978,0.678464928934,0.678460546882,2.91582401288e-08
+R4MEAS,152,54,8,8,8,16,54,1,0.000118260344916,1.53000844309886e-05,-0.529122107274,-0.514443402043,-0.51445119291,2.92267375178e-08
+R4MEAS,153,170,8,8,8,16,170,1,0.000249725341913,1.54000843903919e-05,0.317835376021,0.300128632416,0.300072660834,2.92843899521e-08
+......9....R4MEAS,154,119,8,8,8,16,119,1,0.000235424669874,1.55000843938789e-05,-0.0756780790757,-0.0567095427374,-0.0567239062881,2.92131873173e-08
+R4MEAS,155,100,8,8,8,16,100,1,0.000277789731357,1.56000844440451e-05,-0.173828787965,-0.192253149374,-0.192224544037,2.92155584952e-08
+R4MEAS,156,188,8,8,8,16,188,1,0.000205515654995,1.57000844309822e-05,0.406453060806,0.422222982796,0.42227245397,2.92308028841e-08
+R4MEAS,157,40,8,8,8,16,40,1,0.00040208599266,1.58000843838146e-05,-0.599598986432,-0.611565423654,-0.611544850707,2.92363962482e-08
+R4MEAS,158,233,8,8,8,16,233,1,0.000262423662604,1.59000844971069e-05,0.734503932,0.741242049214,0.741281810292,2.91939496881e-08
+R4MEAS,159,14,8,8,8,16,14,1,0.000288379710994,1.60000844700092e-05,-0.798068310695,-0.799133779734,-0.799181113846,2.91522248264e-08
+R4MEAS,160,238,8,8,8,16,238,1,0.000147310595879,1.61000845561318e-05,0.784116512511,0.779150977869,0.77915179657,2.92189796247e-08
+R4MEAS,161,30,8,8,8,16,30,1,0.000295634261002,1.62000845029819e-05,-0.694003101971,-0.683713905072,-0.683696279727,2.91673757935e-08
+R4MEAS,162,202,8,8,8,16,202,1,0.000340231772027,1.63000844503954e-05,0.53648056633,0.521897572807,0.52187175243,2.92250944696e-08
+R4MEAS,163,83,8,8,8,16,83,1,0.000247681183272,1.64000844842848e-05,-0.326850996254,-0.309030330768,-0.309049274338,2.92588899756e-08
+R4MEAS,164,137,8,8,8,16,137,1,0.00029078185007,1.65000844622811e-05,0.0854733345682,0.066441137187,0.0664471234543,2.92300429655e-08
+R4MEAS,165,153,8,8,8,16,153,1,0.000249341325107,1.66000844628389e-05,0.164205880208,0.182593936658,0.182564014607,2.94156117895e-08
+R4MEAS,166,68,8,8,8,16,68,1,0.000196798928926,1.67000844137903e-05,-0.397936763586,-0.414178382771,-0.414169869726,2.93368725254e-08
+R4MEAS,167,214,8,8,8,16,214,1,0.000299039782123,1.6800084493808e-05,0.593013753946,0.605324661046,0.605345707637,2.9249900409e-08
+R4MEAS,168,22,8,8,8,16,22,1,0.000289895899345,1.69000843934184e-05,-0.730493860533,-0.737582670364,-0.737671043733,2.91921536778e-08
+......9.....R4MEAS,169,241,8,8,8,16,241,1,0.000237496039519,1.70000843934489e-05,0.79701959521,0.798223285616,0.798195451803,2.91312006887e-08
+R4MEAS,170,16,8,8,8,16,16,1,0.000305883509362,1.71000844365541e-05,-0.786131044654,-0.781498016297,-0.78151257766,2.91438350317e-08
+R4MEAS,171,226,8,8,8,16,226,1,7.79426426321e-05,1.72000844731061e-05,0.698886135894,0.688859201254,0.688867452515,2.9197094905e-08
+R4MEAS,172,52,8,8,8,16,52,1,0.000340276864444,1.73000844619474e-05,-0.543758095141,-0.529376221122,-0.529379904826,2.92252087923e-08
+R4MEAS,173,173,8,8,8,16,173,1,0.000368417915721,1.7400084485929e-05,0.33581547181,0.318238400559,0.318226136167,2.92531852068e-08
+R4MEAS,174,117,8,8,8,16,117,1,0.000226789155909,1.75000844261766e-05,-0.0952533596153,-0.0761631982872,-0.0761573117057,2.9252487709e-08
+R4MEAS,175,103,8,8,8,16,103,1,0.000362041716398,1.76000843806947e-05,-0.154560488812,-0.173178110703,-0.173106217832,2.92079243505e-08
+R4MEAS,176,185,8,8,8,16,185,1,0.000383778162504,1.7700084430012e-05,0.389359880475,0.405655446698,0.405694992844,2.92454861182e-08
+R4MEAS,177,42,8,8,8,16,42,1,0.000397773852738,1.78000844353468e-05,-0.58634177869,-0.598582497976,-0.598600734012,2.9239910269e-08
+R4MEAS,178,232,8,8,8,16,232,1,0.000310453346079,1.79000844493068e-05,0.726372295986,0.73356133345,0.733589654933,2.91502113786e-08
+R4MEAS,179,14,8,8,8,16,14,1,0.000289321574389,1.800008442542e-05,-0.795850586444,-0.797397594541,-0.797397402224,2.91493660811e-08
+R4MEAS,180,239,8,8,8,16,239,1,0.000381457244002,1.81000844473465e-05,0.788027805762,0.78352255156,0.783490552627,2.9151530828e-08
+R4MEAS,181,29,8,8,8,16,29,1,0.000347841514519,1.82000844490139e-05,-0.703663997626,-0.6937024884,-0.69376317514,2.92181569289e-08
+R4MEAS,182,204,8,8,8,16,204,1,0.000228219767317,1.83000844431696e-05,0.550953231473,0.536505507115,0.536511567053,2.92437996975e-08
+......9......R4MEAS,183,81,8,8,8,16,81,1,0.000222652355349,1.84000844223315e-05,-0.344728037794,-0.327262640901,-0.32723896467,2.92403830689e-08
+R4MEAS,184,140,8,8,8,16,140,1,0.000162198022666,1.85000844432285e-05,0.105020237947,0.0862125844325,0.0862311525564,2.92321837723e-08
+R4MEAS,185,151,8,8,8,16,151,1,0.000262380100594,1.86000845210121e-05,0.144886865491,0.163168446982,0.163241374874,2.92399904549e-08
+R4MEAS,186,71,8,8,8,16,71,1,0.000234513530251,1.87000844988452e-05,-0.380723306124,-0.397227262878,-0.397214754132,2.92007131198e-08
+R4MEAS,187,212,8,8,8,16,212,1,0.000303558355016,1.88000844215865e-05,0.579580825158,0.592159206742,0.592118253706,2.9194349325e-08
+R4MEAS,188,24,8,8,8,16,24,1,0.000190522212176,1.89000844315749e-05,-0.722142041388,-0.729551887491,-0.729598438672,2.91766844897e-08
+R4MEAS,189,241,8,8,8,16,241,1,0.000196320066974,1.90000844042036e-05,0.794561873181,0.79618117994,0.796155126411,2.91400899238e-08
+R4MEAS,190,16,8,8,8,16,16,1,0.000245407544131,1.91000843928302e-05,-0.789805628162,-0.785437553621,-0.785466900354,2.91314151941e-08
+R4MEAS,191,227,8,8,8,16,227,1,0.000214058861693,1.92000844244457e-05,0.708335896847,0.698566636373,0.698580382736,2.91702264261e-08
+R4MEAS,192,50,8,8,8,16,50,1,0.000206355286768,1.93000845443711e-05,-0.558067358856,-0.543929461245,-0.543914767394,2.92197678683e-08
+R4MEAS,193,175,8,8,8,16,175,1,0.000139539663102,1.94000844600654e-05,0.353590767935,0.336171565839,0.336124512147,2.92060609337e-08
+R4MEAS,194,114,8,8,8,16,114,1,0.000278356267692,1.95000844077129e-05,-0.114770118924,-0.0959090329817,-0.0959321793857,2.92214520419e-08
+R4MEAS,195,106,8,8,8,16,106,1,0.00025540623035,1.9600084384264e-05,-0.135197605145,-0.153787450682,-0.153846316144,2.92612236681e-08
+R4MEAS,196,183,8,8,8,16,183,1,0.000225905497917,1.9700084480275e-05,0.372031134977,0.388412357615,0.388414135411,2.91949157503e-08
+R4MEAS,197,44,8,8,8,16,44,1,0.000315462439277,1.98000844332362e-05,-0.572732190774,-0.585221032153,-0.585192184866,2.92166166893e-08
+......9......8R4MEAS,198,231,8,8,8,16,231,1,0.000407149927325,1.99000844933327e-05,0.717802238778,0.725412411676,0.725431836684,2.91682112566e-08
+R4MEAS,199,14,8,8,8,16,14,1,0.00022188446606,2.00000845165376e-05,-0.793153061564,-0.794916532895,-0.79493553335,2.91437153444e-08
+R4MEAS,200,240,8,8,8,16,240,1,0.000212853163724,2.01000844822158e-05,0.791465069191,0.787386550553,0.787378790936,2.91298339745e-08
+R4MEAS,201,27,8,8,8,16,27,1,0.000451650353057,2.02000844434595e-05,-0.712901588623,-0.703447317339,-0.70343726718,2.91918346173e-08
+R4MEAS,202,206,8,8,8,16,206,1,0.000194510017084,2.03000844944986e-05,0.565094971416,0.551113929186,0.551082324166,2.92134324203e-08
+R4MEAS,203,78,8,8,8,16,78,1,0.000138936594509,2.04000844173457e-05,-0.362398610826,-0.345048719271,-0.345022186736,2.92341477974e-08
+R4MEAS,204,143,8,8,8,16,143,1,0.000324233143388,2.05000845128543e-05,0.124505871516,0.105653905919,0.105644999755,2.93391960022e-08
+R4MEAS,205,148,8,8,8,16,148,1,0.000279971342279,2.06000844257293e-05,0.125484003602,0.144268472705,0.14429731264,2.92317795807e-08
+R4MEAS,206,73,8,8,8,16,73,1,0.000378993667077,2.07000844314101e-05,-0.363283554939,-0.379977797064,-0.38001132072,2.92432050406e-08
+R4MEAS,207,210,8,8,8,16,210,1,0.00017691288955,2.08000843149931e-05,0.56579938947,0.578579418236,0.578585748563,2.92204911407e-08
+R4MEAS,208,25,8,8,8,16,25,1,0.000165507665942,2.09000844365189e-05,-0.713355537203,-0.721114518178,-0.721117225895,2.91962860565e-08
+R4MEAS,209,241,8,8,8,16,241,1,0.00024288451587,2.10000845256376e-05,0.791625119919,0.793741886744,0.79373499089,2.93571287878e-08
+R4MEAS,210,15,8,8,8,16,15,1,0.000206594695527,2.11000844278995e-05,-0.793004779077,-0.789325410109,-0.789293857264,2.9115518448e-08
+R4MEAS,211,228,8,8,8,16,228,1,0.000262006465354,2.12000843757602e-05,0.717359030341,0.708025819024,0.708088041576,2.92935722136e-08
+R4MEAS,212,48,8,8,8,16,48,1,0.000406668417514,2.13000843146638e-05,-0.572035435199,-0.558181968043,-0.55820822352,2.91926371868e-08
+......9......8.R4MEAS,213,178,8,8,8,16,178,1,0.000248334378279,2.14000844334528e-05,0.37115307183,0.353979547436,0.35396285207,2.92419381442e-08
+R4MEAS,214,111,8,8,8,16,111,1,0.000182169067221,2.15000844388939e-05,-0.134218858475,-0.115134611171,-0.115210231383,2.92014300297e-08
+R4MEAS,215,108,8,8,8,16,108,1,0.000318818451472,2.16000843888298e-05,-0.115753260457,-0.134349531817,-0.134374264507,2.926869674e-08
+R4MEAS,216,180,8,8,8,16,180,1,0.000287666950185,2.17000844274752e-05,0.354480363571,0.371245259082,0.371202846782,2.92583298138e-08
+R4MEAS,217,46,8,8,8,16,46,1,0.000183968005865,2.18000844168336e-05,-0.558777844729,-0.57172123921,-0.571705530426,2.92042942731e-08
+R4MEAS,218,230,8,8,8,16,230,1,0.000210505865912,2.19000843640443e-05,0.70880160139,0.716902024384,0.716904647435,2.9259413808e-08
+R4MEAS,219,15,8,8,8,16,15,1,9.80262427915e-05,2.2000084356198e-05,-0.789978659779,-0.792220713946,-0.792302377986,2.91603093674e-08
+R4MEAS,220,240,8,8,8,16,240,1,0.0002188747994,2.21000844813652e-05,0.79442543331,0.790673793093,0.79066813458,2.91566628123e-08
+R4MEAS,221,26,8,8,8,16,26,1,0.000165896759116,2.22000844519397e-05,-0.721709898828,-0.712672821394,-0.712692363512,2.91968165424e-08
+R4MEAS,222,208,8,8,8,16,208,1,0.000339009787328,2.23000844659057e-05,0.578895023777,0.565154608502,0.565127469446,2.91840711803e-08
+R4MEAS,223,76,8,8,8,16,76,1,0.000302376564303,2.24000844805147e-05,-0.379852253,-0.362853339972,-0.362822711751,2.92437184271e-08
+R4MEAS,224,145,8,8,8,16,145,1,0.000220109707481,2.25000844470398e-05,0.143913472173,0.12510396961,0.125101566228,2.92487442168e-08
+R4MEAS,225,145,8,8,8,16,145,1,0.000244540362876,2.26000843638308e-05,0.106004820614,0.124781219077,0.124829695752,2.92405164554e-08
+R4MEAS,226,76,8,8,8,16,76,1,0.000210766600858,2.27000844337935e-05,-0.345623579798,-0.362543496986,-0.362509127046,2.92345206135e-08
+R4MEAS,227,208,8,8,8,16,208,1,0.000238540291689,2.2800084427299e-05,0.551673615632,0.565012385461,0.564977696656,2.91834349009e-08
+......9......8..R4MEAS,228,26,8,8,8,16,26,1,0.000374821124257,2.29000843921993e-05,-0.704139864774,-0.712438945374,-0.712453446403,2.91901297997e-08
+R4MEAS,229,240,8,8,8,16,240,1,0.00029193074776,2.30000844146178e-05,0.788212365922,0.7907486099,0.790744444093,2.91415577391e-08
+R4MEAS,230,15,8,8,8,16,15,1,0.000310410843061,2.31000844799186e-05,-0.795726263436,-0.792419785045,-0.79249901178,2.91750549459e-08
+R4MEAS,231,230,8,8,8,16,230,1,0.000236523866102,2.32000843940217e-05,0.725950748155,0.717080382121,0.717060266156,2.92312411237e-08
+R4MEAS,232,46,8,8,8,16,46,1,0.000205033149542,2.3300084520161e-05,-0.585665868464,-0.572043453629,-0.57204900996,2.92268694077e-08
+R4MEAS,233,180,8,8,8,16,180,1,0.000186462955164,2.34000844561254e-05,0.388492799054,0.371615056714,0.371650514103,2.93826949933e-08
+R4MEAS,234,108,8,8,8,16,108,1,0.000399889719928,2.35000843391383e-05,-0.153583827886,-0.134681675042,-0.134685106654,2.92774443942e-08
+R4MEAS,235,111,8,8,8,16,111,1,0.000281998830118,2.36000843924801e-05,-0.096239210219,-0.115147975325,-0.115109058701,2.92144895696e-08
+R4MEAS,236,178,8,8,8,16,178,1,0.000196770496146,2.37000843358036e-05,0.33671689294,0.35349615718,0.35349264683,2.92305981822e-08
+R4MEAS,237,48,8,8,8,16,48,1,0.000276428010689,2.38000844412388e-05,-0.544486244622,-0.557982746078,-0.557981883214,2.91880721812e-08
+R4MEAS,238,228,8,8,8,16,228,1,0.000265076268497,2.39000844282288e-05,0.699371986029,0.707835164754,0.707842426029,2.92092125288e-08
+R4MEAS,239,15,8,8,8,16,15,1,0.000352975839085,2.40000844555585e-05,-0.786327416536,-0.789049868836,-0.789043431369,2.91092104447e-08
+R4MEAS,240,240,8,8,8,16,240,1,0.000288439516073,2.41000844787907e-05,0.796907261736,0.793825781862,0.793857772334,2.92481901909e-08
+R4MEAS,241,25,8,8,8,16,25,1,0.000436761590682,2.42000843667243e-05,-0.730082588929,-0.721451439592,-0.7213999083,2.92225241997e-08
+......9......8...R4MEAS,242,210,8,8,8,16,210,1,0.000160068227631,2.43000843724963e-05,0.592345402764,0.57904033347,0.579059142299,2.92266359738e-08
+R4MEAS,243,73,8,8,8,16,73,1,0.000191024965005,2.44000844642394e-05,-0.397075486878,-0.380042550825,-0.380075865929,2.9270272252e-08
+R4MEAS,244,148,8,8,8,16,148,1,0.000313778949073,2.45000844333899e-05,0.163235556702,0.144519613029,0.144496565922,2.92331247296e-08
+R4MEAS,245,143,8,8,8,16,143,1,0.000172848570952,2.46000844087795e-05,0.0864593832188,0.105111303647,0.105110508577,2.92951351718e-08
+R4MEAS,246,78,8,8,8,16,78,1,0.00035086766273,2.47000843656085e-05,-0.327756874181,-0.344730724253,-0.344745639897,2.92540339466e-08
+R4MEAS,247,206,8,8,8,16,206,1,0.00026331382911,2.48000844453702e-05,0.537217035977,0.550569439665,0.550588833352,2.91998540327e-08
+R4MEAS,248,27,8,8,8,16,27,1,0.000301737972271,2.49000843844134e-05,-0.694499673392,-0.703313066577,-0.703330279987,2.91759331924e-08
+R4MEAS,249,240,8,8,8,16,240,1,0.000285808248665,2.50000842951993e-05,0.784324983677,0.787460376775,0.78747709393,2.91156620178e-08
+R4MEAS,250,14,8,8,8,16,14,1,0.000164728222999,2.51000843731475e-05,-0.797968008223,-0.795181836998,-0.795155025149,2.91631386819e-08
+R4MEAS,251,231,8,8,8,16,231,1,0.000271185724374,2.52000845188358e-05,0.734106136276,0.725538740404,0.725512498908,2.91815362254e-08
+R4MEAS,252,44,8,8,8,16,44,1,0.000281654606955,2.53000843709684e-05,-0.598937998301,-0.585714027154,-0.585745533263,2.92196149118e-08
+R4MEAS,253,183,8,8,8,16,183,1,0.000246160786803,2.54000844589011e-05,0.405598111029,0.388913582809,0.388959246455,2.92140983835e-08
+R4MEAS,254,106,8,8,8,16,106,1,0.00041555760752,2.5500084372955e-05,-0.17285926488,-0.154117977354,-0.154098835209,2.93724866591e-08
+R4MEAS,255,114,8,8,8,16,114,1,0.000362647449409,2.56000843915695e-05,-0.0766672916013,-0.0954524449983,-0.0955540426523,2.92203285596e-08
+
+Warning from spectre at time = 25.7065 us during transient analysis `tran_perf'.
+    WARNING (SPECTRE-16780): LTE tolerance was temporarily relaxed to step over a discontinuity in the signal: XDUT.XCTRL.XTIM.X006.X001.XLIB.net10. Check the design or use '+diagnose' to get more information.
+R4MEAS,256,175,8,8,8,16,175,1,0.000186955431845,2.57000844787834e-05,0.31874575381,0.335711249939,0.335761873236,2.92152836702e-08
+......9......8....R4MEAS,257,50,8,8,8,16,50,1,0.000360447643617,2.58000843637109e-05,-0.529868384261,-0.543673033073,-0.543660278114,2.92080463503e-08
+R4MEAS,258,227,8,8,8,16,227,1,0.000190099325017,2.59000844170606e-05,0.689521906365,0.698440017292,0.698500606544,2.91758881136e-08
+R4MEAS,259,15,8,8,8,16,15,1,0.000271789278753,2.60000844436522e-05,-0.782202969755,-0.785433032547,-0.78544423179,2.92916977193e-08
+R4MEAS,260,241,8,8,8,16,241,1,0.000171537898084,2.61000843054666e-05,0.798908719247,0.796378929848,0.796403307873,2.9158368275e-08
+R4MEAS,261,24,8,8,8,16,24,1,0.00032415682269,2.62000844765544e-05,-0.738017324588,-0.729837306744,-0.729891727082,2.91907087869e-08
+R4MEAS,262,212,8,8,8,16,212,1,0.000228272042512,2.63000844578416e-05,0.605441712318,0.59235996747,0.592331338666,2.9220071381e-08
+R4MEAS,263,71,8,8,8,16,71,1,0.000272714739815,2.64000844888321e-05,-0.414060340478,-0.397429410249,-0.397409973273,2.92121781222e-08
+R4MEAS,264,151,8,8,8,16,151,1,0.000355186467545,2.65000844833784e-05,0.182460723393,0.16382203507,0.163850157567,2.92464914132e-08
+R4MEAS,265,140,8,8,8,16,140,1,0.000439686214176,2.66000844811031e-05,0.0668612415682,0.085654138702,0.085700941888,2.92440608675e-08
+R4MEAS,266,81,8,8,8,16,81,1,0.000284358343923,2.67000844793746e-05,-0.309688962846,-0.326910063306,-0.326934149158,2.92131364852e-08
+R4MEAS,267,204,8,8,8,16,204,1,0.000230062978174,2.68000844683727e-05,0.522436758488,0.536477312885,0.53648052275,2.92200131501e-08
+R4MEAS,268,29,8,8,8,16,29,1,0.000351704326594,2.69000843767053e-05,-0.684441147963,-0.693709595039,-0.693755401094,2.91889385293e-08
+R4MEAS,269,239,8,8,8,16,239,1,0.000251628588144,2.70000844238228e-05,0.779963969652,0.78338438711,0.783389528595,2.91249717724e-08
+R4MEAS,270,14,8,8,8,16,14,1,0.000328011118729,2.71000843963463e-05,-0.799729432987,-0.797275154353,-0.797209410637,2.91282798469e-08
+R4MEAS,271,232,8,8,8,16,232,1,0.000274291193566,2.72000844565289e-05,0.741817583969,0.733804746105,0.73381559843,2.91659438815e-08
+......9......8.....R4MEAS,272,42,8,8,8,16,42,1,0.000255435553999,2.73000844784323e-05,-0.611853240025,-0.598996648521,-0.59903953181,2.92302011839e-08
+R4MEAS,273,185,8,8,8,16,185,1,0.000216741689528,2.74000844393318e-05,0.422458673326,0.405862445922,0.40588779666,2.92386248405e-08
+R4MEAS,274,103,8,8,8,16,103,1,0.000253192009557,2.75000844888554e-05,-0.192032378074,-0.173477152592,-0.173484090272,2.92274643227e-08
+R4MEAS,275,116,8,8,8,16,116,1,0.000399956369822,2.76000844760411e-05,-0.0570472592058,-0.0760009210328,-0.0759657253935,2.94048162835e-08
+R4MEAS,276,173,8,8,8,16,173,1,0.000233189721376,2.77000845177462e-05,0.300584738986,0.317815571215,0.317829602886,2.92417348774e-08
+R4MEAS,277,52,8,8,8,16,52,1,0.000293403012906,2.78000843756391e-05,-0.514929851772,-0.528973319902,-0.528964406954,2.92150026841e-08
+R4MEAS,278,225,8,8,8,16,225,1,0.000434474400181,2.79000844458118e-05,0.679256013431,0.688506107037,0.688572974709,2.94779629965e-08
+R4MEAS,279,16,8,8,8,16,16,1,0.00023326141265,2.80000844346612e-05,-0.777607349854,-0.781130756341,-0.781137061603,2.91331644795e-08
+R4MEAS,280,241,8,8,8,16,241,1,0.000277965528393,2.81000843937772e-05,0.800429522136,0.79823709573,0.798189912662,2.91445752348e-08
+R4MEAS,281,22,8,8,8,16,22,1,0.000298069225894,2.82000844845355e-05,-0.745506540852,-0.737736586873,-0.737699752556,2.92312898646e-08
+R4MEAS,282,214,8,8,8,16,214,1,0.00033215817425,2.83000845009908e-05,0.618172644587,0.605449350857,0.605453818637,2.92496121656e-08
+R4MEAS,283,68,8,8,8,16,68,1,0.000369128992205,2.84000844934186e-05,-0.430795382567,-0.41433443546,-0.414312051494,2.92716084055e-08
+R4MEAS,284,154,8,8,8,16,154,1,0.00023733345075,2.85000844317823e-05,0.201573738975,0.182971230734,0.182970868742,2.92760070507e-08
+R4MEAS,285,137,8,8,8,16,137,1,0.000480668462285,2.86000844180993e-05,0.0472258836677,0.0661028661752,0.066160419792,2.92283723524e-08
+R4MEAS,286,84,8,8,8,16,84,1,0.000262143202426,2.87000844340118e-05,-0.291437821342,-0.308942997797,-0.308943260524,2.9260305535e-08
+......9......8......R4MEAS,287,202,8,8,8,16,202,1,0.000132364474288,2.88000844050108e-05,0.507343285745,0.52161872437,0.521593779335,2.91987015362e-08
+R4MEAS,288,30,8,8,8,16,30,1,0.000158718374129,2.89000845112819e-05,-0.673968597588,-0.683485703425,-0.683520614819,2.91634386144e-08
+R4MEAS,289,239,8,8,8,16,239,1,0.000423616103462,2.90000844803184e-05,0.775133416179,0.779152343871,0.779196980663,2.92034082479e-08
+R4MEAS,290,14,8,8,8,16,14,1,0.000201116395492,2.9100084476423e-05,-0.80100917296,-0.799015505886,-0.799048713406,2.91697913233e-08
+R4MEAS,291,233,8,8,8,16,233,1,0.000351101713544,2.92000844919477e-05,0.749083045595,0.741533761052,0.741545275392,2.91972454742e-08
+R4MEAS,292,40,8,8,8,16,40,1,0.000296869543215,2.93000844760742e-05,-0.624398268762,-0.61182116537,-0.6117941176,2.92608969954e-08
+R4MEAS,293,188,8,8,8,16,188,1,0.00016595672415,2.94000844249841e-05,0.439064872944,0.422739096691,0.422678915668,2.92093588825e-08
+R4MEAS,294,100,8,8,8,16,100,1,0.000280806300863,2.95000844088269e-05,-0.211085498424,-0.19253941444,-0.192548927327,2.9218888995e-08
+R4MEAS,295,119,8,8,8,16,119,1,0.000202538763667,2.96000843745531e-05,-0.0373970717111,-0.0563478407069,-0.0564015627408,2.9256134316e-08
+R4MEAS,296,170,8,8,8,16,170,1,0.000301719152267,2.97000844553615e-05,0.282244799357,0.299629679036,0.299611426873,2.92507094784e-08
+R4MEAS,297,54,8,8,8,16,54,1,0.000272884721576,2.98000844678705e-05,-0.499679710955,-0.513946174758,-0.513953957733,2.92179729289e-08
+R4MEAS,298,224,8,8,8,16,224,1,0.000237808820296,2.99000844348565e-05,0.668581432716,0.678269421256,0.678260979294,2.9149173701e-08
+R4MEAS,299,17,8,8,8,16,17,1,0.000223728264169,3.00000844704201e-05,-0.772543064866,-0.776671294106,-0.776656036644,2.91406612102e-08
+R4MEAS,300,241,8,8,8,16,241,1,0.000149443996372,3.01000844114369e-05,0.80146801316,0.799745520664,0.79973858362,2.92198717287e-08
+......9......8......7R4MEAS,301,21,8,8,8,16,21,1,0.000249681318893,3.02000844751841e-05,-0.752546547474,-0.745203671711,-0.745218968095,2.92335833533e-08
+R4MEAS,302,215,8,8,8,16,215,1,0.000232401251594,3.03000844739663e-05,0.630530191547,0.618097428962,0.618099274166,2.9335843676e-08
+R4MEAS,303,66,8,8,8,16,66,1,0.000203871676169,3.04000844605392e-05,-0.447270221229,-0.431085700546,-0.431174904717,2.92043544258e-08
+R4MEAS,304,156,8,8,8,16,156,1,0.00028187620304,3.0500084530709e-05,0.22056863213,0.202105233255,0.202094287785,2.92936993237e-08
+R4MEAS,305,134,8,8,8,16,134,1,0.00034203920551,3.06000844580929e-05,0.0275597472183,0.0464348935678,0.0464452657367,2.92291866781e-08
+R4MEAS,306,86,8,8,8,16,86,1,0.00041928412092,3.07000844782904e-05,-0.273009234467,-0.290567968418,-0.290576918659,2.92214266126e-08
+R4MEAS,307,200,8,8,8,16,200,1,0.00021976315998,3.08000844646551e-05,0.491942048581,0.50641446073,0.506394895171,2.93032929917e-08
+R4MEAS,308,32,8,8,8,16,32,1,0.000419433474978,3.09000843938957e-05,-0.663093164632,-0.673036324603,-0.673048960442,2.92042941619e-08
+R4MEAS,309,238,8,8,8,16,238,1,0.000204404482738,3.10000845029313e-05,0.769836106449,0.774286353842,0.774282087354,2.91553566991e-08
+R4MEAS,310,13,8,8,8,16,13,1,0.000276374257157,3.11000844996094e-05,-0.801806289471,-0.800460488414,-0.80040249134,2.92163545167e-08
+R4MEAS,311,234,8,8,8,16,234,1,0.000154532645664,3.12000844739056e-05,0.755896844923,0.748778541927,0.748789385131,2.91751055637e-08
+R4MEAS,312,39,8,8,8,16,39,1,0.000254461241366,3.13000845443354e-05,-0.636568160281,-0.624315158453,-0.624365369304,2.92791513064e-08
+R4MEAS,313,190,8,8,8,16,190,1,0.00034496591602,3.14000845073991e-05,0.455408412372,0.439253766559,0.439221029218,2.91908929817e-08
+R4MEAS,314,97,8,8,8,16,97,1,0.000310576497122,3.15000844994844e-05,-0.23001520234,-0.21155723824,-0.211579243126,2.92450233948e-08
+R4MEAS,315,122,8,8,8,16,122,1,0.000260096619913,3.16000843258473e-05,-0.0177231655821,-0.0367557646322,-0.0368605397741,2.92299814794e-08
+......9......8......7.R4MEAS,316,168,8,8,8,16,168,1,0.000175811802661,3.17000844825536e-05,0.263732951012,0.281376111269,0.28138373541,2.92647450723e-08
+R4MEAS,317,57,8,8,8,16,57,1,0.000206834139632,3.18000845488322e-05,-0.484128721652,-0.498734346207,-0.498825486885,2.92857277284e-08
+R4MEAS,318,223,8,8,8,16,223,1,0.000108286808263,3.19000844590368e-05,0.657503677084,0.667589882718,0.667607364228,2.9258813599e-08
+R4MEAS,319,18,8,8,8,16,18,1,0.000344483840589,3.20000844098955e-05,-0.76701402975,-0.771648715453,-0.771666949305,2.92386507135e-08
+R4MEAS,320,242,8,8,8,16,242,1,0.000228289424378,3.21000844914299e-05,0.802023732738,0.800818223155,0.800786093506,2.92188764165e-08
+R4MEAS,321,20,8,8,8,16,20,1,0.00029901578806,3.22000844705351e-05,-0.759133292428,-0.752161763439,-0.752146250102,2.92396461455e-08
+R4MEAS,322,217,8,8,8,16,217,1,0.000371939670094,3.23000844755694e-05,0.642508343207,0.630445830255,0.630472176767,2.92519496285e-08
+R4MEAS,323,64,8,8,8,16,64,1,0.000332582128806,3.24000844472016e-05,-0.463476023333,-0.447562345273,-0.447612519061,2.91754006661e-08
+R4MEAS,324,159,8,8,8,16,159,1,0.000244754130158,3.25000843936636e-05,0.239425522705,0.221146889674,0.221136257733,2.9205948167e-08
+R4MEAS,325,131,8,8,8,16,131,1,0.000291559915793,3.26000844766135e-05,0.00787749546535,0.0268277462001,0.0267815364725,2.92376678131e-08
+R4MEAS,326,89,8,8,8,16,89,1,0.000301480872771,3.27000843645378e-05,-0.254419580748,-0.272314076469,-0.272314063249,2.92563487577e-08
+R4MEAS,327,197,8,8,8,16,197,1,0.000206643532831,3.28000844445026e-05,0.476245900066,0.491192383173,0.491165288938,2.93316992983e-08
+R4MEAS,328,33,8,8,8,16,33,1,0.000287393694047,3.29000844391867e-05,-0.65181626605,-0.662067615015,-0.662033928758,2.91414747536e-08
+R4MEAS,329,237,8,8,8,16,237,1,0.000301589367022,3.30000843500953e-05,0.764076263594,0.769090435788,0.769078216551,2.91625588109e-08
+R4MEAS,330,14,8,8,8,16,14,1,0.000278235788781,3.31000844640097e-05,-0.802120397128,-0.801127115809,-0.801143512462,2.92970042122e-08
+......9......8......7..R4MEAS,331,235,8,8,8,16,235,1,0.000355874796725,3.320008442923e-05,0.76225515104,0.755361729129,0.755360868461,2.9166467128e-08
+R4MEAS,332,37,8,8,8,16,37,1,0.000309285984247,3.33000844689269e-05,-0.648352627322,-0.636615683618,-0.636551521292,2.92240186986e-08
+R4MEAS,333,192,8,8,8,16,192,1,0.000213065769139,3.34000843612432e-05,0.471473383004,0.4555997126,0.455593407697,2.92843913567e-08
+R4MEAS,334,95,8,8,8,16,95,1,0.000327420053948,3.35000844386563e-05,-0.248803057155,-0.23040562521,-0.230421324421,2.92316030654e-08
+R4MEAS,335,125,8,8,8,16,125,1,0.00014589573849,3.36000844588543e-05,0.00196553806501,-0.01707704077,-0.0170613187286,2.91850895463e-08
+R4MEAS,336,165,8,8,8,16,165,1,0.000398712959364,3.37000844983387e-05,0.245062476288,0.262886153289,0.262875758695,2.92221982184e-08
+R4MEAS,337,59,8,8,8,16,59,1,0.000247509831751,3.38000843942467e-05,-0.468290395982,-0.483266346368,-0.48326341721,2.92281337746e-08
+R4MEAS,338,221,8,8,8,16,221,1,0.000233692136274,3.39000844201312e-05,0.646030692178,0.65656119223,0.656534687197,2.91898207685e-08
+R4MEAS,339,18,8,8,8,16,18,1,0.000172821502243,3.4000084521649e-05,-0.761021803276,-0.766143702222,-0.766190208946,2.92010282132e-08
+R4MEAS,340,242,8,8,8,16,242,1,0.000279134134082,3.41000844391277e-05,0.80209627991,0.801306772645,0.80133767197,2.91955585613e-08
+R4MEAS,341,20,8,8,8,16,20,1,0.000357624394573,3.42000843790362e-05,-0.76526217825,-0.758761616087,-0.75876905162,2.92237994925e-08
+R4MEAS,342,219,8,8,8,16,219,1,0.000264350262858,3.43000844332624e-05,0.654098893762,0.642464220485,0.642464772669,2.91983243861e-08
+R4MEAS,343,62,8,8,8,16,62,1,0.000193923439963,3.44000844046331e-05,-0.479402121651,-0.463660035879,-0.463685505405,2.92914755783e-08
+R4MEAS,344,162,8,8,8,16,162,1,0.000333108320501,3.45000844289525e-05,0.258141939997,0.239893222022,0.239888500941,2.92131467472e-08
+R4MEAS,345,128,8,8,8,16,128,1,0.000169568354045,3.46000843438683e-05,-0.0118060698366,0.00717571805023,0.00720012686172,2.92434219098e-08
+......9......8......7...R4MEAS,346,91,8,8,8,16,91,1,0.000225438885363,3.4700084436738e-05,-0.235672681424,-0.253518544616,-0.25349941248,2.92684614425e-08
+R4MEAS,347,195,8,8,8,16,195,1,0.000411470755611,3.48000844446298e-05,0.460262515306,0.475322982707,0.475349329673,2.91793196198e-08
+R4MEAS,348,35,8,8,8,16,35,1,0.000272515176125,3.49000844117187e-05,-0.640147691497,-0.650824857192,-0.650837058267,2.91787645881e-08
+R4MEAS,349,236,8,8,8,16,236,1,0.000296496080451,3.50000844030986e-05,0.757854801768,0.763227357756,0.763181938109,2.91786122696e-08
+R4MEAS,350,13,8,8,8,16,13,1,0.000256090357838,3.51000844573235e-05,-0.801951363413,-0.801453293386,-0.801420859022,2.91701107346e-08
+R4MEAS,351,236,8,8,8,16,236,1,0.000299122296303,3.52000844170582e-05,0.768154562789,0.761826879639,0.761878931211,2.91520897837e-08
+R4MEAS,352,35,8,8,8,16,35,1,0.00032246531626,3.53000844706318e-05,-0.65974761401,-0.648338525569,-0.64836617168,2.91954397465e-08
+R4MEAS,353,195,8,8,8,16,195,1,0.00020740134698,3.54000844278781e-05,0.487258286579,0.471668654831,0.471699234331,2.92200388134e-08
+R4MEAS,354,92,8,8,8,16,92,1,0.000425986735454,3.55000843981112e-05,-0.267441497198,-0.249314509679,-0.24934456616,2.92184556509e-08
+R4MEAS,355,128,8,8,8,16,128,1,0.000267869454119,3.56000844748475e-05,0.0216504033759,0.00260649820123,0.00260596752077,2.91329557201e-08
+R4MEAS,356,162,8,8,8,16,162,1,0.000246985662487,3.57000844523251e-05,0.226245724963,0.244247108162,0.244194740729,2.92109944336e-08
+R4MEAS,357,61,8,8,8,16,61,1,0.000300272198621,3.58000844333085e-05,-0.45216646108,-0.467348261578,-0.467399630661,2.91657454548e-08
+R4MEAS,358,219,8,8,8,16,219,1,0.000304319255206,3.59000844155642e-05,0.634168120363,0.645055145496,0.645000087578,2.92062386084e-08
+R4MEAS,359,19,8,8,8,16,19,1,0.000194425918295,3.60000844076007e-05,-0.754572785456,-0.760093459854,-0.760132974687,2.91590908704e-08
+......9......8......7....R4MEAS,360,242,8,8,8,16,242,1,0.00027760947244,3.61000843631654e-05,0.801685750298,0.801160197117,0.801197953392,2.91781003841e-08
+R4MEAS,361,19,8,8,8,16,19,1,0.000225767740437,3.62000844647245e-05,-0.77093130623,-0.764724402259,-0.764740102593,2.9249414715e-08
+R4MEAS,362,221,8,8,8,16,221,1,0.000210271699545,3.63000843524389e-05,0.665294989822,0.653941380957,0.653928957863,2.92308498172e-08
+R4MEAS,363,59,8,8,8,16,59,1,0.000135433348569,3.64000845185808e-05,-0.495042268652,-0.479747247754,-0.479699508082,2.9198864735e-08
+R4MEAS,364,164,8,8,8,16,164,1,0.000165302072777,3.65000844035278e-05,0.276701556591,0.25859064844,0.258553957304,2.92363093498e-08
+R4MEAS,365,126,8,8,8,16,126,1,0.000329755211849,3.66000844380433e-05,-0.0314876705011,-0.0123886258149,-0.0123964188503,2.92055206092e-08
+R4MEAS,366,94,8,8,8,16,94,1,0.000227350833353,3.67000843537087e-05,-0.216787189064,-0.234895500355,-0.234886001189,2.92015517323e-08
+R4MEAS,367,193,8,8,8,16,193,1,0.000184870409791,3.68000844281541e-05,0.44400219927,0.459228507422,0.459202428182,2.91680724884e-08
+R4MEAS,368,36,8,8,8,16,36,1,0.000193766215798,3.69000844032153e-05,-0.62809327269,-0.639100697079,-0.639112088782,2.92571798684e-08
+R4MEAS,369,235,8,8,8,16,235,1,0.000277345633901,3.70000843718764e-05,0.751177450999,0.756875877555,0.756892271313,2.91777951758e-08
+R4MEAS,370,13,8,8,8,16,13,1,0.000242476690678,3.71000844909075e-05,-0.801299230158,-0.801312140217,-0.801272168473,2.91734796221e-08
+R4MEAS,371,237,8,8,8,16,237,1,0.000298921132263,3.72000844283355e-05,0.773591420581,0.767724384949,0.767705880751,2.91665695813e-08
+R4MEAS,372,34,8,8,8,16,34,1,0.000378411457519,3.73000844094121e-05,-0.670744408864,-0.659492769468,-0.659471633979,2.92285948027e-08
+R4MEAS,373,197,8,8,8,16,197,1,0.000245160246891,3.74000844707151e-05,0.502749218163,0.487415627713,0.487440381939,2.92285409256e-08
+R4MEAS,374,89,8,8,8,16,89,1,0.000316903844134,3.75000844383382e-05,-0.285920567827,-0.26782118708,-0.267819021826,2.92904753507e-08
+......9......8......7.....R4MEAS,375,131,8,8,8,16,131,1,0.00022746933387,3.76000843303518e-05,0.041318590247,0.0223416653595,0.022369920051,2.92259366431e-08
+R4MEAS,376,160,8,8,8,16,160,1,0.000391928447589,3.77000844199354e-05,0.207292407512,0.225402062977,0.225374850418,2.91663591094e-08
+R4MEAS,377,63,8,8,8,16,63,1,0.000194770537577,3.7800084458213e-05,-0.43577040317,-0.451229695508,-0.451251206512,2.9145003135e-08
+R4MEAS,378,218,8,8,8,16,218,1,0.000254531562845,3.79000844356422e-05,0.621923200261,0.633216974141,0.633199914063,2.91923863991e-08
+R4MEAS,379,20,8,8,8,16,20,1,0.000229563324877,3.80000844449444e-05,-0.747668116598,-0.753557307112,-0.753551096167,2.91599514813e-08
+R4MEAS,380,242,8,8,8,16,242,1,0.000183469536217,3.81000844646178e-05,0.800792167688,0.800916981365,0.800928326114,2.91939728634e-08
+R4MEAS,381,18,8,8,8,16,18,1,0.000343317539249,3.82000843971473e-05,-0.776135084246,-0.770475067458,-0.770503047938,2.91707462021e-08
+R4MEAS,382,222,8,8,8,16,222,1,0.000226453244071,3.83000843768688e-05,0.676091696793,0.665111054467,0.665128964217,2.91965688738e-08
+R4MEAS,383,57,8,8,8,16,57,1,0.000286188476042,3.84000844458863e-05,-0.510380875432,-0.495176701044,-0.495137482718,2.92108754518e-08
+R4MEAS,384,167,8,8,8,16,167,1,0.000238151741854,3.85000843973979e-05,0.295094915366,0.277033679756,0.277062143064,2.92243161935e-08
+R4MEAS,385,123,8,8,8,16,123,1,0.000290941199129,3.86000844393109e-05,-0.051148196328,-0.0321571942442,-0.0321508132161,2.92039680856e-08
+R4MEAS,386,97,8,8,8,16,97,1,0.000173699129307,3.87000843915598e-05,-0.197768479162,-0.216030212553,-0.216070865788,2.91895651118e-08
+R4MEAS,387,191,8,8,8,16,191,1,0.000214570813283,3.88000843757588e-05,0.427475132686,0.443155319739,0.443163507512,2.92000118737e-08
+R4MEAS,388,38,8,8,8,16,38,1,0.000353773525674,3.89000844299835e-05,-0.615660008405,-0.627159500562,-0.627154516745,2.92035671526e-08
+R4MEAS,389,234,8,8,8,16,234,1,0.00017443624516,3.90000845055178e-05,0.744046254109,0.750271467979,0.750314466928,2.91986847561e-08
+......9......8......7......R4MEAS,390,13,8,8,8,16,13,1,0.000238829127063,3.91000844270192e-05,-0.800164541412,-0.800511929694,-0.800574827529,2.91778506913e-08
+R4MEAS,391,238,8,8,8,16,238,1,0.000288156656075,3.92000844379789e-05,0.778562274796,0.77313695354,0.773118651956,2.91752322819e-08
+R4MEAS,392,32,8,8,8,16,32,1,0.000281552214201,3.93000844714813e-05,-0.681338705608,-0.670533996625,-0.670512021495,2.9137035257e-08
+R4MEAS,393,199,8,8,8,16,199,1,0.000181645776245,3.94000843299954e-05,0.517934102329,0.502878026131,0.502882483801,2.91888905314e-08
+R4MEAS,394,87,8,8,8,16,87,1,0.000257325129331,3.95000844015138e-05,-0.304225777001,-0.286382225768,-0.286352969358,2.92374059096e-08
+R4MEAS,395,133,8,8,8,16,133,1,0.000451380552649,3.96000844438327e-05,0.0609677330417,0.0419976971268,0.0419933059478,2.93597060747e-08
+R4MEAS,396,157,8,8,8,16,157,1,0.000372509320171,3.97000844447844e-05,0.18821297173,0.206438332816,0.206435553362,2.92252291516e-08
+R4MEAS,397,66,8,8,8,16,66,1,0.000201664863864,3.98000844196604e-05,-0.419113066028,-0.434957349459,-0.434947381727,2.92184318048e-08
+R4MEAS,398,216,8,8,8,16,216,1,0.00019354263661,3.99000843706733e-05,0.60930489455,0.620847324727,0.620875012027,2.91994597195e-08
+R4MEAS,399,21,8,8,8,16,21,1,0.00023414313438,4.00000843539491e-05,-0.740314162594,-0.746617655585,-0.746605150737,2.91634413454e-08
+R4MEAS,400,242,8,8,8,16,242,1,0.000295464564948,4.01000844126857e-05,0.799416390833,0.800028360317,0.8000354708,2.9279390697e-08
+R4MEAS,401,17,8,8,8,16,17,1,0.000143967987711,4.02000844778716e-05,-0.780872189787,-0.775725846677,-0.775690336716,2.91341943392e-08
+R4MEAS,402,224,8,8,8,16,224,1,0.000274884848298,4.0300084335799e-05,0.686480359744,0.675918643707,0.675925337169,2.91435258228e-08
+R4MEAS,403,55,8,8,8,16,55,1,0.00027641016647,4.040008436428e-05,-0.52541194658,-0.510442990663,-0.510428865309,2.92098278515e-08
+R4MEAS,404,170,8,8,8,16,170,1,0.000316549127431,4.05000843849783e-05,0.313310391138,0.295532975195,0.295538688111,2.93302621055e-08
+......9......8......7......6R4MEAS,405,120,8,8,8,16,120,1,0.000283528867431,4.06000844611718e-05,-0.0707783777296,-0.0517211707132,-0.0517165002077,2.91955471219e-08
+R4MEAS,406,100,8,8,8,16,100,1,0.000452637014573,4.07000844617267e-05,-0.178629915714,-0.19683987742,-0.196868009789,2.92722076842e-08
+R4MEAS,407,188,8,8,8,16,188,1,0.000131439300522,4.0800084357738e-05,0.410689932205,0.426688870648,0.426708785123,2.92239566343e-08
+R4MEAS,408,40,8,8,8,16,40,1,0.000376611029248,4.09000844186074e-05,-0.602856441578,-0.61489437022,-0.614905473291,2.91912948974e-08
+R4MEAS,409,233,8,8,8,16,233,1,0.000475373221984,4.10000843955133e-05,0.736468924027,0.743108765243,0.743162621701,2.92297006423e-08
+R4MEAS,410,14,8,8,8,16,14,1,0.00033354901501,4.11000844234695e-05,-0.798547805274,-0.799495521532,-0.799512020339,2.91729553546e-08
+R4MEAS,411,238,8,8,8,16,238,1,0.00034261729638,4.12000844556301e-05,0.783064181159,0.778216864395,0.778258841009,2.92021170691e-08
+R4MEAS,412,30,8,8,8,16,30,1,0.000315308857143,4.13000843996268e-05,-0.691520990934,-0.681245571075,-0.68125541252,2.92102198642e-08
+R4MEAS,413,201,8,8,8,16,201,1,0.000448248618687,4.1400084434698e-05,0.532811266061,0.518108450736,0.518093017747,2.92463560904e-08
+R4MEAS,414,84,8,8,8,16,84,1,0.00017620582321,4.15000843951634e-05,-0.322348380643,-0.304569807211,-0.304549448142,2.92428978491e-08
+R4MEAS,415,136,8,8,8,16,136,1,0.000328174310228,4.16000844296034e-05,0.080577258534,0.0614391126379,0.0614188839936,2.92316009779e-08
+R4MEAS,416,154,8,8,8,16,154,1,0.000453636200592,4.17000844172225e-05,0.169021319472,0.187539193673,0.187515063747,2.92514020048e-08
+R4MEAS,417,68,8,8,8,16,68,1,0.000221378518699,4.18000844077755e-05,-0.402202769767,-0.418440173299,-0.418450045811,2.91820840393e-08
+R4MEAS,418,214,8,8,8,16,214,1,0.000225470221993,4.19000843944562e-05,0.59631827449,0.608427740837,0.608419969106,2.92044678202e-08
+......9......8......7......6.R4MEAS,419,22,8,8,8,16,22,1,0.000309008321805,4.20000844051716e-05,-0.732513049681,-0.739331308784,-0.739320922502,2.92070284453e-08
+R4MEAS,420,241,8,8,8,16,241,1,0.000189498521827,4.21000843746736e-05,0.79755909942,0.79871871637,0.798688338606,2.91736228104e-08
+R4MEAS,421,16,8,8,8,16,16,1,0.000291073033143,4.22000844328977e-05,-0.785138255755,-0.780354250912,-0.780289345546,2.91750378539e-08
+R4MEAS,422,225,8,8,8,16,225,1,0.00031694149838,4.23000844385405e-05,0.696457170522,0.686259578711,0.686212446018,2.91659076723e-08
+R4MEAS,423,53,8,8,8,16,53,1,0.000262769684535,4.24000843985355e-05,-0.540128532257,-0.525581359846,-0.525592474541,2.92611470029e-08
+R4MEAS,424,172,8,8,8,16,172,1,0.00024835400903,4.25000844486006e-05,0.331338717115,0.313663799619,0.313652405899,2.92411527406e-08
+R4MEAS,425,117,8,8,8,16,117,1,0.000227102150269,4.26000843908005e-05,-0.0903638433644,-0.0713391388534,-0.0713079770324,2.92421041847e-08
+R4MEAS,426,102,8,8,8,16,102,1,0.00024194892988,4.27000844522943e-05,-0.159385504932,-0.177920065886,-0.177959660143,2.92083710825e-08
+R4MEAS,427,186,8,8,8,16,186,1,0.000170608009081,4.28000844540336e-05,0.393655097813,0.409824434909,0.409901448711,2.92322678219e-08
+R4MEAS,428,42,8,8,8,16,42,1,0.000276275797552,4.29000843480371e-05,-0.589690656565,-0.601875989083,-0.601905958494,2.92111027933e-08
+R4MEAS,429,232,8,8,8,16,232,1,0.000319001668183,4.30000844763719e-05,0.728446272062,0.735583518205,0.735607742102,2.9190080451e-08
+R4MEAS,430,14,8,8,8,16,14,1,0.000258579113967,4.31000844734316e-05,-0.79644991355,-0.797681382727,-0.797709299084,2.91325983022e-08
+R4MEAS,431,239,8,8,8,16,239,1,0.000112604705438,4.3200084450215e-05,0.787094278905,0.782493715071,0.782493394547,2.91392370922e-08
+R4MEAS,432,29,8,8,8,16,29,1,0.00027753292354,4.33000844313375e-05,-0.701287939494,-0.691334336528,-0.691290299747,2.9191440833e-08
+R4MEAS,433,203,8,8,8,16,203,1,0.000240595583588,4.34000844326002e-05,0.547365635404,0.532886565378,0.532931145622,2.92402628994e-08
+......9......8......7......6..R4MEAS,434,82,8,8,8,16,82,1,0.000264794677312,4.35000846017641e-05,-0.340281191936,-0.322720885128,-0.322674656046,2.92934408809e-08
+R4MEAS,435,139,8,8,8,16,139,1,0.000126379494454,4.36000844709343e-05,0.100139499659,0.0812206727101,0.0812041779599,2.92352728838e-08
+R4MEAS,436,151,8,8,8,16,151,1,0.000223698278093,4.37000844055626e-05,0.149727507094,0.168243451097,0.168294282947,2.9252751203e-08
+R4MEAS,437,70,8,8,8,16,70,1,0.000360095207379,4.38000843844227e-05,-0.385050436493,-0.401281724962,-0.401305528327,2.92350403358e-08
+R4MEAS,438,212,8,8,8,16,212,1,0.000313806928782,4.39000844354479e-05,0.582972166716,0.595528732311,0.595533043469,2.92142017297e-08
+R4MEAS,439,23,8,8,8,16,23,1,0.000128712004841,4.40000844050888e-05,-0.72427114649,-0.731611993554,-0.731641892009,2.91834573519e-08
+R4MEAS,440,241,8,8,8,16,241,1,0.000319682674603,4.41000844244434e-05,0.795221169551,0.796778985564,0.796705801019,2.91404158109e-08
+R4MEAS,441,16,8,8,8,16,16,1,0.000243867277624,4.42000844207357e-05,-0.788931567297,-0.784663933334,-0.784690133085,2.91275215531e-08
+R4MEAS,442,227,8,8,8,16,227,1,0.000227459662054,4.43000842984409e-05,0.706011746936,0.696322344276,0.696308678487,2.92109131764e-08
+R4MEAS,443,51,8,8,8,16,51,1,0.000199476593156,4.44000844236728e-05,-0.554519589527,-0.540353652802,-0.540379415573,2.93959648914e-08
+R4MEAS,444,175,8,8,8,16,175,1,0.000293502885982,4.45000844149873e-05,0.349165441545,0.331774475285,0.331761807402,2.92230243094e-08
+R4MEAS,445,115,8,8,8,16,115,1,0.000421446345258,4.46000844083869e-05,-0.109896862917,-0.0909561566186,-0.0909418873672,2.92841799163e-08
+R4MEAS,446,105,8,8,8,16,105,1,0.000326875594003,4.4700084392473e-05,-0.140046214105,-0.158553736684,-0.158561204652,2.92394205641e-08
+R4MEAS,447,184,8,8,8,16,184,1,0.000311703681874,4.48000844252282e-05,0.376385594253,0.392748799437,0.392748985745,2.92390181145e-08
+R4MEAS,448,44,8,8,8,16,44,1,0.000262815899394,4.49000843869103e-05,-0.576167994076,-0.58877014452,-0.588763648509,2.92280349925e-08
+......9......8......7......6...R4MEAS,449,231,8,8,8,16,231,1,0.000225987604802,4.5000084346981e-05,0.719986852411,0.727514142709,0.727499622987,2.91603651129e-08
+R4MEAS,450,14,8,8,8,16,14,1,0.000247119970414,4.51000843988263e-05,-0.793872619339,-0.795675012385,-0.79567877186,2.9152264415e-08
+R4MEAS,451,240,8,8,8,16,240,1,0.00021169680493,4.52000843808988e-05,0.790650022032,0.786595489287,0.78661158127,2.91760065268e-08
+R4MEAS,452,28,8,8,8,16,28,1,0.000212599405613,4.53000844038057e-05,-0.710631804105,-0.70084629278,-0.700834680202,2.92060744055e-08
+R4MEAS,453,205,8,8,8,16,205,1,0.000219260897892,4.54000844128257e-05,0.561590007376,0.547601213502,0.547611518618,2.92603009418e-08
+R4MEAS,454,79,8,8,8,16,79,1,0.000253225656879,4.55000843307166e-05,-0.357999234696,-0.340485001148,-0.340539971741,2.92061965511e-08
+R4MEAS,455,142,8,8,8,16,142,1,0.000204891997931,4.5600084373695e-05,0.119638305836,0.100780652406,0.100748559967,2.92271765986e-08
+R4MEAS,456,149,8,8,8,16,149,1,0.000272781935347,4.57000844277891e-05,0.130342748243,0.149038179663,0.149037280125,2.92318434324e-08
+R4MEAS,457,73,8,8,8,16,73,1,0.000196739620758,4.58000844306048e-05,-0.367664773509,-0.384214246589,-0.384150959296,2.92221770466e-08
+R4MEAS,458,210,8,8,8,16,210,1,0.000353168156277,4.59000844357398e-05,0.569275515699,0.582060197168,0.58205765237,2.92211462397e-08
+R4MEAS,459,24,8,8,8,16,24,1,0.000190160947769,4.60000844107489e-05,-0.715592910655,-0.723385796809,-0.7233563566,2.92373907274e-08
+R4MEAS,460,241,8,8,8,16,241,1,0.000437531756717,4.61000844369597e-05,0.792404304433,0.794394952912,0.794375705623,2.91603338425e-08
+R4MEAS,461,15,8,8,8,16,15,1,0.000271604383098,4.6200084435704e-05,-0.792249765583,-0.788512398881,-0.788500118478,2.91397599356e-08
+R4MEAS,462,228,8,8,8,16,228,1,0.000292949358221,4.63000844381398e-05,0.715144060836,0.705892273882,0.705853531569,2.91950813457e-08
+R4MEAS,463,49,8,8,8,16,49,1,0.000259266681748,4.64000844138123e-05,-0.568576045456,-0.554648255973,-0.554696669168,2.93011002116e-08
+......9......8......7......6....R4MEAS,464,177,8,8,8,16,177,1,0.00023760486727,4.65000844805917e-05,0.366783860119,0.349413750877,0.349445949791,2.92412573518e-08
+R4MEAS,465,112,8,8,8,16,112,1,0.000320427549264,4.66000845025332e-05,-0.129365396382,-0.110454503734,-0.110476888528,2.91858364993e-08
+R4MEAS,466,108,8,8,8,16,108,1,0.000323774497684,4.67000844110428e-05,-0.120620817883,-0.139548720161,-0.13958307003,2.92547727499e-08
+R4MEAS,467,181,8,8,8,16,181,1,0.000290229443822,4.68000843885394e-05,0.358889545106,0.375520513929,0.375488028777,2.92411257814e-08
+R4MEAS,468,46,8,8,8,16,46,1,0.000462301321001,4.69000844071514e-05,-0.562298539922,-0.575316269925,-0.575280906763,2.9327564512e-08
+R4MEAS,469,230,8,8,8,16,230,1,0.000252713931992,4.70000844402028e-05,0.71109153181,0.719164138558,0.719215555058,2.91704052609e-08
+R4MEAS,470,15,8,8,8,16,15,1,0.000345736797438,4.71000844071913e-05,-0.790816893171,-0.792955281915,-0.793025327664,2.920847147e-08
+R4MEAS,471,240,8,8,8,16,240,1,0.000303226327965,4.72000844166803e-05,0.793729927356,0.790031902013,0.790024341969,2.9120914226e-08
+R4MEAS,472,26,8,8,8,16,26,1,0.000249066297483,4.73000843173926e-05,-0.719547047445,-0.710587404869,-0.710579011267,2.92125297989e-08
+R4MEAS,473,207,8,8,8,16,207,1,0.000150545607234,4.74000844429355e-05,0.575476902411,0.56165089272,0.561655052938,2.92180257275e-08
+R4MEAS,474,76,8,8,8,16,76,1,0.000181042282587,4.75000844533436e-05,-0.37550965983,-0.35827316195,-0.358288152201,2.92649691085e-08
+R4MEAS,475,145,8,8,8,16,145,1,0.000237599359279,4.76000844045059e-05,0.139067923911,0.120214134427,0.120207814408,2.92696672197e-08
+R4MEAS,476,146,8,8,8,16,146,1,0.000217663539337,4.77000844954983e-05,0.110878449704,0.129630258288,0.129648062878,2.9239265652e-08
+R4MEAS,477,75,8,8,8,16,75,1,0.000332318224539,4.7800084358842e-05,-0.350060027251,-0.366719492799,-0.366706733462,2.92498776205e-08
+......9......8......7......6.....R4MEAS,478,208,8,8,8,16,208,1,0.000250027053699,4.79000843966912e-05,0.555236598366,0.568375892153,0.568373922973,2.93037979518e-08
+R4MEAS,479,26,8,8,8,16,26,1,0.000290660769717,4.80000844465261e-05,-0.706483299186,-0.714706958606,-0.714708531067,2.9196003462e-08
+R4MEAS,480,240,8,8,8,16,240,1,0.000158801052371,4.81000843549701e-05,0.789110495537,0.791458225132,0.79148883403,2.91461755113e-08
+R4MEAS,481,15,8,8,8,16,15,1,0.000336177788863,4.82000843730758e-05,-0.795090493098,-0.791730228488,-0.791760710273,2.91538886123e-08
+R4MEAS,482,229,8,8,8,16,229,1,0.000210105343808,4.83000843775808e-05,0.723843502157,0.714885526085,0.714923131874,2.92063528903e-08
+R4MEAS,483,46,8,8,8,16,46,1,0.000163738123421,4.84000843180894e-05,-0.582288680337,-0.568641995543,-0.568675060535,2.92933260487e-08
+R4MEAS,484,180,8,8,8,16,180,1,0.000277279718632,4.85000844231579e-05,0.384178857761,0.367173573049,0.367179879294,2.92670646145e-08
+R4MEAS,485,109,8,8,8,16,109,1,0.000245568194659,4.86000843860444e-05,-0.148751291775,-0.130023633784,-0.130075371301,2.9229148394e-08
+R4MEAS,486,110,8,8,8,16,110,1,0.000230062595138,4.87000844388558e-05,-0.10112255303,-0.119966243589,-0.119987445654,2.92501371805e-08
+R4MEAS,487,178,8,8,8,16,178,1,0.000356905454442,4.88000844327245e-05,0.341175671878,0.357935139786,0.357954843463,2.92660700749e-08
+R4MEAS,488,48,8,8,8,16,48,1,0.000253900575113,4.89000844603323e-05,-0.548089816655,-0.561295973077,-0.56133817496,2.92234661007e-08
+R4MEAS,489,229,8,8,8,16,229,1,0.000341057650965,4.90000844485785e-05,0.70176871661,0.710137847644,0.710125119663,2.92384016879e-08
+R4MEAS,490,15,8,8,8,16,15,1,0.000177887312674,4.91000844556646e-05,-0.787284625045,-0.789810080977,-0.789826192298,2.91343574649e-08
+R4MEAS,491,240,8,8,8,16,240,1,0.00021029237207,4.92000844288401e-05,0.796331615715,0.792982797337,0.793090683732,2.92040282913e-08
+R4MEAS,492,25,8,8,8,16,25,1,0.000357953002409,4.93000844849207e-05,-0.72803136755,-0.719276379776,-0.719233700159,2.91773468473e-08
+......9......8......7......6......R4MEAS,493,209,8,8,8,16,209,1,0.000142564178687,4.94000844240817e-05,0.5890163735,0.575448303069,0.575446122174,2.92255987319e-08
+R4MEAS,494,74,8,8,8,16,74,1,0.000360966450037,4.95000843425466e-05,-0.392789210259,-0.37588089828,-0.375867031989,2.92387112185e-08
+R4MEAS,495,147,8,8,8,16,147,1,0.00030638738211,4.96000844216439e-05,0.158413462599,0.139675184907,0.139659300747,2.92542156937e-08
+R4MEAS,496,143,8,8,8,16,143,1,0.000172236561989,4.97000843980255e-05,0.0913510752109,0.110200299266,0.11024471503,2.91990896062e-08
+R4MEAS,497,78,8,8,8,16,78,1,0.000234504000267,4.98000844370297e-05,-0.332241356085,-0.349173552116,-0.349166599673,2.92135155573e-08
+R4MEAS,498,207,8,8,8,16,207,1,0.0002629829763,4.99000844343243e-05,0.540861972532,0.554366761017,0.554385434878,2.92656190265e-08
+R4MEAS,499,27,8,8,8,16,27,1,0.000256011980819,5.00000844072593e-05,-0.69694893639,-0.705539428851,-0.705531072739,2.91866569302e-08
+R4MEAS,500,240,8,8,8,16,240,1,0.000346600582583,5.01000843900633e-05,0.785340905198,0.788115925943,0.788144471245,2.91278614671e-08
+R4MEAS,501,14,8,8,8,16,14,1,0.000179951344621,5.02000844409589e-05,-0.797452676149,-0.794583138631,-0.794592634225,2.91725182209e-08
+R4MEAS,502,231,8,8,8,16,231,1,0.00021279443497,5.03000844219193e-05,0.732107960595,0.723656255126,0.723612207387,2.92712568964e-08
+R4MEAS,503,45,8,8,8,16,45,1,0.000313968158837,5.0400084462516e-05,-0.595654293005,-0.582390481462,-0.58231704245,2.92972446996e-08
+R4MEAS,504,182,8,8,8,16,182,1,0.000321565337227,5.05000843887885e-05,0.401342924162,0.384420891462,0.38436903904,2.92377223325e-08
+R4MEAS,505,106,8,8,8,16,106,1,0.000279533277532,5.06000844350409e-05,-0.168051280444,-0.149245350799,-0.149181318565,2.92624503578e-08
+R4MEAS,506,113,8,8,8,16,113,1,0.000238980439915,5.07000844159136e-05,-0.0815645174647,-0.1003439111,-0.100316751923,2.92156307836e-08
+R4MEAS,507,176,8,8,8,16,176,1,0.00045699848811,5.08000843434958e-05,0.323259036635,0.340441789968,0.340434409667,2.9191058365e-08
+......9......8......7......6......5R4MEAS,508,50,8,8,8,16,50,1,0.00032089915985,5.09000843706868e-05,-0.533553323866,-0.547236242133,-0.547242901948,2.93066518577e-08
+R4MEAS,509,227,8,8,8,16,227,1,0.000309457997497,5.10000844412822e-05,0.692023353818,0.700761332285,0.700832794112,2.91928913361e-08
+R4MEAS,510,15,8,8,8,16,15,1,0.000199206605336,5.11000844894382e-05,-0.783278144992,-0.786597917346,-0.786581267501,2.91844457671e-08
+R4MEAS,511,241,8,8,8,16,241,1,0.000282034702185,5.1200084453084e-05,0.798453636448,0.795777653513,0.795728265075,2.91631840334e-08
+R4MEAS,512,24,8,8,8,16,24,1,0.000169541823935,5.13000844691961e-05,-0.736075327192,-0.72775025009,-0.727713521598,2.91626604129e-08
+R4MEAS,513,211,8,8,8,16,211,1,0.000303223785002,5.14000844295394e-05,0.602201422955,0.589070161255,0.589091240552,2.92317348303e-08
+R4MEAS,514,72,8,8,8,16,72,1,0.000301484694146,5.1500084473502e-05,-0.409836934772,-0.393095194313,-0.393078885428,2.92912751567e-08
+R4MEAS,515,150,8,8,8,16,150,1,0.000318573920139,5.16000844978646e-05,0.177664882427,0.158931408667,0.158916252479,2.92385366755e-08
+R4MEAS,516,140,8,8,8,16,140,1,0.00017740545089,5.17000844046539e-05,0.0717663340833,0.0905863521416,0.0905824439232,2.92843685069e-08
+R4MEAS,517,80,8,8,8,16,80,1,0.000131493515631,5.18000843949845e-05,-0.314225029064,-0.331425074665,-0.331408647167,2.92238956829e-08
+R4MEAS,518,204,8,8,8,16,204,1,0.00014622281955,5.19000843577635e-05,0.52616347908,0.540039054398,0.540019003069,2.92254414e-08
+R4MEAS,519,28,8,8,8,16,28,1,0.000321612476331,5.20000843728063e-05,-0.686994739227,-0.695969029415,-0.695973531107,2.92201229433e-08
+R4MEAS,520,239,8,8,8,16,239,1,0.000170785560384,5.21000843983204e-05,0.781098355105,0.784694314741,0.784662351156,2.91270262015e-08
+R4MEAS,521,14,8,8,8,16,14,1,0.000268978823764,5.22000843478239e-05,-0.799334123831,-0.796847756938,-0.796890210133,2.91422543775e-08
+R4MEAS,522,232,8,8,8,16,232,1,0.000204029155034,5.23000844811621e-05,0.739931510067,0.731847828352,0.731886632342,2.91741925142e-08
+......9......8......7......6......5.R4MEAS,523,43,8,8,8,16,43,1,0.000416257895478,5.24000844110097e-05,-0.608658090866,-0.595652787198,-0.595659745914,2.9283014572e-08
+R4MEAS,524,185,8,8,8,16,185,1,0.00024868490975,5.25000843604735e-05,0.418265372959,0.401681473032,0.401672698719,2.92537909934e-08
+R4MEAS,525,103,8,8,8,16,103,1,0.000314981212541,5.2600084421829e-05,-0.1872486574,-0.168609801781,-0.168591627832,2.92598321777e-08
+R4MEAS,526,116,8,8,8,16,116,1,0.000374651177944,5.2700084502093e-05,-0.0619548845731,-0.0807372412981,-0.0807789546438,2.92221880567e-08
+R4MEAS,527,173,8,8,8,16,173,1,0.000181180943679,5.28000843688873e-05,0.305145317151,0.322423672524,0.322408413121,2.92983804739e-08
+R4MEAS,528,52,8,8,8,16,52,1,0.000272513194675,5.29000844718813e-05,-0.518692202,-0.532655725796,-0.532661515257,2.92196095907e-08
+R4MEAS,529,226,8,8,8,16,226,1,0.000221179325462,5.30000843830313e-05,0.681861757948,0.691226990414,0.691231515183,2.9164010072e-08
+R4MEAS,530,16,8,8,8,16,16,1,0.000221737091232,5.31000844433028e-05,-0.778800244805,-0.78242140453,-0.782412473538,2.91299763402e-08
+R4MEAS,531,241,8,8,8,16,241,1,0.000297973304883,5.320008436571e-05,0.800094491571,0.797866785079,0.797902203629,2.9139458761e-08
+R4MEAS,532,23,8,8,8,16,23,1,0.000167748803858,5.33000844612638e-05,-0.743675984904,-0.735819985033,-0.735789753401,2.92140944201e-08
+R4MEAS,533,213,8,8,8,16,213,1,0.000363656966851,5.3400084428139e-05,0.615023624333,0.602062806666,0.60201459319,2.92237994616e-08
+R4MEAS,534,69,8,8,8,16,69,1,0.000176656030441,5.35000844550232e-05,-0.426634843117,-0.410082645547,-0.410108994556,2.92223469919e-08
+R4MEAS,535,153,8,8,8,16,153,1,0.000345809780672,5.36000843520664e-05,0.196804381274,0.178143791869,0.178183982997,2.92305895411e-08
+R4MEAS,536,138,8,8,8,16,138,1,0.00026100871848,5.37000843823609e-05,0.0521390177607,0.0710194595607,0.0709978621743,2.92385619982e-08
+......9......8......7......6......5..R4MEAS,537,83,8,8,8,16,83,1,0.000263284797117,5.38000844659217e-05,-0.296017060424,-0.313307612616,-0.313339968084,2.92247585876e-08
+R4MEAS,538,202,8,8,8,16,202,1,0.000220950112134,5.39000844249862e-05,0.511145586159,0.525180661627,0.525230619621,2.92198106087e-08
+R4MEAS,539,30,8,8,8,16,30,1,0.000450238553373,5.40000844888228e-05,-0.676624921409,-0.685959438493,-0.685946181421,2.91864469789e-08
+R4MEAS,540,239,8,8,8,16,239,1,0.000286350538989,5.41000844550487e-05,0.77638501524,0.780197415977,0.780192332855,2.91726719026e-08
+R4MEAS,541,14,8,8,8,16,14,1,0.00028568424416,5.42000843334418e-05,-0.800734291088,-0.798760679916,-0.798760242024,2.91575107466e-08
+R4MEAS,542,233,8,8,8,16,233,1,0.00018972529341,5.43000843778556e-05,0.747307951583,0.73952890026,0.739524798817,2.92085619354e-08
+R4MEAS,543,41,8,8,8,16,41,1,0.000274140419031,5.44000843387533e-05,-0.62129500159,-0.608773755907,-0.608800343099,2.92423907931e-08
+R4MEAS,544,187,8,8,8,16,187,1,0.000210065962773,5.45000844163494e-05,0.43493749582,0.418538795788,0.418535126841,2.92134240029e-08
+R4MEAS,545,101,8,8,8,16,101,1,0.000216974019788,5.46000844767484e-05,-0.20633474004,-0.187800981707,-0.18776190494,2.92614554436e-08
+R4MEAS,546,119,8,8,8,16,119,1,0.000120283158642,5.47000844288812e-05,-0.0423115364195,-0.0613686999087,-0.0613529727217,2.92211367029e-08
+R4MEAS,547,171,8,8,8,16,171,1,0.000253656386463,5.48000844873794e-05,0.286845806071,0.304239722439,0.304220143136,2.92623815101e-08
+R4MEAS,548,54,8,8,8,16,54,1,0.000239665747113,5.49000843791214e-05,-0.503521992115,-0.518028365702,-0.517999769888,2.92309615775e-08
+R4MEAS,549,224,8,8,8,16,224,1,0.000201881304224,5.5000084407805e-05,0.67128845806,0.680895993706,0.680886330668,2.92674463586e-08
+R4MEAS,550,17,8,8,8,16,17,1,0.000178844439313,5.51000843630595e-05,-0.773853478008,-0.778038459315,-0.778058962336,2.91873844885e-08
+R4MEAS,551,241,8,8,8,16,241,1,0.000248347927976,5.52000844182077e-05,0.801253644707,0.799464772733,0.799455404202,2.91704701149e-08
+......9......8......7......6......5...R4MEAS,552,22,8,8,8,16,22,1,0.000337943664078,5.53000843696617e-05,-0.7508280202,-0.743258820467,-0.743225110249,2.92422798876e-08
+R4MEAS,553,215,8,8,8,16,215,1,0.000288787670333,5.54000843699303e-05,0.627474556729,0.615166809175,0.615203344373,2.92039481701e-08
+R4MEAS,554,67,8,8,8,16,67,1,0.00026930922709,5.55000844498435e-05,-0.443176025044,-0.426922094934,-0.426911643424,2.9233927461e-08
+R4MEAS,555,156,8,8,8,16,156,1,0.000297414272121,5.56000843900145e-05,0.215829387699,0.197340349705,0.197322002574,2.92372620127e-08
+R4MEAS,556,135,8,8,8,16,135,1,0.000240409689265,5.5700084426664e-05,0.0324787866693,0.05133092213,0.0513739058465,2.92091617027e-08
+R4MEAS,557,85,8,8,8,16,85,1,0.00017940408056,5.58000844326121e-05,-0.277632972122,-0.295297339181,-0.295274381773,2.92507604719e-08
+R4MEAS,558,200,8,8,8,16,200,1,0.000428278902397,5.59000844391529e-05,0.495820696826,0.510145075698,0.510108275164,2.91964720806e-08
+R4MEAS,559,31,8,8,8,16,31,1,0.000228792272765,5.60000844572868e-05,-0.665849287848,-0.675821446566,-0.675820907272,2.91323358688e-08
+R4MEAS,560,238,8,8,8,16,238,1,0.000257313490345,5.61000844854208e-05,0.771204113363,0.775519238115,0.775511442954,2.91665436773e-08
+R4MEAS,561,13,8,8,8,16,13,1,0.000252372176972,5.62000844620818e-05,-0.80165225344,-0.800216423154,-0.800168386701,2.91813610967e-08
+R4MEAS,562,234,8,8,8,16,234,1,0.000181522343846,5.63000845086157e-05,0.754236157505,0.747055224696,0.747069980891,2.91929527559e-08
+R4MEAS,563,39,8,8,8,16,39,1,0.000210400184541,5.64000843954588e-05,-0.633559524324,-0.621386348799,-0.621387290602,2.91993700196e-08
+R4MEAS,564,190,8,8,8,16,190,1,0.000344632858165,5.65000843623993e-05,0.451345534888,0.435143564841,0.435138747205,2.93739576394e-08
+R4MEAS,565,98,8,8,8,16,98,1,0.000287362337393,5.66000844694158e-05,-0.225295163011,-0.206711777689,-0.206719192674,2.92305466389e-08
+R4MEAS,566,122,8,8,8,16,122,1,0.000258797961345,5.67000844150826e-05,-0.0226413581671,-0.041625369238,-0.0416625760611,2.92905271293e-08
+......9......8......7......6......5....R4MEAS,567,168,8,8,8,16,168,1,0.000291636895858,5.68000844235152e-05,0.268377361711,0.285911228737,0.285942257131,2.92091372002e-08
+R4MEAS,568,56,8,8,8,16,56,1,0.000224244292773,5.69000843934972e-05,-0.488046615135,-0.502591864124,-0.502553321773,2.92156992043e-08
+R4MEAS,569,223,8,8,8,16,223,1,0.000196321281833,5.70000843862954e-05,0.660311372234,0.670496589586,0.670433601589,2.91587838851e-08
+R4MEAS,570,17,8,8,8,16,17,1,0.000337002068564,5.71000843993047e-05,-0.768439899119,-0.773067204919,-0.773048093801,2.91812266758e-08
+R4MEAS,571,242,8,8,8,16,242,1,0.000250828557661,5.72000843567313e-05,0.801930037073,0.800592996259,0.800569850669,2.92294945711e-08
+R4MEAS,572,21,8,8,8,16,21,1,0.000159667131178,5.73000844503921e-05,-0.757529165888,-0.750313506136,-0.750356755616,2.92850471928e-08
+R4MEAS,573,217,8,8,8,16,217,1,0.00017760493309,5.74000843818731e-05,0.63954853331,0.627575569027,0.627552510587,2.92379151619e-08
+R4MEAS,574,64,8,8,8,16,64,1,0.00023532479531,5.75000843785974e-05,-0.459449028752,-0.443443264866,-0.443441620933,2.92081316765e-08
+R4MEAS,575,158,8,8,8,16,158,1,0.000132717747453,5.76000844096254e-05,0.234723977349,0.216425118186,0.216466384518,2.92404946239e-08
+R4MEAS,576,132,8,8,8,16,132,1,0.000247177478884,5.7700084434232e-05,0.0127998229671,0.0318039723445,0.0318054878488,2.920104297e-08
+R4MEAS,577,88,8,8,8,16,88,1,0.000289643419373,5.78000844296168e-05,-0.259081009989,-0.276965790641,-0.276947402926,2.92165594797e-08
+R4MEAS,578,198,8,8,8,16,198,1,0.000296019404707,5.79000844218178e-05,0.480197706416,0.494976829163,0.495002487528,2.91937921895e-08
+R4MEAS,579,33,8,8,8,16,33,1,0.000248575975878,5.80000844252102e-05,-0.654672607812,-0.664865623103,-0.664827450899,2.91747707378e-08
+R4MEAS,580,237,8,8,8,16,237,1,0.000291725221214,5.81000844586106e-05,0.765559021716,0.770380877702,0.770364209533,2.9159392146e-08
+R4MEAS,581,14,8,8,8,16,14,1,0.000335378907627,5.82000844330443e-05,-0.802087152133,-0.800721262022,-0.80076513795,2.92886436875e-08
+......9......8......7......6......5.....R4MEAS,582,235,8,8,8,16,235,1,0.000209874022148,5.83000844837006e-05,0.760708782506,0.753839806376,0.753833396996,2.91966689519e-08
+R4MEAS,583,37,8,8,8,16,37,1,0.00018469694785,5.84000843744714e-05,-0.645441317979,-0.633511664523,-0.633524904287,2.92380464771e-08
+R4MEAS,584,192,8,8,8,16,192,1,0.00026878817363,5.85000843874313e-05,0.467483190337,0.451661633842,0.451665147671,2.91542745451e-08
+R4MEAS,585,95,8,8,8,16,95,1,0.000170763944876,5.86000844484419e-05,-0.244119584066,-0.225701844363,-0.225681232715,2.91862006385e-08
+R4MEAS,586,124,8,8,8,16,124,1,0.000249599922399,5.87000843872121e-05,-0.00295786132174,-0.0220196547406,-0.0220174060792,2.92701199853e-08
+R4MEAS,587,166,8,8,8,16,166,1,0.000356996697999,5.8800084369282e-05,0.249747072999,0.267675000153,0.26762279743,2.92585532032e-08
+R4MEAS,588,58,8,8,8,16,58,1,0.000282234503667,5.89000844293986e-05,-0.47227685261,-0.487073692776,-0.487046693902,2.92098656941e-08
+R4MEAS,589,221,8,8,8,16,221,1,0.000285204078531,5.90000844567607e-05,0.648935332631,0.659513244518,0.659545102107,2.92343765064e-08
+R4MEAS,590,18,8,8,8,16,18,1,0.00027173752218,5.91000844120961e-05,-0.762563567162,-0.767479265091,-0.767540967156,2.9175691593e-08
+R4MEAS,591,242,8,8,8,16,242,1,0.000124381072104,5.92000844487479e-05,0.80212343669,0.801200902574,0.801203396405,2.91832867684e-08
+R4MEAS,592,20,8,8,8,16,20,1,0.000301145405354,5.93000843955479e-05,-0.763772979617,-0.75713998294,-0.757189017124,2.92014659835e-08
+R4MEAS,593,219,8,8,8,16,219,1,0.000292362956744,5.94000844079701e-05,0.651237446656,0.63947793716,0.639490226533,2.92507219887e-08
+R4MEAS,594,62,8,8,8,16,62,1,0.000311639940137,5.95000844662073e-05,-0.475448225929,-0.459614189014,-0.459622391165,2.91725939143e-08
+R4MEAS,595,161,8,8,8,16,161,1,0.000267672292029,5.96000844354629e-05,0.253477305702,0.235078790833,0.235144474325,2.92142456021e-08
+......9......8......7......6......5......R4MEAS,596,129,8,8,8,16,129,1,0.000212658009373,5.97000844189854e-05,-0.00688633337496,0.0120980588711,0.0120620497194,2.917115971e-08
+R4MEAS,597,91,8,8,8,16,91,1,0.000157736718906,5.98000843218742e-05,-0.240375255651,-0.258169850849,-0.258143581788,2.92416978908e-08
+R4MEAS,598,196,8,8,8,16,196,1,0.0001817502834,5.9900084443234e-05,0.464284757437,0.479252317299,0.479255716012,2.92087067023e-08
+R4MEAS,599,34,8,8,8,16,34,1,0.000351280084097,6.00000844212846e-05,-0.643101224887,-0.653711905019,-0.653720741656,2.92689524666e-08
+R4MEAS,600,236,8,8,8,16,236,1,0.000157725993901,6.01000844689882e-05,0.759452542892,0.764625761403,0.764602868799,2.93009351186e-08
+R4MEAS,601,13,8,8,8,16,13,1,0.000342544539463,6.02000844084758e-05,-0.80203893436,-0.801492893203,-0.801502112237,2.91727181522e-08
+R4MEAS,602,236,8,8,8,16,236,1,0.00036354147735,6.0300084477162e-05,0.766723333799,0.760178167312,0.760223237306,2.91747579833e-08
+R4MEAS,603,36,8,8,8,16,36,1,0.000312896878996,6.04000843886665e-05,-0.656934798776,-0.645286400628,-0.645309177137,2.92416931421e-08
+R4MEAS,604,194,8,8,8,16,194,1,0.000331283262734,6.05000844421157e-05,0.483339772081,0.467540090134,0.467559735858,2.91857634851e-08
+R4MEAS,605,93,8,8,8,16,93,1,0.000151416443971,6.06000843854381e-05,-0.262796062718,-0.244645862296,-0.244687114466,2.92538551428e-08
+R4MEAS,606,127,8,8,8,16,127,1,0.000327546672973,6.07000843844687e-05,0.0167279871088,-0.00210180979465,-0.00209081340038,2.91495288798e-08
+R4MEAS,607,163,8,8,8,16,163,1,0.000224521896574,6.0800084447831e-05,0.230963479638,0.248901877133,0.24887917422,2.92125074775e-08
+R4MEAS,608,60,8,8,8,16,60,1,0.00035138589444,6.09000845395559e-05,-0.456221198862,-0.471338083618,-0.471317974578,2.92500057658e-08
+R4MEAS,609,220,8,8,8,16,220,1,0.000347136893925,6.10000843318175e-05,0.637171028454,0.648008392614,0.648063451057,2.92068534889e-08
+R4MEAS,610,19,8,8,8,16,19,1,0.000245322430233,6.11000845185213e-05,-0.756227173537,-0.761570932811,-0.761556691518,2.9172674481e-08
+......9......8......7......6......5......4R4MEAS,611,242,8,8,8,16,242,1,0.000393407055172,6.12000843784046e-05,0.801833664093,0.801577769562,0.801565053842,2.91730421592e-08
+R4MEAS,612,19,8,8,8,16,19,1,0.000368673908421,6.1300084366976e-05,-0.769556951355,-0.763364088119,-0.763299448858,2.91910650935e-08
+R4MEAS,613,220,8,8,8,16,220,1,0.000269637033465,6.14000844498676e-05,0.662534257411,0.650986786435,0.650955341608,2.92152920626e-08
+R4MEAS,614,60,8,8,8,16,60,1,0.000172011350655,6.15000843954555e-05,-0.491158132277,-0.475700959342,-0.475669422128,2.91979402415e-08
+R4MEAS,615,164,8,8,8,16,164,1,0.000323587344803,6.1600084395286e-05,0.27207653068,0.254040552084,0.25404587107,2.92483715038e-08
+R4MEAS,616,126,8,8,8,16,126,1,0.000356653353732,6.17000843997754e-05,-0.026568251914,-0.00771630158936,-0.00770533373689,2.9235011964e-08
+R4MEAS,617,93,8,8,8,16,93,1,0.000338270015957,6.18000844073779e-05,-0.22152053008,-0.23958235883,-0.23958360227,2.93035497666e-08
+R4MEAS,618,193,8,8,8,16,193,1,0.00021979593363,6.1900084474799e-05,0.448091935886,0.463299124972,0.463332276864,2.92421970515e-08
+R4MEAS,619,36,8,8,8,16,36,1,0.00027737636565,6.20000844234651e-05,-0.631142379834,-0.642025054964,-0.642062705152,2.91946730568e-08
+R4MEAS,620,236,8,8,8,16,236,1,0.000330227740716,6.21000843879827e-05,0.752889302564,0.758470171748,0.758535008627,2.92211367555e-08
+R4MEAS,621,13,8,8,8,16,13,1,0.000163923769609,6.22000844200459e-05,-0.801507593494,-0.801303762508,-0.801353579503,2.91786202376e-08
+R4MEAS,622,237,8,8,8,16,237,1,0.000177356222612,6.23000844811571e-05,0.772276111179,0.766235123352,0.766220333863,2.92206561428e-08
+R4MEAS,623,34,8,8,8,16,34,1,0.000202690794341,6.24000843749467e-05,-0.668032203075,-0.656556270425,-0.656522907597,2.91856751958e-08
+R4MEAS,624,196,8,8,8,16,196,1,0.00016910114673,6.25000843719294e-05,0.498902952791,0.483586441885,0.483596847436,2.92440125934e-08
+R4MEAS,625,90,8,8,8,16,90,1,0.000299058073853,6.26000843604541e-05,-0.281315073688,-0.263121790124,-0.26314965904,2.92503983454e-08
+......9......8......7......6......5......4.R4MEAS,626,130,8,8,8,16,130,1,0.000292487233393,6.270008442197e-05,0.0364046714776,0.017287134031,0.0172948715292,2.91826351636e-08
+R4MEAS,627,160,8,8,8,16,160,1,0.000306331019506,6.28000843927631e-05,0.212043661166,0.230184671637,0.23018062603,2.92108916824e-08
+R4MEAS,628,63,8,8,8,16,63,1,0.000283281810141,6.29000844075531e-05,-0.439895259278,-0.455295712447,-0.455319197687,2.91983876463e-08
+R4MEAS,629,218,8,8,8,16,218,1,0.000162121681662,6.30000843814976e-05,0.625020543479,0.63625293725,0.636271341527,2.9213518645e-08
+R4MEAS,630,20,8,8,8,16,20,1,0.000382360241431,6.31000844679673e-05,-0.749436414809,-0.755207526111,-0.755278820978,2.91595682972e-08
+R4MEAS,631,241,8,8,8,16,241,1,0.000226055510743,6.32000844152751e-05,0.801060849876,0.801023047508,0.800996539913,2.93444426799e-08
+R4MEAS,632,18,8,8,8,16,18,1,0.000304675227449,6.33000844653055e-05,-0.774878145387,-0.769206145247,-0.769153659192,2.91705595929e-08
+R4MEAS,633,222,8,8,8,16,222,1,0.000219781149714,6.34000843810783e-05,0.673430579386,0.662476792244,0.662491860611,2.92028295876e-08
+R4MEAS,634,58,8,8,8,16,58,1,0.00025462389102,6.35000844762442e-05,-0.506574897493,-0.491351092217,-0.491408390232,2.92452455852e-08
+R4MEAS,635,166,8,8,8,16,166,1,0.00025556310091,6.36000844401663e-05,0.290513680979,0.272342988391,0.272318418138,2.92585029579e-08
+R4MEAS,636,124,8,8,8,16,124,1,0.000319955290579,6.37000844255217e-05,-0.0462351857768,-0.0271161497835,-0.0271501753315,2.92156815377e-08
+R4MEAS,637,96,8,8,8,16,96,1,0.000336446409782,6.38000844295561e-05,-0.202533732791,-0.220824008451,-0.220841259396,2.91897545479e-08
+R4MEAS,638,191,8,8,8,16,191,1,0.000221309595586,6.390008444101e-05,0.431630430723,0.447305753249,0.447301532128,2.91659552423e-08
+R4MEAS,639,38,8,8,8,16,38,1,0.000286436245277,6.40000843865685e-05,-0.618803920451,-0.630106175344,-0.630111879958,2.92183500845e-08
+R4MEAS,640,235,8,8,8,16,235,1,0.000304207327424,6.41000844530236e-05,0.745871415462,0.751947172053,0.751932164169,2.93014320968e-08
+......9......8......7......6......5......4..R4MEAS,641,13,8,8,8,16,13,1,0.000353223513833,6.42000845277892e-05,-0.800493302402,-0.800774897367,-0.800785112868,2.92369615268e-08
+R4MEAS,642,237,8,8,8,16,237,1,0.000269132848529,6.43000844918817e-05,0.777363731671,0.771805154089,0.771819449513,2.92780656705e-08
+R4MEAS,643,32,8,8,8,16,32,1,0.000237295518513,6.44000844498947e-05,-0.678728294633,-0.667798797534,-0.667785542936,2.92486264263e-08
+R4MEAS,644,199,8,8,8,16,199,1,0.000343664331153,6.45000844044741e-05,0.514167450687,0.498989649559,0.498981324345,2.92896847557e-08
+R4MEAS,645,87,8,8,8,16,87,1,0.000260967952894,6.46000844437518e-05,-0.299666919696,-0.281758458466,-0.281753882255,2.93867119925e-08
+R4MEAS,646,133,8,8,8,16,133,1,0.000290877496247,6.4700084433253e-05,0.0560588317153,0.0370626449001,0.0371374464007,2.92284585773e-08
+R4MEAS,647,158,8,8,8,16,158,1,0.000382301457849,6.48000844375514e-05,0.192993932615,0.211236597426,0.211232314653,2.92667290199e-08
+R4MEAS,648,65,8,8,8,16,65,1,0.000269166770326,6.49000844756131e-05,-0.423300568097,-0.438960759722,-0.43896959685,2.91868334898e-08
+R4MEAS,649,216,8,8,8,16,216,1,0.000442434465551,6.50000843823367e-05,0.612494241941,0.624134539139,0.624133576375,2.92752833159e-08
+R4MEAS,650,21,8,8,8,16,21,1,0.000301978634149,6.51000844089586e-05,-0.742194348965,-0.748545401297,-0.748537307836,2.91669900822e-08
+R4MEAS,651,241,8,8,8,16,241,1,0.000431793433781,6.52000844521728e-05,0.799805465502,0.800305688583,0.800273866568,2.91783561005e-08
+R4MEAS,652,17,8,8,8,16,17,1,0.000284417792689,6.53000844983688e-05,-0.779732128541,-0.774342219405,-0.774351726409,2.91725178098e-08
+R4MEAS,653,223,8,8,8,16,223,1,0.000427821600116,6.54000843995209e-05,0.683922350435,0.673391902874,0.673391056095,2.91444534628e-08
+R4MEAS,654,55,8,8,8,16,55,1,0.000210978472621,6.55000844857503e-05,-0.521685235547,-0.506649017203,-0.506654458836,2.92623365333e-08
+......9......8......7......6......5......4...R4MEAS,655,169,8,8,8,16,169,1,0.000282080944517,6.56000844023636e-05,0.308774087139,0.291022042737,0.291046813334,2.92403029517e-08
+R4MEAS,656,121,8,8,8,16,121,1,0.000328275305912,6.57000844849426e-05,-0.065875029117,-0.0470515932263,-0.0470420302154,2.92146150958e-08
+R4MEAS,657,99,8,8,8,16,99,1,0.000275323596385,6.58000844321851e-05,-0.183425362324,-0.201834553678,-0.201928018701,2.92141415006e-08
+R4MEAS,658,189,8,8,8,16,189,1,0.000120713949845,6.59000844464718e-05,0.414908185597,0.430757315248,0.430744109354,2.91856208715e-08
+R4MEAS,659,40,8,8,8,16,40,1,0.000139600798635,6.6000084397753e-05,-0.606092033838,-0.617908012444,-0.617845386696,2.928517995e-08
+R4MEAS,660,234,8,8,8,16,234,1,0.000220046530765,6.61000844120811e-05,0.738405115234,0.744941947025,0.744875369536,2.91919859329e-08
+R4MEAS,661,14,8,8,8,16,14,1,0.000289160316345,6.62000844593719e-05,-0.798997057023,-0.799660069328,-0.799629794586,2.91608455107e-08
+R4MEAS,662,238,8,8,8,16,238,1,0.00032574240648,6.63000843973269e-05,0.781982553782,0.776740249513,0.776721791483,2.91748594751e-08
+R4MEAS,663,31,8,8,8,16,31,1,0.000206074307057,6.64000844000639e-05,-0.689014025465,-0.678427146917,-0.678452040325,2.91732153814e-08
+R4MEAS,664,201,8,8,8,16,201,1,0.000186400594944,6.65000843590644e-05,0.529120880766,0.514552501503,0.514553042604,2.92324699311e-08
+R4MEAS,665,85,8,8,8,16,85,1,0.000159707005025,6.66000844743355e-05,-0.31783712475,-0.300130173464,-0.300181325786,2.92761581267e-08
+R4MEAS,666,136,8,8,8,16,136,1,0.000435728319545,6.67000843928758e-05,0.075678056418,0.0565791987669,0.0565589890603,2.93568648462e-08
+R4MEAS,667,155,8,8,8,16,155,1,0.00029058722679,6.68000844426668e-05,0.173828818495,0.192272582772,0.192244980788,2.92304811766e-08
+R4MEAS,668,67,8,8,8,16,67,1,0.00016158936295,6.69000844082034e-05,-0.406453506377,-0.422566183529,-0.422520052561,2.91898842367e-08
+R4MEAS,669,215,8,8,8,16,215,1,0.000299499679457,6.70000843816791e-05,0.599599018618,0.611621859728,0.611646186413,2.92549936495e-08
+......9......8......7......6......5......4....R4MEAS,670,22,8,8,8,16,22,1,0.000361643424213,6.71000844104796e-05,-0.734504721883,-0.74132730012,-0.741315184479,2.91909252137e-08
+R4MEAS,671,241,8,8,8,16,241,1,0.000201106544745,6.72000844121692e-05,0.798068442528,0.798899847197,0.798900294813,2.91637924821e-08
+R4MEAS,672,17,8,8,8,16,17,1,0.000154239643415,6.73000844034367e-05,-0.784115782475,-0.779130664795,-0.779143836302,2.92017322385e-08
+R4MEAS,673,225,8,8,8,16,225,1,0.000226876643835,6.74000844579315e-05,0.694002589436,0.683710841632,0.683762621957,2.91797189157e-08
+R4MEAS,674,53,8,8,8,16,53,1,0.000242631360513,6.75000843796048e-05,-0.536479372248,-0.521768412663,-0.521809385953,2.92490126618e-08
+R4MEAS,675,171,8,8,8,16,171,1,0.000326484679806,6.76000844544724e-05,0.326850378531,0.309072879298,0.309033942096,2.94638037846e-08
+R4MEAS,676,118,8,8,8,16,118,1,0.000337793742159,6.7700084474344e-05,-0.0854736067106,-0.0665703009187,-0.066626957556,2.92229619126e-08
+R4MEAS,677,101,8,8,8,16,101,1,0.000350133421728,6.78000844137642e-05,-0.164206970102,-0.182510266406,-0.182623686065,2.93662282397e-08
+R4MEAS,678,186,8,8,8,16,186,1,0.00032904193597,6.79000845107115e-05,0.397934854198,0.413808582727,0.413856417549,2.9274534263e-08
+R4MEAS,679,41,8,8,8,16,41,1,0.000467498742168,6.80000844198973e-05,-0.593014883186,-0.605176151899,-0.605167601143,2.92256562173e-08
+R4MEAS,680,233,8,8,8,16,233,1,0.000401559045574,6.81000843739914e-05,0.730494042611,0.737523272378,0.73752304246,2.92757309994e-08
+R4MEAS,681,14,8,8,8,16,14,1,0.000262963807894,6.82000843785727e-05,-0.797019633235,-0.798267051881,-0.798297004252,2.91554549001e-08
+R4MEAS,682,239,8,8,8,16,239,1,0.000118794704193,6.83000844585142e-05,0.786131143661,0.781458953902,0.781467944305,2.91746830473e-08
+R4MEAS,683,29,8,8,8,16,29,1,0.000235546850374,6.84000843909864e-05,-0.698885221477,-0.688885651678,-0.688902301223,2.94700556822e-08
+R4MEAS,684,203,8,8,8,16,203,1,0.000219784530681,6.85000844466196e-05,0.543757839468,0.529162496579,0.529156177372,2.92502804646e-08
+......9......8......7......6......5......4.....R4MEAS,685,82,8,8,8,16,82,1,0.00017338432406,6.86000844018209e-05,-0.335813738741,-0.318374235605,-0.318399641201,2.92391032806e-08
+R4MEAS,686,138,8,8,8,16,138,1,0.000197834736089,6.87000844247538e-05,0.0952533275603,0.0762761415548,0.0762813482506,2.92607168527e-08
+R4MEAS,687,152,8,8,8,16,152,1,0.000235716166559,6.88000845283975e-05,0.154557200323,0.173032789199,0.173036875392,2.92314590188e-08
+R4MEAS,688,70,8,8,8,16,70,1,0.000244932397451,6.89000843975381e-05,-0.389360524661,-0.405538591654,-0.405532432439,2.92560380819e-08
+R4MEAS,689,213,8,8,8,16,213,1,0.000170765472555,6.90000844324311e-05,0.586341823834,0.598702923547,0.598688004511,2.92191127045e-08
+R4MEAS,690,23,8,8,8,16,23,1,0.000440154751545,6.9100084462512e-05,-0.726372168883,-0.733574754419,-0.733582380443,2.91591738054e-08
+R4MEAS,691,241,8,8,8,16,241,1,0.000227841357158,6.92000843494455e-05,0.795850801646,0.797174851516,0.797216907277,2.91434376493e-08
+R4MEAS,692,16,8,8,8,16,16,1,0.000476322320115,6.93000843690559e-05,-0.78802747418,-0.783600657981,-0.783601870029,2.91263634651e-08
+R4MEAS,693,226,8,8,8,16,226,1,0.000302218983837,6.94000844294476e-05,0.703663784514,0.693747535089,0.69381937764,2.92328116123e-08
+R4MEAS,694,51,8,8,8,16,51,1,0.000311959530334,6.95000844687368e-05,-0.550953653083,-0.536539445281,-0.536525133119,2.92204311185e-08
+R4MEAS,695,174,8,8,8,16,174,1,0.000374235698061,6.96000844398218e-05,0.344728396121,0.3272384904,0.327189965181,2.92158629033e-08
+R4MEAS,696,115,8,8,8,16,115,1,0.000187996282146,6.97000844917103e-05,-0.105021328503,-0.0861031524117,-0.0860808024923,2.92226517608e-08
+R4MEAS,697,104,8,8,8,16,104,1,0.000364983798736,6.98000844344058e-05,-0.144888798216,-0.163484140092,-0.163497177553,2.92615807974e-08
+R4MEAS,698,184,8,8,8,16,184,1,0.000281623926826,6.99000844279731e-05,0.380724721491,0.397149276828,0.397217004879,2.92079876443e-08
+R4MEAS,699,43,8,8,8,16,43,1,0.000375771737509,7.00000844671136e-05,-0.579580111043,-0.592169255892,-0.592196005899,2.9207961445e-08
+......9......8......7......6......5......4......R4MEAS,700,231,8,8,8,16,231,1,0.000411882831583,7.01000843961532e-05,0.722142391237,0.729574886199,0.72955678142,2.92825569148e-08
+R4MEAS,701,14,8,8,8,16,14,1,0.000327137740203,7.02000844786888e-05,-0.794561641634,-0.796148115804,-0.79617110775,2.91550483306e-08
+R4MEAS,702,239,8,8,8,16,239,1,0.000186714972669,7.03000844945136e-05,0.789806030971,0.785608080966,0.785630583089,2.91769584133e-08
+R4MEAS,703,28,8,8,8,16,28,1,0.000414583928631,7.04000844542835e-05,-0.70833621452,-0.698658244545,-0.6986451144,2.9201806065e-08
+R4MEAS,704,205,8,8,8,16,205,1,0.000225697942374,7.05000844344922e-05,0.558065568072,0.543716225543,0.543682938916,2.92198789626e-08
+R4MEAS,705,80,8,8,8,16,80,1,0.000363295378371,7.06000844697648e-05,-0.353590965472,-0.336087723092,-0.336146165939,2.92144673083e-08
+R4MEAS,706,141,8,8,8,16,141,1,0.00025214935388,7.07000843876829e-05,0.114769669131,0.0958011569769,0.0958361567406,2.92466072177e-08
+R4MEAS,707,149,8,8,8,16,149,1,0.000358683659497,7.08000844364231e-05,0.135196438618,0.153817044338,0.153796049903,2.92955103769e-08
+
+Warning from spectre at time = 70.9101 us during transient analysis `tran_perf'.
+    WARNING (SPECTRE-16780): LTE tolerance was temporarily relaxed to step over a discontinuity in the signal: XDUT.XCTRL.XTIM.X006.X001.XLIB.net10. Check the design or use '+diagnose' to get more information.
+R4MEAS,708,72,8,8,8,16,72,1,0.000214277665049,7.090008447082e-05,-0.372031325037,-0.388426353428,-0.388451267471,2.92118408441e-08
+R4MEAS,709,211,8,8,8,16,211,1,0.000200894051926,7.10000844134766e-05,0.572732504664,0.585408904744,0.585411715317,2.92019107721e-08
+R4MEAS,710,24,8,8,8,16,24,1,0.000199537711747,7.11000844792964e-05,-0.717802380919,-0.725353490072,-0.725354234071,2.9173179158e-08
+R4MEAS,711,241,8,8,8,16,241,1,0.000192879009805,7.12000843723296e-05,0.793153549594,0.79497356767,0.795041383056,2.9160365928e-08
+R4MEAS,712,15,8,8,8,16,15,1,0.000263242840881,7.13000844169958e-05,-0.791464828729,-0.787558678873,-0.787589559254,2.91404484679e-08
+R4MEAS,713,228,8,8,8,16,228,1,0.000451003977202,7.14000844107924e-05,0.712901248885,0.703409641838,0.70346473835,2.9183659265e-08
+......9......8......7......6......5......4......3R4MEAS,714,49,8,8,8,16,49,1,0.000327951709163,7.15000844206639e-05,-0.565093782466,-0.551016770667,-0.551026968146,2.92195970867e-08
+R4MEAS,715,177,8,8,8,16,177,1,0.000224871553525,7.1600084331939e-05,0.362396882049,0.345132255394,0.345117791885,2.92510067838e-08
+R4MEAS,716,113,8,8,8,16,113,1,0.000410796263752,7.17000843751068e-05,-0.124502783985,-0.105469346508,-0.105443671516,2.92781153042e-08
+R4MEAS,717,107,8,8,8,16,107,1,0.000248401413063,7.18000843928859e-05,-0.125484739625,-0.144121970131,-0.144083563316,2.92388886794e-08
+R4MEAS,718,182,8,8,8,16,182,1,0.000259605743741,7.19000843994875e-05,0.363284200701,0.379947012017,0.379959357466,2.93329088423e-08
+R4MEAS,719,45,8,8,8,16,45,1,0.000189621893246,7.20000844076227e-05,-0.565797899704,-0.578772366465,-0.578750236953,2.92029369429e-08
+R4MEAS,720,230,8,8,8,16,230,1,0.000290689096711,7.21000843722623e-05,0.713356203867,0.721174282144,0.721182445624,2.91781594158e-08
+R4MEAS,721,14,8,8,8,16,14,1,0.000193499260987,7.22000844002742e-05,-0.79162557866,-0.793621613151,-0.793605162385,2.92506906561e-08
+R4MEAS,722,240,8,8,8,16,240,1,0.000281040598787,7.23000843745925e-05,0.793004597195,0.789197768836,0.789190925556,2.9127195272e-08
+R4MEAS,723,27,8,8,8,16,27,1,0.000262501401603,7.24000845139638e-05,-0.717360433347,-0.708090107442,-0.708068325616,2.92224320698e-08
+R4MEAS,724,207,8,8,8,16,207,1,0.000311611887344,7.25000843938542e-05,0.572036694764,0.55811307785,0.558119792829,2.91896777346e-08
+R4MEAS,725,77,8,8,8,16,77,1,0.000230006986574,7.26000843556244e-05,-0.371151506361,-0.354004560617,-0.354005020535,2.92368737684e-08
+R4MEAS,726,144,8,8,8,16,144,1,0.000423137135341,7.27000843822552e-05,0.134217591495,0.115526437371,0.115485757325,2.91951937212e-08
+R4MEAS,727,147,8,8,8,16,147,1,0.000244609765659,7.28000844021038e-05,0.11575296243,0.13443565563,0.134443041579,2.92856759435e-08
+R4MEAS,728,75,8,8,8,16,75,1,0.000230971955692,7.29000844225163e-05,-0.354480464503,-0.37128119063,-0.371313442778,2.92480088739e-08
+......9......8......7......6......5......4......3.R4MEAS,729,209,8,8,8,16,209,1,0.000385884041345,7.30000843851139e-05,0.558778361071,0.571929013834,0.571932340112,2.91965606952e-08
+R4MEAS,730,25,8,8,8,16,25,1,0.000160942948138,7.31000844669104e-05,-0.708800508759,-0.716942399675,-0.716883480672,2.91858959229e-08
+R4MEAS,731,240,8,8,8,16,240,1,0.000244469558385,7.32000843568018e-05,0.789978657404,0.792422938585,0.792499610573,2.91748270669e-08
+R4MEAS,732,15,8,8,8,16,15,1,0.000190783427676,7.33000843904523e-05,-0.794425148169,-0.790810467876,-0.790805012681,2.91321037802e-08
+R4MEAS,733,229,8,8,8,16,229,1,0.000287778451607,7.34000844280642e-05,0.721709662414,0.712554481324,0.712569490517,2.92022928812e-08
+R4MEAS,734,47,8,8,8,16,47,1,0.000293226054501,7.35000844028423e-05,-0.57889403332,-0.565115495163,-0.565091297324,2.92037032031e-08
+R4MEAS,735,179,8,8,8,16,179,1,0.000338203861058,7.36000844247555e-05,0.379851138708,0.362600341149,0.362590678973,2.9255524047e-08
+R4MEAS,736,110,8,8,8,16,110,1,0.000106909099174,7.37000844844103e-05,-0.143914306329,-0.125151367323,-0.12519864817,2.92489319792e-08
+R4MEAS,737,110,8,8,8,16,110,1,0.000344114104577,7.38000845142067e-05,-0.106001438596,-0.124688081374,-0.124689125627,2.92173032534e-08
+R4MEAS,738,179,8,8,8,16,179,1,0.000298574746215,7.39000843915256e-05,0.345624445236,0.36247369483,0.362463021734,2.9215109881e-08
+R4MEAS,739,47,8,8,8,16,47,1,0.000205152769074,7.4000084383807e-05,-0.551674331989,-0.564822981333,-0.564854293119,2.91767110888e-08
+R4MEAS,740,229,8,8,8,16,229,1,0.000275105064219,7.41000844020777e-05,0.704139757424,0.712367225984,0.712389465511,2.91799704408e-08
+R4MEAS,741,15,8,8,8,16,15,1,0.000265805870843,7.42000844523835e-05,-0.788212207015,-0.790818541093,-0.790824731644,2.91407643875e-08
+R4MEAS,742,240,8,8,8,16,240,1,0.000231344217918,7.43000844111529e-05,0.795726066737,0.792354129853,0.792373488977,2.92135725053e-08
+R4MEAS,743,25,8,8,8,16,25,1,0.000279619376297,7.44000844190608e-05,-0.725950989799,-0.717100771068,-0.717096589001,2.92150808196e-08
+......9......8......7......6......5......4......3..R4MEAS,744,209,8,8,8,16,209,1,0.00024774101169,7.45000844064892e-05,0.585664106142,0.572142936219,0.572144313003,2.9225142045e-08
+R4MEAS,745,74,8,8,8,16,74,1,0.000147205710275,7.46000843579933e-05,-0.388490851065,-0.37154724693,-0.371481484526,2.93887574663e-08
+R4MEAS,746,147,8,8,8,16,147,1,0.000322739644383,7.47000844794785e-05,0.153586953208,0.134819560816,0.134825091268,2.92567747675e-08
+R4MEAS,747,144,8,8,8,16,144,1,0.000226404377741,7.48000844236942e-05,0.0962385071044,0.115079800155,0.115045434172,2.91927527865e-08
+R4MEAS,748,77,8,8,8,16,77,1,0.000384336824827,7.49000844001615e-05,-0.336715567585,-0.35365596954,-0.35363569998,2.92343310213e-08
+R4MEAS,749,207,8,8,8,16,207,1,0.000154452649353,7.50000845026878e-05,0.544485220802,0.557918873557,0.557910372494,2.91855648358e-08
+R4MEAS,750,27,8,8,8,16,27,1,0.000305044761279,7.5100084414895e-05,-0.699372134177,-0.707952162522,-0.707909631365,2.92516478556e-08
+R4MEAS,751,240,8,8,8,16,240,1,0.000176632969454,7.52000844377263e-05,0.786327496442,0.789134144427,0.789140540629,2.91263558333e-08
+R4MEAS,752,14,8,8,8,16,14,1,0.000207159368912,7.53000843505577e-05,-0.796906930382,-0.793874924541,-0.793832254371,2.91892541969e-08
+R4MEAS,753,230,8,8,8,16,230,1,0.000191315897012,7.54000843893726e-05,0.730082801779,0.721396684911,0.721410382396,2.92006997691e-08
+R4MEAS,754,45,8,8,8,16,45,1,0.000161189880832,7.55000843478822e-05,-0.592345026189,-0.578835524038,-0.57883659122,2.92189847724e-08
+R4MEAS,755,182,8,8,8,16,182,1,0.000229388217714,7.56000844670861e-05,0.397075542999,0.380131914593,0.380138485322,2.92685818409e-08
+R4MEAS,756,107,8,8,8,16,107,1,0.000323533346219,7.57000844180129e-05,-0.163235215107,-0.14459138554,-0.144598413714,2.92479063237e-08
+R4MEAS,757,113,8,8,8,16,113,1,0.000251833365024,7.58000844425074e-05,-0.0864586224108,-0.105237742869,-0.10521546261,2.92747384712e-08
+R4MEAS,758,177,8,8,8,16,177,1,0.000167489791933,7.59000844461847e-05,0.327755205542,0.344772092445,0.344715822417,2.92310380521e-08
+......9......8......7......6......5......4......3...R4MEAS,759,49,8,8,8,16,49,1,0.000340623121892,7.60000843781835e-05,-0.537218168008,-0.550883545973,-0.55087871119,2.91812551178e-08
+R4MEAS,760,228,8,8,8,16,228,1,0.000350051562628,7.61000845262241e-05,0.694498063463,0.70318415482,0.703156520262,2.92111592546e-08
+R4MEAS,761,15,8,8,8,16,15,1,0.000217552638114,7.62000844933663e-05,-0.784324041675,-0.787361452417,-0.787352339846,2.91462693261e-08
+R4MEAS,762,241,8,8,8,16,241,1,0.000330269836799,7.63000844253766e-05,0.797968128725,0.79520017259,0.795206992684,2.91816918492e-08
+R4MEAS,763,24,8,8,8,16,24,1,0.00043106613971,7.6400084342104e-05,-0.734104520267,-0.725671969806,-0.725699222809,2.91629670718e-08
+R4MEAS,764,211,8,8,8,16,211,1,0.000218099267814,7.65000844881461e-05,0.598939766791,0.585676622006,0.585701260922,2.92191500864e-08
+R4MEAS,765,72,8,8,8,16,72,1,0.000328707361492,7.66000844938513e-05,-0.405598795179,-0.388833775702,-0.388832919797,2.92058346021e-08
+R4MEAS,766,149,8,8,8,16,149,1,0.000160947659647,7.67000844416128e-05,0.172860786082,0.154144590914,0.154099978882,2.92934173538e-08
+R4MEAS,767,141,8,8,8,16,141,1,0.000274550552114,7.68000844152076e-05,0.0766667577235,0.0956812007652,0.0956791076356,2.92247398543e-08
+R4MEAS,768,80,8,8,8,16,80,1,0.000249347499047,7.69000844240996e-05,-0.318746892385,-0.335837248579,-0.335855241922,2.92097522936e-08
+R4MEAS,769,205,8,8,8,16,205,1,0.000311384043765,7.70000843885638e-05,0.529867960912,0.543622298655,0.543662325301,2.9203562962e-08
+R4MEAS,770,28,8,8,8,16,28,1,0.00012669413357,7.71000844404768e-05,-0.689521634904,-0.698443289385,-0.698430549518,2.91763830307e-08
+R4MEAS,771,239,8,8,8,16,239,1,0.000154905104287,7.72000843838866e-05,0.782203270106,0.785444225027,0.785459064002,2.91585258496e-08
+R4MEAS,772,14,8,8,8,16,14,1,0.000234044191509,7.73000844988963e-05,-0.798909111915,-0.796330092148,-0.796330394903,2.91461271054e-08
+......9......8......7......6......5......4......3....R4MEAS,773,231,8,8,8,16,231,1,0.000166400780931,7.74000844311709e-05,0.738016921204,0.729836160675,0.729830493614,2.92383871801e-08
+R4MEAS,774,43,8,8,8,16,43,1,0.000208202180372,7.75000844003992e-05,-0.605440857384,-0.592280221608,-0.592322050152,2.92127365727e-08
+R4MEAS,775,184,8,8,8,16,184,1,0.000363630764115,7.76000844391053e-05,0.414059374152,0.397355253078,0.39735069045,2.92203490561e-08
+R4MEAS,776,104,8,8,8,16,104,1,0.00020546049082,7.77000844840244e-05,-0.182460737665,-0.163900260454,-0.163792706154,2.9229628643e-08
+R4MEAS,777,115,8,8,8,16,115,1,0.000409114003376,7.78000844339738e-05,-0.0668623071829,-0.0857938883131,-0.0857647637859,2.92439223264e-08
+R4MEAS,778,174,8,8,8,16,174,1,0.000275588148536,7.79000844127378e-05,0.309690357565,0.326988963148,0.326959902575,2.92197345723e-08
+R4MEAS,779,51,8,8,8,16,51,1,0.000272240324616,7.80000844247575e-05,-0.522437509405,-0.536403862806,-0.536436649067,2.92140552924e-08
+R4MEAS,780,226,8,8,8,16,226,1,0.000187235232814,7.81000844944017e-05,0.684439755456,0.6935713286,0.693499061603,2.92135018763e-08
+R4MEAS,781,16,8,8,8,16,16,1,0.000233935432714,7.82000844820755e-05,-0.779963661108,-0.783507405505,-0.783500927884,2.91352437618e-08
+R4MEAS,782,241,8,8,8,16,241,1,0.000365943118788,7.83000844389148e-05,0.799729507591,0.797261062476,0.797209161856,2.91513399378e-08
+R4MEAS,783,23,8,8,8,16,23,1,0.000195799135956,7.84000843816341e-05,-0.741816937514,-0.733595140741,-0.733616791111,2.9172202305e-08
+R4MEAS,784,213,8,8,8,16,213,1,0.00026714163579,7.85000844254771e-05,0.611852463063,0.598905596984,0.598917184013,2.92563411901e-08
+R4MEAS,785,70,8,8,8,16,70,1,0.000332613285803,7.8600084339922e-05,-0.422456755955,-0.40580809437,-0.405823998753,2.92620605243e-08
+R4MEAS,786,152,8,8,8,16,152,1,0.000133099375676,7.87000843667353e-05,0.192029687815,0.17345266506,0.173468989001,2.92243696905e-08
+R4MEAS,787,138,8,8,8,16,138,1,0.000371780730067,7.88000843492495e-05,0.0570501287491,0.0759961425699,0.0759323616726,2.92280264592e-08
+......9......8......7......6......5......4......3.....R4MEAS,788,82,8,8,8,16,82,1,0.000232134831715,7.89000843744212e-05,-0.300587753982,-0.317788272003,-0.317800842879,2.92480465525e-08
+R4MEAS,789,203,8,8,8,16,203,1,0.000344783604495,7.90000843013922e-05,0.514931143439,0.529068632259,0.529061024172,2.92166715366e-08
+R4MEAS,790,29,8,8,8,16,29,1,0.000238713890254,7.9100084496146e-05,-0.679255405994,-0.688623244993,-0.688646113396,2.9313931211e-08
+R4MEAS,791,239,8,8,8,16,239,1,0.000226833429238,7.92000844581424e-05,0.777607219135,0.781485009016,0.78144657473,2.91509827329e-08
+R4MEAS,792,14,8,8,8,16,14,1,0.000260518135831,7.93000844195528e-05,-0.800429560151,-0.798285270048,-0.79826931818,2.91449133821e-08
+R4MEAS,793,233,8,8,8,16,233,1,0.00015358482508,7.94000843563571e-05,0.745505467569,0.737779995601,0.737761313738,2.92889457093e-08
+R4MEAS,794,41,8,8,8,16,41,1,0.000188643259386,7.95000844019743e-05,-0.618171212952,-0.605497017222,-0.605460416424,2.92626738727e-08
+R4MEAS,795,186,8,8,8,16,186,1,0.00029537723066,7.96000844236578e-05,0.430794047386,0.414409165802,0.414416908752,2.93692452516e-08
+R4MEAS,796,101,8,8,8,16,101,1,0.000172469022029,7.97000844654128e-05,-0.201574477544,-0.183039385179,-0.183022249849,2.92728206108e-08
+R4MEAS,797,118,8,8,8,16,118,1,0.000302599549509,7.98000844043522e-05,-0.0472261950407,-0.0661763223509,-0.066213765567,2.92230074551e-08
+R4MEAS,798,172,8,8,8,16,172,1,0.000212467584699,7.99000843510642e-05,0.291439574756,0.308668423676,0.308677287577,2.93050175843e-08
+R4MEAS,799,53,8,8,8,16,53,1,0.000291249574517,8.00000843906082e-05,-0.507343538862,-0.521461703484,-0.52148204643,2.92244712687e-08
+R4MEAS,800,225,8,8,8,16,225,1,0.00028342640159,8.01000844346002e-05,0.673969540997,0.683606944521,0.683643743297,2.91902083617e-08
+R4MEAS,801,16,8,8,8,16,16,1,0.000438834498351,8.02000844097067e-05,-0.775133828303,-0.778986546046,-0.778961790099,2.93961703652e-08
+R4MEAS,802,241,8,8,8,16,241,1,0.000175062380716,8.03000844442339e-05,0.801009134436,0.799040030689,0.799065390805,2.9167931417e-08
+......9......8......7......6......5......4......3......R4MEAS,803,22,8,8,8,16,22,1,0.000229303756681,8.04000844556195e-05,-0.749082750832,-0.741331059148,-0.741309667372,2.91808747822e-08
+R4MEAS,804,215,8,8,8,16,215,1,0.000224878033752,8.0500084436408e-05,0.6243977038,0.611916354106,0.611932262661,2.92437074212e-08
+R4MEAS,805,67,8,8,8,16,67,1,0.000318090708059,8.06000844203529e-05,-0.439064785003,-0.422763950907,-0.422749481055,2.92384805147e-08
+R4MEAS,806,155,8,8,8,16,155,1,0.00020011322742,8.07000844527668e-05,0.211086460255,0.192652044764,0.192677741855,2.92404165242e-08
+R4MEAS,807,136,8,8,8,16,136,1,0.000254488867091,8.08000843513995e-05,0.037397596482,0.0564088109431,0.0564480147743,2.9246198043e-08
+R4MEAS,808,85,8,8,8,16,85,1,0.000329188040242,8.09000844022355e-05,-0.282245927667,-0.299781349158,-0.299768996275,2.9251343218e-08
+R4MEAS,809,201,8,8,8,16,201,1,0.00025799156463,8.10000844661633e-05,0.499679741256,0.513962082371,0.513948959398,2.92213231111e-08
+R4MEAS,810,31,8,8,8,16,31,1,0.000317016783921,8.1100084323101e-05,-0.668582833673,-0.678310552332,-0.678292586507,2.91521448415e-08
+R4MEAS,811,238,8,8,8,16,238,1,0.000309545088488,8.12000843659995e-05,0.772543702364,0.776933845375,0.776915633961,2.91567724675e-08
+R4MEAS,812,14,8,8,8,16,14,1,0.000336597450731,8.13000844123558e-05,-0.801468014004,-0.799791204367,-0.799845688556,2.91630068925e-08
+R4MEAS,813,234,8,8,8,16,234,1,0.000205674907759,8.14000843742354e-05,0.752545754694,0.745137637959,0.745156102958,2.91982609825e-08
+R4MEAS,814,39,8,8,8,16,39,1,0.000233463159721,8.15000843865625e-05,-0.6305289657,-0.618114127925,-0.618068358915,2.92673374486e-08
+R4MEAS,815,189,8,8,8,16,189,1,0.000319146428443,8.16000843999368e-05,0.447269079804,0.431028184358,0.431147098856,2.92245872497e-08
+R4MEAS,816,99,8,8,8,16,99,1,0.000284999381619,8.17000843654588e-05,-0.220565027239,-0.202057003789,-0.201994324619,2.92207043458e-08
+R4MEAS,817,121,8,8,8,16,121,1,0.000175683913589,8.18000843666655e-05,-0.0275618204288,-0.0464933917501,-0.0465302764851,2.92175939016e-08
+......9......8......7......6......5......4......3......2R4MEAS,818,169,8,8,8,16,169,1,0.000199389146703,8.19000843849988e-05,0.273011224822,0.290674485347,0.290683592274,2.9234176721e-08
+R4MEAS,819,55,8,8,8,16,55,1,0.000194567582607,8.20000843735024e-05,-0.491943682152,-0.506379281454,-0.506350542565,2.93097416325e-08
+R4MEAS,820,223,8,8,8,16,223,1,0.000122079901774,8.21000844108539e-05,0.663092948126,0.673064656542,0.672966222548,2.91502337065e-08
+R4MEAS,821,17,8,8,8,16,17,1,0.000321406376438,8.22000844300466e-05,-0.769836570931,-0.774279287321,-0.774240353671,2.91759970866e-08
+R4MEAS,822,241,8,8,8,16,241,1,0.000318866484486,8.23000844445275e-05,0.801806254196,0.800219767944,0.800199871014,2.9204436955e-08
+R4MEAS,823,21,8,8,8,16,21,1,0.000119923971299,8.24000843668218e-05,-0.755896031998,-0.748520726776,-0.748549434802,2.91873812993e-08
+R4MEAS,824,217,8,8,8,16,217,1,0.00021351352104,8.25000844130228e-05,0.636566347493,0.624290791405,0.624302728097,2.92934770829e-08
+R4MEAS,825,65,8,8,8,16,65,1,0.000159508253145,8.26000843037261e-05,-0.455404608175,-0.439397790441,-0.439445144341,2.91856323422e-08
+R4MEAS,826,158,8,8,8,16,158,1,0.000275944372153,8.27000844735176e-05,0.230014637912,0.211662930965,0.211684862874,2.92370174302e-08
+R4MEAS,827,133,8,8,8,16,133,1,0.000329777185876,8.28000843793424e-05,0.0177219521062,0.0367518618287,0.0367211527909,2.92079734456e-08
+R4MEAS,828,87,8,8,8,16,87,1,0.000305129435768,8.29000844789276e-05,-0.263733028711,-0.281518782434,-0.281547938689,2.92260246588e-08
+
+Warning from spectre at time = 83.0101 us during transient analysis `tran_perf'.
+    WARNING (SPECTRE-16780): LTE tolerance was temporarily relaxed to step over a discontinuity in the signal: XDUT.XCTRL.XTIM.X006.X001.XLIB.net10. Check the design or use '+diagnose' to get more information.
+        Further occurrences of this warning will be suppressed.
+R4MEAS,829,199,8,8,8,16,199,1,0.000272099253156,8.30000843974477e-05,0.484131460301,0.49872784318,0.498735439163,2.9267943357e-08
+R4MEAS,830,32,8,8,8,16,32,1,0.00041138817245,8.31000844373428e-05,-0.657503959026,-0.667769414095,-0.667784921031,2.92492929486e-08
+R4MEAS,831,238,8,8,8,16,238,1,8.57666486465e-05,8.32000844465045e-05,0.767013786682,0.771775388096,0.771790306944,2.92519819226e-08
+......9......8......7......6......5......4......3......2.R4MEAS,832,13,8,8,8,16,13,1,0.000330590035317,8.33000843881937e-05,-0.802023695361,-0.800827342852,-0.800845333361,2.92248491134e-08
+R4MEAS,833,235,8,8,8,16,235,1,0.000235332340678,8.34000844831714e-05,0.759133385032,0.752252790912,0.752277757008,2.92281144632e-08
+R4MEAS,834,38,8,8,8,16,38,1,0.0002781602271,8.35000844180115e-05,-0.642507561388,-0.630374706398,-0.630323239442,2.92129566275e-08
+R4MEAS,835,191,8,8,8,16,191,1,0.000387452247884,8.3600084406761e-05,0.463475274435,0.447457772573,0.447456408796,2.91615975545e-08
+R4MEAS,836,96,8,8,8,16,96,1,0.000315508417978,8.37000844269262e-05,-0.239426243009,-0.221019662218,-0.221073229942,2.91831940002e-08
+R4MEAS,837,124,8,8,8,16,124,1,0.000254872051107,8.38000844440538e-05,-0.00787823419169,-0.0268645921719,-0.0268962153465,2.91981369641e-08
+R4MEAS,838,166,8,8,8,16,166,1,0.000363995963453,8.39000844617036e-05,0.254417489949,0.272256510282,0.272234120336,2.92382710424e-08
+R4MEAS,839,58,8,8,8,16,58,1,0.000113523097083,8.40000844052559e-05,-0.476246616607,-0.491193790823,-0.491194040491,2.92214270241e-08
+R4MEAS,840,222,8,8,8,16,222,1,0.000393731398417,8.41000843677696e-05,0.651817210434,0.66225526967,0.662242707227,2.91870722177e-08
+R4MEAS,841,18,8,8,8,16,18,1,0.000326326743298,8.42000844127514e-05,-0.764075830936,-0.769004820661,-0.768952765264,2.91701830576e-08
+R4MEAS,842,242,8,8,8,16,242,1,0.000307843312156,8.43000844543958e-05,0.802120396324,0.801155757803,0.801155460299,2.91653244491e-08
+R4MEAS,843,20,8,8,8,16,20,1,0.000279343316714,8.44000845023075e-05,-0.762255667292,-0.755461535054,-0.755416137074,2.91835274433e-08
+R4MEAS,844,218,8,8,8,16,218,1,0.000359202423663,8.45000844979188e-05,0.648353014628,0.636437313878,0.636454259938,2.9226395736e-08
+R4MEAS,845,63,8,8,8,16,63,1,0.000420484865045,8.46000844344783e-05,-0.471474727323,-0.455691414061,-0.455734145449,2.92821344762e-08
+R4MEAS,846,160,8,8,8,16,160,1,0.000270930631051,8.4700084460037e-05,0.248803518342,0.230445701429,0.23048505199,2.92131796099e-08
+......9......8......7......6......5......4......3......2..R4MEAS,847,130,8,8,8,16,130,1,0.000280878061207,8.48000845044797e-05,-0.00196657327577,0.0170619809299,0.0170636088729,2.92190945403e-08
+R4MEAS,848,90,8,8,8,16,90,1,0.000275968108211,8.49000844334995e-05,-0.24506387711,-0.26295832197,-0.262967312498,2.9244931848e-08
+R4MEAS,849,196,8,8,8,16,196,1,0.00039242426806,8.50000844387353e-05,0.468289576445,0.483047596131,0.483037392636,2.9204640587e-08
+R4MEAS,850,34,8,8,8,16,34,1,0.000204287436973,8.51000843724397e-05,-0.646031333572,-0.656622929978,-0.656602123089,2.91841870973e-08
+R4MEAS,851,237,8,8,8,16,237,1,0.000331654985663,8.52000844003636e-05,0.761022672896,0.766224527028,0.766215659625,2.9217316216e-08
+R4MEAS,852,13,8,8,8,16,13,1,0.000410000742054,8.53000844435605e-05,-0.802096279046,-0.801579158749,-0.8015631156,2.91841990472e-08
+R4MEAS,853,236,8,8,8,16,236,1,0.000200799768971,8.5400084385689e-05,0.765262223485,0.758888200388,0.75888523774,2.93633588749e-08
+R4MEAS,854,36,8,8,8,16,36,1,0.00017906518454,8.55000844353954e-05,-0.654098921774,-0.642360976704,-0.642352138445,2.92227548835e-08
+R4MEAS,855,193,8,8,8,16,193,1,0.000264858928121,8.56000844173537e-05,0.479402353054,0.463821466996,0.463821928138,2.92583594956e-08
+R4MEAS,856,93,8,8,8,16,93,1,0.000379916681839,8.57000844225687e-05,-0.258141802857,-0.240013026295,-0.240041266356,2.92661297547e-08
+R4MEAS,857,126,8,8,8,16,126,1,0.000247985353696,8.58000843982988e-05,0.0118073046998,-0.00714780273351,-0.00716175743203,2.93586894442e-08
+R4MEAS,858,164,8,8,8,16,164,1,0.000221574953866,8.59000844094963e-05,0.235673272243,0.253643924678,0.253645573893,2.92499024893e-08
+R4MEAS,859,60,8,8,8,16,60,1,0.000245352582901,8.60000844148035e-05,-0.460263069553,-0.475096897482,-0.475112994428,2.91935367586e-08
+R4MEAS,860,220,8,8,8,16,220,1,0.000235155341422,8.61000843861677e-05,0.640148040831,0.650867939356,0.650838877498,2.92073926824e-08
+R4MEAS,861,19,8,8,8,16,19,1,0.000384549482541,8.62000843843664e-05,-0.757854941016,-0.763220561794,-0.76323105637,2.91645842172e-08
+......9......8......7......6......5......4......3......2...R4MEAS,862,242,8,8,8,16,242,1,0.000232266732987,8.63000844939488e-05,0.80195134608,0.801423682048,0.801431338951,2.9162764239e-08
+R4MEAS,863,19,8,8,8,16,19,1,0.000314036882215,8.64000843879229e-05,-0.768154372443,-0.761772548732,-0.761742620861,2.91868781572e-08
+R4MEAS,864,220,8,8,8,16,220,1,0.000301734547182,8.65000844700269e-05,0.659747606203,0.648285497534,0.648277317006,2.92113524713e-08
+R4MEAS,865,60,8,8,8,16,60,1,0.000330539856535,8.66000844364551e-05,-0.487258441167,-0.471755506717,-0.471711494148,2.92483135676e-08
+R4MEAS,866,163,8,8,8,16,163,1,0.000166685454176,8.67000844157641e-05,0.267441874812,0.249177159885,0.249170248612,2.92299342148e-08
+R4MEAS,867,127,8,8,8,16,127,1,0.000365813398296,8.68000844361186e-05,-0.0216495249603,-0.00269176462927,-0.00262935053795,2.91847268538e-08
+R4MEAS,868,93,8,8,8,16,93,1,0.000405985135757,8.69000844446525e-05,-0.226245891983,-0.244347034092,-0.244338799061,2.92387353148e-08
+R4MEAS,869,194,8,8,8,16,194,1,0.000274593915513,8.70000844264517e-05,0.452166589581,0.467398288237,0.467448220302,2.91951006193e-08
+R4MEAS,870,36,8,8,8,16,36,1,0.000422180807537,8.71000843238554e-05,-0.634169394489,-0.645201490026,-0.645210741853,2.9207662295e-08
+R4MEAS,871,236,8,8,8,16,236,1,0.000140984067745,8.72000844180939e-05,0.754572704699,0.760187024614,0.760156284694,2.91737996816e-08
+R4MEAS,872,13,8,8,8,16,13,1,0.000331746104052,8.73000844157454e-05,-0.801685710783,-0.801463793301,-0.801433493326,2.91746472829e-08
+R4MEAS,873,236,8,8,8,16,236,1,0.000299270666472,8.74000843469042e-05,0.770930567961,0.764999580986,0.76498428646,2.92546857063e-08
+R4MEAS,874,34,8,8,8,16,34,1,0.000219427551622,8.7500084363358e-05,-0.665295128222,-0.654141245254,-0.654118254257,2.9237233402e-08
+R4MEAS,875,196,8,8,8,16,196,1,0.000163805721591,8.76000843529504e-05,0.495039311673,0.479812280566,0.479791387512,2.92197495664e-08
+R4MEAS,876,91,8,8,8,16,91,1,0.000212890368834,8.77000843979138e-05,-0.276701437031,-0.258580534809,-0.258556158371,2.92701734989e-08
+......9......8......7......6......5......4......3......2....R4MEAS,877,129,8,8,8,16,129,1,0.000345908107879,8.78000844040649e-05,0.0314869001457,0.0124907154881,0.0124727270004,2.92317643357e-08
+R4MEAS,878,161,8,8,8,16,161,1,0.000350172017774,8.79000843875453e-05,0.216786449901,0.234985848535,0.235024039672,2.92149656073e-08
+R4MEAS,879,62,8,8,8,16,62,1,0.000433771118434,8.8000084441255e-05,-0.44400195171,-0.459469030278,-0.459465741412,2.91865226942e-08
+R4MEAS,880,218,8,8,8,16,218,1,0.000317980140872,8.81000844245175e-05,0.628092972067,0.639193082968,0.63919930964,2.937307621e-08
+R4MEAS,881,20,8,8,8,16,20,1,0.000388998774959,8.82000844007652e-05,-0.751177221117,-0.756998176265,-0.756975757822,2.92028403243e-08
+R4MEAS,882,242,8,8,8,16,242,1,0.000104960572703,8.83000843865734e-05,0.801299337598,0.801073084803,0.801108573966,2.91851930094e-08
+R4MEAS,883,18,8,8,8,16,18,1,0.000292612034216,8.84000844045596e-05,-0.773591277974,-0.767622130521,-0.767664892365,2.9184220747e-08
+R4MEAS,884,221,8,8,8,16,221,1,0.000281603781363,8.85000844048009e-05,0.670744351485,0.659347434015,0.659326914352,2.92689917955e-08
+R4MEAS,885,58,8,8,8,16,58,1,0.000337512293823,8.86000844396799e-05,-0.50274866947,-0.487381254448,-0.487430017609,2.92278643572e-08
+R4MEAS,886,166,8,8,8,16,166,1,0.000225699393838,8.87000845158041e-05,0.285922210027,0.267801482736,0.267854583867,2.92654535898e-08
+R4MEAS,887,124,8,8,8,16,124,1,0.000204502083508,8.88000843954164e-05,-0.0413200645643,-0.0222729099219,-0.0222588593803,2.92288035084e-08
+R4MEAS,888,95,8,8,8,16,95,1,0.000257213046996,8.89000844308647e-05,-0.207292167955,-0.225492398615,-0.225442325559,2.92486537633e-08
+R4MEAS,889,192,8,8,8,16,192,1,0.000246854318547,8.90000844582627e-05,0.435770402224,0.451292845203,0.451355054819,2.91523872629e-08
+R4MEAS,890,37,8,8,8,16,37,1,0.000225635910447,8.91000843285878e-05,-0.621924734269,-0.633102922587,-0.633129660864,2.92410920041e-08
+......9......8......7......6......5......4......3......2.....R4MEAS,891,235,8,8,8,16,235,1,0.000338481661269,8.92000844087213e-05,0.747668414266,0.753771259725,0.753725960157,2.91842975688e-08
+R4MEAS,892,13,8,8,8,16,13,1,0.000354224006732,8.93000844094757e-05,-0.800792239806,-0.800971438946,-0.800918777992,2.94200576485e-08
+R4MEAS,893,237,8,8,8,16,237,1,0.000250796198513,8.94000844751744e-05,0.776135531263,0.770407120138,0.770465028532,2.92088510317e-08
+R4MEAS,894,33,8,8,8,16,33,1,0.000206301524945,8.95000844246358e-05,-0.676092279998,-0.665139914543,-0.665142841005,2.9186979663e-08
+R4MEAS,895,198,8,8,8,16,198,1,0.000258640094838,8.96000843866781e-05,0.510379839059,0.495156348665,0.495184517811,2.92039603034e-08
+R4MEAS,896,88,8,8,8,16,88,1,0.000258079641856,8.97000844077248e-05,-0.295095133246,-0.277056366039,-0.277093251145,2.92206984702e-08
+R4MEAS,897,132,8,8,8,16,132,1,0.000249567855068,8.9800084359003e-05,0.0511463778947,0.0320383469348,0.0320388069281,2.92019838055e-08
+R4MEAS,898,158,8,8,8,16,158,1,0.000277510499358,8.99000843212732e-05,0.197770024692,0.215984046911,0.215940814769,2.92218791338e-08
+R4MEAS,899,64,8,8,8,16,64,1,0.000297004672166,9.00000843714208e-05,-0.42747521597,-0.443082034073,-0.443129027845,2.92237219224e-08
+R4MEAS,900,217,8,8,8,16,217,1,0.000198752137518,9.01000842923287e-05,0.61566201046,0.627199242879,0.627191846039,2.92148483784e-08
+R4MEAS,901,21,8,8,8,16,21,1,0.000239484515532,9.02000843472641e-05,-0.744047595554,-0.750338514751,-0.750316376159,2.92040548443e-08
+R4MEAS,902,242,8,8,8,16,242,1,0.000245694705504,9.0300084413403e-05,0.800164563003,0.800521602669,0.800556492158,2.92399422888e-08
+R4MEAS,903,17,8,8,8,16,17,1,0.000275001544852,9.04000844112871e-05,-0.778562129081,-0.773112755831,-0.773090289277,2.92754892973e-08
+R4MEAS,904,223,8,8,8,16,223,1,0.000217427666002,9.05000844091445e-05,0.681337959202,0.67059349397,0.670602889774,2.91739310784e-08
+R4MEAS,905,56,8,8,8,16,56,1,0.000359948579443,9.06000844738816e-05,-0.51793659521,-0.503092266766,-0.503028315102,2.92081348559e-08
+......9......8......7......6......5......4......3......2......R4MEAS,906,168,8,8,8,16,168,1,0.000271526671901,9.0700084305661e-05,0.304223764652,0.286324044578,0.286369464255,2.92537439605e-08
+R4MEAS,907,122,8,8,8,16,122,1,0.000239918581757,9.08000843535042e-05,-0.0609656894682,-0.0416942528414,-0.0416862223829,2.93127235496e-08
+R4MEAS,908,98,8,8,8,16,98,1,0.00023713147411,9.09000844496301e-05,-0.188212864854,-0.206472957176,-0.206511030365,2.92303176095e-08
+R4MEAS,909,189,8,8,8,16,189,1,0.000299979819827,9.10000843949235e-05,0.419113544584,0.434898878679,0.434898803748,2.9302686604e-08
+R4MEAS,910,39,8,8,8,16,39,1,0.000251207165465,9.11000844200305e-05,-0.609304166203,-0.621099230246,-0.621083376184,2.9192435734e-08
+R4MEAS,911,234,8,8,8,16,234,1,0.000193774547979,9.12000843676899e-05,0.740314042579,0.746898959354,0.746852584456,2.92041279508e-08
+R4MEAS,912,14,8,8,8,16,14,1,0.00019823027532,9.13000845009642e-05,-0.799416226339,-0.800098249037,-0.80008840091,2.92372219114e-08
+R4MEAS,913,238,8,8,8,16,238,1,0.000143088074026,9.14000844728248e-05,0.780872163602,0.775546362565,0.775522834205,2.91636024457e-08
+R4MEAS,914,31,8,8,8,16,31,1,0.000164496580619,9.15000843822025e-05,-0.686480904354,-0.67592055954,-0.675983604135,2.9168566411e-08
+R4MEAS,915,200,8,8,8,16,200,1,0.000279207098162,9.16000844661794e-05,0.52541369357,0.51050718846,0.510508860569,2.92642571498e-08
+R4MEAS,916,85,8,8,8,16,85,1,0.000219105085733,9.17000843455366e-05,-0.313309567319,-0.29552495296,-0.295539113262,2.93368242096e-08
+R4MEAS,917,135,8,8,8,16,135,1,0.000416225490138,9.18000843196e-05,0.0707751780776,0.0517906971355,0.0517624344009,2.9204876406e-08
+R4MEAS,918,155,8,8,8,16,155,1,0.000419373617701,9.190008443755e-05,0.178630450495,0.196842578161,0.196889677836,2.92576134773e-08
+R4MEAS,919,67,8,8,8,16,67,1,0.000271350748665,9.20000843590209e-05,-0.410689907204,-0.426718580893,-0.426753746436,2.92153571609e-08
+R4MEAS,920,215,8,8,8,16,215,1,0.000202054790986,9.21000844195887e-05,0.602856426891,0.614840132562,0.614795891581,2.91886619103e-08
+......9......8......7......6......5......4......3......2......1R4MEAS,921,22,8,8,8,16,22,1,0.000395979380067,9.22000844365836e-05,-0.736468554784,-0.74322980475,-0.743184239096,2.91969970457e-08
+R4MEAS,922,241,8,8,8,16,241,1,0.000180356448031,9.23000843896719e-05,0.798547877624,0.79921175945,0.799159099548,2.91869036192e-08
+R4MEAS,923,17,8,8,8,16,17,1,0.000346787881585,9.24000843808973e-05,-0.783063813694,-0.778041680405,-0.778054080889,2.91758377242e-08
+R4MEAS,924,224,8,8,8,16,224,1,0.000171013266597,9.25000844692469e-05,0.691521791369,0.680995828982,0.681002603068,2.92584543751e-08
+R4MEAS,925,54,8,8,8,16,54,1,0.000269199615925,9.26000843921308e-05,-0.532810544096,-0.518092330377,-0.51806614231,2.92386664257e-08
+R4MEAS,926,171,8,8,8,16,171,1,0.000202532788086,9.27000844091536e-05,0.322348671313,0.304732133969,0.304743697479,2.92412958887e-08
+R4MEAS,927,119,8,8,8,16,119,1,0.000228249737905,9.28000844275924e-05,-0.0805772131355,-0.0613874343237,-0.0613426660752,2.92308914809e-08
+R4MEAS,928,101,8,8,8,16,101,1,0.000161349605243,9.29000843903983e-05,-0.169021914433,-0.187376082523,-0.187355516872,2.92240678083e-08
+R4MEAS,929,187,8,8,8,16,187,1,0.000202421233264,9.30000843956729e-05,0.402203007353,0.418165177528,0.418129959048,2.92180396663e-08
+R4MEAS,930,41,8,8,8,16,41,1,0.000244032766198,9.31000844135724e-05,-0.596317984399,-0.6084971268,-0.608457352931,2.92170484027e-08
+R4MEAS,931,233,8,8,8,16,233,1,0.000216782500059,9.32000844795039e-05,0.732512362443,0.739459056011,0.73943644501,2.91873367262e-08
+R4MEAS,932,14,8,8,8,16,14,1,0.000167799071311,9.33000844141366e-05,-0.79755900401,-0.798596674024,-0.798584250961,2.91415779904e-08
+R4MEAS,933,239,8,8,8,16,239,1,0.000225869687029,9.34000844231029e-05,0.78513821026,0.780422020561,0.780417158596,2.92441266851e-08
+R4MEAS,934,30,8,8,8,16,30,1,0.00020219819941,9.35000844086488e-05,-0.696456834053,-0.686405818906,-0.686448572499,2.91832884311e-08
+R4MEAS,935,202,8,8,8,16,202,1,0.000281139693237,9.36000845019794e-05,0.540130267462,0.525518343174,0.525525408526,2.92637219586e-08
+......9......8......7......6......5......4......3......2......1.R4MEAS,936,83,8,8,8,16,83,1,0.000262640489767,9.3700084448426e-05,-0.331338713508,-0.313813622782,-0.313801241127,2.92364150628e-08
+R4MEAS,937,138,8,8,8,16,138,1,0.000154593677722,9.38000844246333e-05,0.0903646061237,0.0713788946867,0.0713639200394,2.92471943627e-08
+R4MEAS,938,153,8,8,8,16,153,1,0.000301445887552,9.39000843902542e-05,0.159386884519,0.177921579462,0.177863340149,2.92307085527e-08
+R4MEAS,939,69,8,8,8,16,69,1,0.000310883098691,9.40000843752926e-05,-0.393656654451,-0.409855781224,-0.409821352876,2.92197231612e-08
+R4MEAS,940,213,8,8,8,16,213,1,0.000318635068518,9.41000844009715e-05,0.589689842378,0.602048307891,0.602014242988,2.92267937591e-08
+R4MEAS,941,23,8,8,8,16,23,1,0.000248060195447,9.42000844608135e-05,-0.728446419852,-0.735483344353,-0.735549524826,2.91967442208e-08
+R4MEAS,942,241,8,8,8,16,241,1,0.000255307818491,9.43000844055636e-05,0.796450096414,0.797886629316,0.797862449807,2.91389682451e-08
+R4MEAS,943,16,8,8,8,16,16,1,0.000281516946984,9.44000844278591e-05,-0.787094181166,-0.782668254241,-0.782621988754,2.91288083927e-08
+R4MEAS,944,226,8,8,8,16,226,1,0.000254724006898,9.45000844261818e-05,0.70128788271,0.691185542942,0.691195703518,2.91793578744e-08
+R4MEAS,945,52,8,8,8,16,52,1,0.000243098787403,9.46000843560862e-05,-0.547364366371,-0.532877512991,-0.532934644553,2.9283974692e-08
+R4MEAS,946,173,8,8,8,16,173,1,0.000121950791891,9.47000844049795e-05,0.340277148683,0.322635618695,0.322569443917,2.9254140149e-08
+R4MEAS,947,116,8,8,8,16,116,1,0.000343001357153,9.48000845013603e-05,-0.100140184605,-0.0811837516851,-0.0811207249053,2.92187252846e-08
+R4MEAS,948,103,8,8,8,16,103,1,0.000280524604425,9.49000844326347e-05,-0.14972690364,-0.168314686332,-0.168337277276,2.92705874417e-08
+R4MEAS,949,185,8,8,8,16,185,1,0.00023531443856,9.50000844406919e-05,0.385049316498,0.401360711635,0.401358634546,2.92613167931e-08
+......9......8......7......6......5......4......3......2......1..R4MEAS,950,43,8,8,8,16,43,1,0.000165855426764,9.51000844535558e-05,-0.582971884512,-0.595294664666,-0.59526514058,2.92472746808e-08
+R4MEAS,951,232,8,8,8,16,232,1,0.000203153526693,9.52000844409075e-05,0.724270797216,0.731666622935,0.731633103251,2.91916825452e-08
+R4MEAS,952,14,8,8,8,16,14,1,0.000267581043428,9.53000844011616e-05,-0.795221238712,-0.796767700564,-0.796770414777,2.91220952134e-08
+R4MEAS,953,239,8,8,8,16,239,1,0.000322247690847,9.54000844122451e-05,0.788931532499,0.784444999139,0.784468199339,2.91258968924e-08
+R4MEAS,954,28,8,8,8,16,28,1,0.000286329159444,9.55000844298334e-05,-0.70601316196,-0.69617480573,-0.696186271592,2.92276535232e-08
+R4MEAS,955,204,8,8,8,16,204,1,0.000188888852155,9.56000843670471e-05,0.554518661182,0.540187527419,0.540133475231,2.9296376597e-08
+R4MEAS,956,80,8,8,8,16,80,1,0.000273658473383,9.57000843726829e-05,-0.349164577394,-0.331900109628,-0.331856933423,2.9235085819e-08
+R4MEAS,957,140,8,8,8,16,140,1,0.00036575042187,9.58000844111676e-05,0.109896925413,0.0911674883138,0.0912296408388,2.92900737033e-08
+R4MEAS,958,150,8,8,8,16,150,1,0.000204393598304,9.59000845111506e-05,0.140043562738,0.158679461553,0.158688164742,2.92362884473e-08
+R4MEAS,959,72,8,8,8,16,72,1,0.000292595906169,9.60000843612187e-05,-0.376386876775,-0.392809604593,-0.392825570337,2.92214554691e-08
+R4MEAS,960,211,8,8,8,16,211,1,0.000260724546599,9.610008447326e-05,0.576166630979,0.588772734983,0.588760802224,2.92114995366e-08
+R4MEAS,961,24,8,8,8,16,24,1,0.00021073882415,9.62000844936532e-05,-0.719985385416,-0.72760909813,-0.727583979325,2.91581145441e-08
+R4MEAS,962,241,8,8,8,16,241,1,0.000425758258912,9.63000844204118e-05,0.793872549262,0.795708647506,0.795707586655,2.91325482536e-08
+R4MEAS,963,15,8,8,8,16,15,1,0.000265468674285,9.64000843959147e-05,-0.790650079457,-0.786570664523,-0.786592508779,2.91432482182e-08
+R4MEAS,964,227,8,8,8,16,227,1,0.00015915009633,9.65000844242297e-05,0.710632019037,0.701084554945,0.70113997867,2.91786954482e-08
+......9......8......7......6......5......4......3......2......1...R4MEAS,965,49,8,8,8,16,49,1,0.000279371396316,9.66000844427768e-05,-0.561590492603,-0.547598324744,-0.547598610082,2.92972716632e-08
+R4MEAS,966,176,8,8,8,16,176,1,0.000381052370927,9.67000843901563e-05,0.358000441573,0.340701147361,0.340705726602,2.92050305451e-08
+R4MEAS,967,113,8,8,8,16,113,1,0.000215574668603,9.68000843215347e-05,-0.119637135588,-0.10077955204,-0.100837725216,2.92022655691e-08
+R4MEAS,968,106,8,8,8,16,106,1,0.000303026915687,9.69000843597762e-05,-0.130344270906,-0.148951012042,-0.148932029053,2.92611972706e-08
+R4MEAS,969,182,8,8,8,16,182,1,0.000249738109145,9.70000843639245e-05,0.367666118154,0.384087601788,0.384154129161,2.92326834527e-08
+R4MEAS,970,45,8,8,8,16,45,1,0.000243673649415,9.71000844317371e-05,-0.56927557968,-0.582114108258,-0.582107320781,2.92922519737e-08
+R4MEAS,971,231,8,8,8,16,231,1,0.000243506056633,9.72000844411963e-05,0.715592598539,0.723301103683,0.723231169252,2.93072611833e-08
+R4MEAS,972,14,8,8,8,16,14,1,0.000253903904853,9.73000844317248e-05,-0.792404322869,-0.794396587188,-0.794385131633,2.91693884364e-08
+R4MEAS,973,240,8,8,8,16,240,1,0.000192087929179,9.7400084403839e-05,0.792249652478,0.788569853083,0.788535081699,2.91164767178e-08
+R4MEAS,974,27,8,8,8,16,27,1,0.000284223317222,9.75000844554467e-05,-0.715144238682,-0.705813937666,-0.705819511397,2.91825177103e-08
+R4MEAS,975,207,8,8,8,16,207,1,0.000269130644218,9.76000844826594e-05,0.568577147319,0.554451925769,0.554488021074,2.92752074547e-08
+R4MEAS,976,78,8,8,8,16,78,1,0.000161233143301,9.77000844405652e-05,-0.366783052448,-0.34940676608,-0.349383962205,2.92180274768e-08
+R4MEAS,977,143,8,8,8,16,143,1,0.000149997890789,9.78000844400783e-05,0.129363997867,0.110370022992,0.110323873497,2.92052252623e-08
+R4MEAS,978,147,8,8,8,16,147,1,0.000239938078954,9.79000843367924e-05,0.120622483422,0.139415521476,0.139335304896,2.93124385314e-08
+R4MEAS,979,74,8,8,8,16,74,1,0.000372667923571,9.80000844779983e-05,-0.358887729836,-0.375492305901,-0.375478429825,2.92548797317e-08
+......9......8......7......6......5......4......3......2......1....R4MEAS,980,209,8,8,8,16,209,1,0.000293981613922,9.81000843717651e-05,0.562299112508,0.575167114286,0.575250379833,2.93822879833e-08
+R4MEAS,981,25,8,8,8,16,25,1,0.000324444276855,9.82000843608264e-05,-0.711092365155,-0.718929622287,-0.718942484483,2.91932942223e-08
+R4MEAS,982,240,8,8,8,16,240,1,0.000220064960121,9.83000844757121e-05,0.790816633025,0.79303655091,0.793015201632,2.92381058717e-08
+R4MEAS,983,15,8,8,8,16,15,1,0.00028065747827,9.8400084387802e-05,-0.793729832801,-0.789987097194,-0.790018665957,2.9132485801e-08
+R4MEAS,984,229,8,8,8,16,229,1,0.000296415627485,9.85000844027286e-05,0.719547903115,0.710316362688,0.710289976358,2.92353687284e-08
+R4MEAS,985,47,8,8,8,16,47,1,0.000220414364901,9.86000844135601e-05,-0.575476438105,-0.56158363565,-0.561622959281,2.92029630763e-08
+R4MEAS,986,179,8,8,8,16,179,1,0.000119591276454,9.87000844177959e-05,0.375508947115,0.358418446554,0.358450705972,2.93123714033e-08
+R4MEAS,987,110,8,8,8,16,110,1,0.000208585718233,9.88000844194501e-05,-0.139068257853,-0.120171851495,-0.120154380918,2.92698605217e-08
+R4MEAS,988,109,8,8,8,16,109,1,0.000215451895569,9.89000843950143e-05,-0.110880707741,-0.12959931636,-0.129538021973,2.92291182057e-08
+R4MEAS,989,180,8,8,8,16,180,1,0.000259535369783,9.90000844112958e-05,0.350058956421,0.36676848503,0.36678448729,2.92129978557e-08
+R4MEAS,990,47,8,8,8,16,47,1,0.000215731350097,9.9100084412466e-05,-0.555236340054,-0.568441355773,-0.568457501903,2.92648434208e-08
+R4MEAS,991,229,8,8,8,16,229,1,0.000208499409233,9.92000843928247e-05,0.706483876193,0.714583051599,0.714547249124,2.92221431636e-08
+R4MEAS,992,15,8,8,8,16,15,1,0.000255927102461,9.930008438962e-05,-0.789110354485,-0.791625319753,-0.791690175336,2.91391999843e-08
+R4MEAS,993,240,8,8,8,16,240,1,0.000265800789612,9.94000843842436e-05,0.795090526585,0.791687191275,0.791669976314,2.91496947213e-08
+R4MEAS,994,26,8,8,8,16,26,1,0.000457684854139,9.95000843841859e-05,-0.723843566732,-0.714827471027,-0.714795633577,2.92044154787e-08
+......9......8......7......6......5......4......3......2......1.....R4MEAS,995,208,8,8,8,16,208,1,0.000379427364334,9.96000843651061e-05,0.582289414032,0.568805076456,0.568770290571,2.92737962978e-08
+R4MEAS,996,75,8,8,8,16,75,1,0.000307358610676,9.97000844174688e-05,-0.384178744449,-0.367227110682,-0.367265365771,2.92254251356e-08
+R4MEAS,997,146,8,8,8,16,146,1,0.00025731248161,9.98000844432248e-05,0.148752566661,0.129997456991,0.129998501708,2.92343485155e-08
+R4MEAS,998,145,8,8,8,16,145,1,0.000304600003941,9.99000843712476e-05,0.101124074781,0.119815728819,0.119813470083,2.92371767179e-08
+R4MEAS,999,76,8,8,8,16,76,1,0.000190803165545,0.000100000084417866,-0.341175977,-0.358061506446,-0.358011475695,2.93007987733e-08
+R4MEAS,1000,207,8,8,8,16,207,1,0.000209474377842,0.000100100084463691,0.548089761019,0.561446902072,0.561374673786,2.92019177824e-08
+R4MEAS,1001,26,8,8,8,16,26,1,0.000428239961692,0.000100200084482369,-0.701768345279,-0.710232196746,-0.710251888183,2.92199571163e-08
+R4MEAS,1002,240,8,8,8,16,240,1,0.000286469686134,0.000100300084420421,0.78728477816,0.789910084117,0.789924254639,2.91309533199e-08
+R4MEAS,1003,14,8,8,8,16,14,1,0.000274409970509,0.00010040008452289,-0.796331871741,-0.79310298448,-0.793088573498,2.92033927912e-08
+R4MEAS,1004,230,8,8,8,16,230,1,0.000434501887674,0.00010050008445372,0.728031070381,0.719091309931,0.71915450751,2.9192922626e-08
+R4MEAS,1005,46,8,8,8,16,46,1,0.00031038069715,0.000100600084495614,-0.589017475219,-0.575442398864,-0.575415746798,2.94324471402e-08
+R4MEAS,1006,181,8,8,8,16,181,1,0.000319411467212,0.000100700084403673,0.392790419508,0.375829476223,0.375840898064,2.92237131394e-08
+R4MEAS,1007,108,8,8,8,16,108,1,0.000332056408233,0.000100800084453555,-0.158414172389,-0.139538085001,-0.139567748143,2.92904269489e-08
+R4MEAS,1008,112,8,8,8,16,112,1,0.000213145548336,0.000100900084353707,-0.091352074236,-0.110103964819,-0.110067894887,2.91865585752e-08
+......9......8......7......6......5......4......3......2......1......R4MEAS,1009,177,8,8,8,16,177,1,0.000136724931156,0.00010100008437513,0.332242634414,0.349219196795,0.349180263756,2.92092750814e-08
+R4MEAS,1010,48,8,8,8,16,48,1,0.000261946234134,0.000101100084430195,-0.540862041719,-0.554452333727,-0.55440940673,2.92514525293e-08
+R4MEAS,1011,228,8,8,8,16,228,1,0.000138292231356,0.000101200084433692,0.696948639496,0.705642671728,0.705657533306,2.91830376342e-08
+R4MEAS,1012,15,8,8,8,16,15,1,0.000407291420639,0.000101300084407675,-0.785340823879,-0.788357519648,-0.788362479763,2.912743933e-08
+R4MEAS,1013,241,8,8,8,16,241,1,0.000405155148551,0.000101400084342034,0.797452434213,0.794521915164,0.794548542446,2.91718000363e-08
+R4MEAS,1014,24,8,8,8,16,24,1,0.00035933345273,0.000101500084413132,-0.732107879129,-0.7235958058,-0.723561853272,2.92489956149e-08
+R4MEAS,1015,211,8,8,8,16,211,1,0.000136961174203,0.000101600084404053,0.595653404603,0.58242635905,0.582493487918,2.92969388379e-08
+R4MEAS,1016,73,8,8,8,16,73,1,0.000304434463529,0.000101700084480797,-0.401344731663,-0.384338555279,-0.384349878692,2.92468161996e-08
+R4MEAS,1017,149,8,8,8,16,149,1,0.000170149633145,0.000101800084472631,0.168052114408,0.149286458517,0.149286399899,2.9238941176e-08
+R4MEAS,1018,142,8,8,8,16,142,1,0.000292037086289,0.000101900084388845,0.0815651284509,0.100284282166,0.100273439716,2.9236322528e-08
+R4MEAS,1019,79,8,8,8,16,79,1,0.000228920794705,0.000102000084420645,-0.323257434597,-0.340226152372,-0.340263012422,2.91969609629e-08
+R4MEAS,1020,205,8,8,8,16,205,1,0.000403835233313,0.000102100084428839,0.533552338662,0.547174079862,0.547143217293,2.92238605974e-08
+R4MEAS,1021,28,8,8,8,16,28,1,0.000294655974994,0.000102200084372541,-0.692024142479,-0.700783641924,-0.700745802221,2.91903454053e-08
+R4MEAS,1022,240,8,8,8,16,240,1,0.000206146898505,0.000102300084445514,0.783278359765,0.786510494487,0.786548398189,2.91244479425e-08
+R4MEAS,1023,14,8,8,8,16,14,1,0.000341789862711,0.000102400084470331,-0.79845367385,-0.795598493624,-0.795564128519,2.91381356609e-08
+......9......8......7......6......5......4......3......2......1......0R4MEAS,1024,231,8,8,8,16,231,1,0.000238586095187,0.000102500084378624,0.736074510568,0.727904737383,0.727906102793,2.91782544117e-08
+R4MEAS,1025,44,8,8,8,16,44,1,0.000346372346473,0.00010260008437178,-0.602200557242,-0.589106426755,-0.589086716824,2.9252856305e-08
+R4MEAS,1026,183,8,8,8,16,183,1,0.000266970800588,0.000102700084422724,0.40983594438,0.39300406024,0.393041230473,2.92411495857e-08
+R4MEAS,1027,105,8,8,8,16,105,1,0.000250928772919,0.000102800084371741,-0.177662091827,-0.15888865268,-0.158903277708,2.92354662022e-08
+R4MEAS,1028,115,8,8,8,16,115,1,0.000275517581956,0.000102900084433274,-0.071765687304,-0.0906679178176,-0.0906918136802,2.93183800966e-08
+R4MEAS,1029,175,8,8,8,16,175,1,0.000246907250747,0.000103000084426666,0.314224367692,0.331495889114,0.3314720391,2.92104031978e-08
+R4MEAS,1030,51,8,8,8,16,51,1,0.00036855649291,0.000103100084405104,-0.526162668335,-0.540012243369,-0.539977795959,2.92596277949e-08
+R4MEAS,1031,227,8,8,8,16,227,1,0.000194632830432,0.000103200084316298,0.686995401074,0.695874227204,0.695878081794,2.92237635939e-08
+Number of accepted tran steps =             52068176
+
+Maximum value achieved for any signal of each quantity: 
+V: V(XDUT.XBOOTN.BTOP) = 1.756 V
+I: I(VVDD:p) = 3.607 mA
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Post-Transient Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   -   Non-default settings that could significantly slow down simulation
+          maxstep = 10 ps, default 2.06518 us
+          reltol = 1e-06, default 1e-03
+          abstol(V) = 10 nV, default 1 uV
+          abstol(I) = 100 fA, default 1 pA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+During simulation, the CPU load for active processors is :
+         0 (68.9 %)      1 (68.8 %)      2 (67.5 %)      3 (67.0 %)
+         4 (66.0 %)      5 (59.5 %)      6 (64.4 %)      7 (55.3 %)
+         8 (58.3 %)      9 (56.4 %)     10 (58.7 %)     11 (55.4 %)
+        12 (57.3 %)     13 (57.8 %)     14 (53.5 %)     15 (50.5 %)
+        16 (52.1 %)     17 (51.8 %)     18 (56.2 %)     19 (54.8 %)
+        20 (47.5 %)     21 (53.0 %)     22 (49.3 %)     23 (35.0 %)
+        24 (53.6 %)     25 (50.2 %)     26 (41.8 %)     27 (51.3 %)
+        28 (42.5 %)     29 (48.2 %)     30 (45.1 %)     31 (48.6 %)
+        32 (45.1 %)     33 (52.7 %)     34 (54.5 %)     35 (52.0 %)
+        36 (50.1 %)     37 (51.7 %)     38 (49.9 %)     39 (53.5 %)
+        40 (52.3 %)     41 (50.9 %)     42 (50.6 %)     43 (51.7 %)
+        44 (53.1 %)     45 (47.6 %)     46 (46.3 %)     47 (48.1 %)
+        48 (23.2 %)     49 (24.5 %)     50 (22.7 %)     51 (25.7 %)
+        52 (23.4 %)     53 (30.3 %)     54 (24.2 %)     55 (34.2 %)
+        56 (25.2 %)     57 (31.9 %)     58 (25.4 %)     59 (34.4 %)
+        60 (25.6 %)     61 (32.8 %)     62 (28.2 %)     63 (39.9 %)
+        64 (27.4 %)     65 (36.5 %)     66 (27.7 %)     67 (33.7 %)
+        68 (27.9 %)     69 (36.3 %)     70 (28.1 %)     71 (44.0 %)
+        72 (27.5 %)     73 (39.1 %)     74 (27.0 %)     75 (37.3 %)
+        76 (29.2 %)     77 (41.2 %)     78 (30.4 %)     79 (41.7 %)
+        80 (29.4 %)     81 (37.4 %)     82 (28.0 %)     83 (39.1 %)
+        84 (29.0 %)     85 (39.4 %)     86 (30.2 %)     87 (38.6 %)
+        88 (22.1 %)     89 (41.9 %)     90 (29.3 %)     91 (40.9 %)
+        92 (29.7 %)     93 (45.7 %)     94 (29.6 %)     95 (46.2 %)
+        Total: 4099.5%
+Initial condition solution time: CPU = 1.61994 s, elapsed = 501.897 ms.
+Intrinsic tran analysis time:    CPU = 554.499 ks, elapsed = 148.169 ks.
+
+Warning from spectre during transient analysis `tran_perf'.
+    WARNING (SPECTRE-555): Swap memory used = 1.87 Mbytes. Swapping detected, resulting in slowed simulation.   Consider running Spectre simulation on a machine with more available memory.
+
+Total time required for tran analysis `tran_perf': CPU = 554.5 ks (6d 10h 1m), elapsed = 148.169 ks (1d 17h 9m), util. = 374%.
+Time accumulated: CPU = 554.512 ks (6d 10h 1m), elapsed = 148.182 ks (1d 17h 9m).
+Peak resident memory used = 351 Mbytes.
+
+
+Notice from spectre.
+    21700496 warnings suppressed.
+
+Licensing Information:
+Lic Summary:
+[redacted environment/license line]
+[13:10:40.023761] Feature usage summary:
+[redacted environment/license line]
+[redacted environment/license line]
+
+
+Aggregate audit (1:10:40 PM, Sat Oct 31, 2026):
+Time used: CPU = 555 ks (6d 10h 1m), elapsed = 148 ks (1d 17h 9m), util. = 374%.
+Time spent in licensing: elapsed = 99.6 ms.
+Peak memory used = 351 Mbytes.
+Simulation started at: 8:00:58 PM, Thur Oct 29, 2026, ended at: 1:10:40 PM, Sat Oct 31, 2026, with elapsed time (wall clock): 148 ks (1d 17h 9m).
+spectre completes with 0 errors, 38 warnings, and 12 notices.
