@@ -1,0 +1,20 @@
+{
+  "source_kind": "hand-authored synthetic examples; no simulator execution",
+  "created": "2026-11-03",
+  "sanitization": "No private inputs used; all instance names, values, paths and messages are invented. Native syntax is imitated for demonstration only.",
+  "limitations": "Not vendor reference output or extra simulator-version coverage. PSF files exercise only the bounded header/tail checker.",
+  "files": {
+    "analysis-mismatch.log": "a3c49a425a7d2317680588a8f625f769b8325588044c0044248efbca8897191e",
+    "complete.log": "54be0b27aeff0577eed0a56db7bdd9d9c199df67d74a92f0f915606e2e4658da",
+    "complete.logStatus": "2dd7c7a44d41a5f88eca232e029f49a6dc4869710578eec8d56eff64c90034e3",
+    "complete.raw": "64cd301ee15b716a72a5c1573f3e6044c014dfd7f08092debbb6f3602eb027ee",
+    "exit0.state.json": "a2c73ee0b5cc38752fc635ad47870724b3934001a53f7f87b0f9d5e190878eff",
+    "fatal-exit0.log": "890a3ec35310bda5ad305c29bd85693d78b0ae1a31fc8537c690e1b97489cfcc",
+    "incomplete.raw": "e4ddab739388f68403ea0031603f37446535291e227e942e45df0ad8bc3e65ba",
+    "no-footer.log": "bc507dbcc1edd7c20c431f2c13f8a54e510a06ab4d4ac4bcb13449ce88b0ab93",
+    "other.logStatus": "494b9f977516667f6db787e7b9724b017be3104a28e983fba351d7da6ca13d7e",
+    "raw-incomplete.log": "a3c49a425a7d2317680588a8f625f769b8325588044c0044248efbca8897191e",
+    "running.state.json": "38088c07c8d76165d326df1c22ffa71eb6b5d72c9c95859797eb65f0588a608c",
+    "warning.log": "099f578d185b716deaeeb6c1eb13161486cb0764244c11dd2ba3d4046a4e831c"
+  }
+}

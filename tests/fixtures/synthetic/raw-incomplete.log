@@ -1,0 +1,3 @@
+Synthetic fixture: hand-authored; not simulator output.
+Transient Analysis `tran_demo': time = (0 s -> 100 ns)
+spectre completes with 0 errors, 0 warnings, and 0 notices.

@@ -1,0 +1,50 @@
+{
+  "description": "Six hand-authored synthetic cases; no simulator was run. Rules are demonstration policy, not a circuit verdict. See docs/examples.md and tests/fixtures/synthetic/provenance.json.",
+  "quiet_after_s": 0,
+  "watch": [
+    {"name": "Demo SOA", "code": "CMI-275*"},
+    {"name": "Demo Newton notice", "text": "Newton iteration fails to converge"},
+    {"name": "Demo TB valid=0", "key": "TB:reported_valid=0"}
+  ],
+  "runs": [
+    {
+      "id": "demo-complete",
+      "log": "../tests/fixtures/synthetic/complete.log",
+      "log_status": "../tests/fixtures/synthetic/complete.logStatus",
+      "raw": "../tests/fixtures/synthetic/complete.raw",
+      "analysis": "tran_demo",
+      "expected_stop_s": 1e-7
+    },
+    {
+      "id": "demo-warning",
+      "log": "../tests/fixtures/synthetic/warning.log",
+      "state": "../tests/fixtures/synthetic/running.state.json",
+      "analysis": "tran_demo",
+      "baseline": "demo-complete"
+    },
+    {
+      "id": "demo-fatal-exit0",
+      "log": "../tests/fixtures/synthetic/fatal-exit0.log",
+      "state": "../tests/fixtures/synthetic/exit0.state.json",
+      "analysis": "tran_demo"
+    },
+    {
+      "id": "demo-no-footer",
+      "log": "../tests/fixtures/synthetic/no-footer.log",
+      "analysis": "tran_demo"
+    },
+    {
+      "id": "demo-raw-incomplete",
+      "log": "../tests/fixtures/synthetic/raw-incomplete.log",
+      "raw": "../tests/fixtures/synthetic/incomplete.raw",
+      "analysis": "tran_demo",
+      "expected_stop_s": 1e-7
+    },
+    {
+      "id": "demo-analysis-mismatch",
+      "log": "../tests/fixtures/synthetic/analysis-mismatch.log",
+      "log_status": "../tests/fixtures/synthetic/other.logStatus",
+      "analysis": "tran_demo"
+    }
+  ]
+}

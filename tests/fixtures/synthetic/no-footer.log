@@ -1,0 +1,5 @@
+Synthetic fixture: hand-authored; not simulator output.
+Transient Analysis `tran_demo': time = (0 s -> 100 ns)
+time = 100 ns
+All analyses PASS according to this free-text sentence.
+    This indented free text is not a native message block.

@@ -1,0 +1,15 @@
+Synthetic fixture: hand-authored; not simulator output.
+Transient Analysis `tran_demo': time = (0 s -> 100 ns)
+Warning from spectre at time = 20 ns during transient analysis `tran_demo'.
+    WARNING (CMI-2753): M_DEMO: Vds(=1.2 V) has exceeded vds_max(=0.99 V).
+Warning from spectre at time = 25 ns during transient analysis `tran_demo'.
+    WARNING (CMI-2753): M_DEMO: Vds(=1.3 V) has exceeded vds_max(=0.99 V).
+        Further occurrences of this warning will be suppressed.
+    123 warnings suppressed.
+Warning from spectre during transient analysis `tran_demo'.
+    WARNING (DEMO-99): synthetic unknown diagnostic code; no header time.
+Notice from spectre at time = 26 ns during transient analysis `tran_demo'.
+    Newton iteration fails to converge at time = 26000 ps step = 1e-15 s.
+R4MEAS,0,23,8,8,8,16,23,1
+R4MEAS,1,24,8,8,8,16,24,0
+R4MEAS,2,short

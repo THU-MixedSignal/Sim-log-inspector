@@ -1,0 +1,5 @@
+Synthetic fixture: hand-authored; not simulator output.
+Transient Analysis `tran_demo': time = (0 s -> 100 ns)
+Fatal error found by spectre at time = 5 ns during transient analysis `tran_demo'.
+    FATAL (DEMO-1): synthetic fatal evidence despite wrapper exit code zero.
+spectre completes with 1 errors, 0 warnings, and 0 notices.

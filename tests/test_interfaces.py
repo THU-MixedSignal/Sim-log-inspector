@@ -137,8 +137,11 @@ class Http(unittest.TestCase):
     def get(self, path, host=None, data=None):
         headers = {'Host': host} if host else {}
         request = urllib.request.Request(f'http://127.0.0.1:{self.port}{path}', headers=headers, data=data)
+        # Loopback tests must reach our server even when the environment defines
+        # HTTP proxies; a deliberately foreign Host can otherwise reach a proxy.
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
         try:
-            with urllib.request.urlopen(request) as response:
+            with opener.open(request, timeout=5) as response:
                 return response.status, response.headers, response.read()
         except urllib.error.HTTPError as e:
             return e.code, e.headers, e.read()
@@ -177,7 +180,9 @@ class Http(unittest.TestCase):
                                ('/api/status?run=none', 404), ('/nope', 404)):
             status, body = self.json(path)
             self.assertEqual((status, body['error']['status']), (expected, expected), path)
-        self.assertEqual(self.get('/api/status', data=b'{}')[0], 501)
+        # Only the unsupported method matters here. An empty POST avoids a
+        # Windows connection reset when the server closes with unread body data.
+        self.assertEqual(self.get('/api/status', data=b'')[0], 501)
 
     def test_foreign_host_is_rejected(self):
         status, body = self.json('/api/status', host=f'attacker.example:{self.port}')
