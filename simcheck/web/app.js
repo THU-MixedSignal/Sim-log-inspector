@@ -88,6 +88,10 @@
   }
   function clockTime(epoch) { return new Date(epoch * 1000).toLocaleTimeString('en-US', { hour12: false }); }
   function clamp(f) { return has(f) ? Math.min(1, Math.max(0, f)) : null; }
+  // Furthest progress the log shows; the API sends Spectre's meter only when it is ahead of the logged time.
+  function shareOf(run) { return has(run.meter) ? Math.max(run.meter, run.pct || 0) : run.pct; }
+  // Every testbench line on the Measurements tab: parsed frames plus other lines.
+  function tbLines(run) { return run.frames ? run.frames.n + (run.frames.other || 0) : 0; }
   function clip(text, n) { return text.length > n ? `${text.slice(0, n - 1)}…` : text; }
   function gkey(g) { return `${g.key}|${g.sev}`; }
   function uncoded(g) { return g.key.startsWith(`${g.sev}:`); }
@@ -430,7 +434,7 @@
     const width = Math.max(target.clientWidth || 0, mini ? 120 : 320);
     const height = mini ? 8 : 52;
     // Redraw only when something drawn changed; rebuilding on every poll would drop keyboard focus.
-    const sig = JSON.stringify([width, run.state, run.stop, run.pct, run.ended, run.analysis, cache ? cache.sig : null]);
+    const sig = JSON.stringify([width, run.state, run.stop, run.pct, run.meter, run.ended, run.analysis, cache ? cache.sig : null]);
     if (target.dataset.sig === sig) return;
     target.setAttribute('viewBox', `0 0 ${width} ${height}`);
     const focused = target.contains(document.activeElement) ? document.activeElement.getAttribute('data-key') : null;
@@ -450,7 +454,8 @@
         }
       }
       parts.push(svg('rect', { x: x0, y: trackY, width: span, height: trackH, rx: trackH / 2 }, 'track' + ended));
-      const f = run.state === 'complete' ? 1 : has(run.pct) ? clamp(run.pct / 100) : null;
+      const share = shareOf(run);
+      const f = run.state === 'complete' ? 1 : has(share) ? clamp(share / 100) : null;
       if (f !== null) {
         parts.push(svg('rect', { x: x0, y: trackY, width: Math.max(trackH, span * f), height: trackH, rx: trackH / 2 }, 'fill' + ended));
       }
@@ -554,14 +559,19 @@
     $('run-error').hidden = !run.error;
     $('run-error').textContent = run.error || '';
     const progress = $('progress');
-    progress.hidden = !has(run.t);
+    progress.hidden = !has(run.t) && !has(run.meter);
     progress.replaceChildren();
     if (has(run.t)) {
       progress.append(document.createTextNode(run.stop ? `${fmtTime(run.t)} / ${fmtTime(run.stop)}` : fmtTime(run.t)));
       if (has(run.pct)) progress.append(el('small', null, fmtPct(run.pct)));
     }
-    $('timeline-box').hidden = !run.stop && !has(run.t);
-    $('timeline').hidden = !run.stop;
+    if (has(run.meter)) {
+      const meter = el('small', null, `Meter ${Math.round(run.meter)}%`);
+      meter.title = 'Spectre progress meter: 70 cells, within one cell (1.4%)';
+      progress.append(meter);
+    }
+    $('timeline-box').hidden = !run.stop && !has(run.t) && !has(run.meter);
+    $('timeline').toggleAttribute('hidden', !run.stop);  // an SVG element has no hidden property
   }
 
   // ---------------------------------------------------------------- problems
@@ -695,6 +705,10 @@
         }
       }
       meta.append(controls, el('code', 'loc', `${e.path}:${e.line}`));
+      if (e.latest_gen) {
+        meta.append(el('span', 'loc', e.replaced ? `Generation ${e.gen}: the log was replaced since; this line number refers to the earlier file`
+          : `Earlier attempt, generation ${e.gen}`));
+      }
       box.replaceChildren(meta, logView(e));
       if (focusButton && box.isConnected) focusButton.focus({ preventScroll: true });
     }).catch((err) => box.replaceChildren(el('p', 'panel-note', `Unable to load evidence: ${err.message}`)));
@@ -867,7 +881,7 @@
       if (ui.tab === 'measurements') {
         const gen = run.gen || 1;
         if (!ui.meas || ui.meas.run !== run.run || ui.meas.gen !== gen) await loadMeasurements(run, 'initial');
-        else if ((run.frames ? run.frames.n : 0) !== ui.meas.total) await loadMeasurements(run, 'newer');
+        else if (tbLines(run) !== ui.meas.total) await loadMeasurements(run, 'newer');
       } else if (ui.tab === 'details') {
         const details = await loadDetails(run);
         if (ui.selected === run.run && ui.tab === 'details') renderDetails(details);
@@ -891,7 +905,7 @@
   }
   function renderTabs(run) {
     const names = { problems: 'Problems', measurements: 'Measurements', details: 'Details' };
-    const counts = { problems: groupsOf(run.run).length, measurements: run.frames ? run.frames.n : 0 };
+    const counts = { problems: groupsOf(run.run).length, measurements: tbLines(run) };
     for (const tab of document.querySelectorAll('.tab')) {
       tab.replaceChildren(document.createTextNode(names[tab.dataset.tab]));
       if (has(counts[tab.dataset.tab])) tab.append(el('span', 'count-label', counts[tab.dataset.tab]));

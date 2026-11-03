@@ -1,5 +1,47 @@
 # 验证记录
 
+## 原生复核后的五项修正 — 2026-11-03
+
+根据 14 组原生日志的复核，修了五处：
+- 读取 Spectre 自己的进度条：最后一行还没写完时也读，但不入库；
+- 帧数只数能解析出的 R4MEAS 帧；
+- Spectre 头行块外、不带编号的 `ERROR:` 等行，不再算作 Spectre 错误；
+- 旧代次的证据标出代次，以及文件是否已被替换；
+- DC、AC、Monte Carlo 分析给出各自的阶段名。
+
+**测试**：unittest 共 100 项，全部通过。其中 15 项是新增的 `tests/test_native_followups.py`；`test_fatal_exit_zero` 改成原生的"头行加缩进"写法。node --check 和 git diff --check 也都通过。
+
+**原生依据**：
+- 进度条读数：
+  - `adc-a-tt` 依次为 31、50、70 格，瞬态开始后没有任何时间行；
+  - `rc-normal` 70 格；
+  - `tran-minstep` 17 格（24.3%），落后于日志时间给出的 25.0%，所以不显示；
+  - 仓库里 noise 运行的 70 个带进度条的帧中，进度条始终领先测试台报告的帧时间，最多领先 0.76 个百分点，不到 1 格；
+  - `minstep.log:298` 的 `10. Try …` 不被当作进度条。
+- `tb-records`：3 个解析帧，另有 3 行其他测试台行（`R4MEAS,3,broken`、FAIL、PASS），测量页仍是 6 条。
+- 4 处原生的未编号 FATAL 仍是原生 FATAL：topology:88、output-limit:175、wall-limit:176、历史 output_limit:289。
+
+**对照**：
+- 仓库里 22 份真实日志：新旧解析器产生的事件逐条一致；`examples/real-fixtures.json` 的 status 输出和 cursor 都不变。
+- 本机 210 份含 DC/AC/Monte Carlo 分析的原生日志，只读汇总，没有导入仓库：
+  - 带标签的告警、错误计数与结尾行一致，210/210；原生错误数前后不变；
+  - 块外未编号标签 0 条；
+  - 821 条问题记录由 setup 改归所在的 DC/AC/MC 分析；
+  - 200 份读到了进度条；
+  - 15 份不再把 `Accumulated DC solution time = 0 s` 当作仿真时间，49 份的瞬态时间保持不变。
+- DC/AC 的回归样例是手写的最小测试行，写法与上述日志一致。导入三份脱敏原生样例需要用户确认，本轮未执行。
+
+**命令行和 HTTP**：用实时采集器跑了 6 个演示运行（`.runtime/followups-20261103/`）。
+- status、show、evidence、measurements、details、wait 都正常；
+- 替换日志后，`wait` 在约 2 秒内返回 restart 和新问题组，退出码 0；旧证据带 `replaced` 标记和行号说明；
+- 9 个 HTTP 请求都返回 200，包括 JSON 和 HTML 两种导出。
+
+**页面**：在 1280×820 和 375×812 下检查。
+- 正常的有：`Meter N%` 和时间轴填充；DC 运行不显示时间轴；测量计数为 6/6；7 秒内没有重新拉取测量页；没有横向溢出；控制台没有错误。
+- 修正一处空白：时间轴的 SVG 设不上 `hidden`（SVG 元素没有这个属性），没有结束时间时仍占 52px，现在改为设置属性。
+
+整个过程只读，没有启动或修改仿真。
+
 ## 历史关闭与 HTML/JSON 另存 — 2026-11-03
 
 每条历史提供 ↓/×，关闭状态按运行 ID/代次存在当前浏览器，可 Restore closed。

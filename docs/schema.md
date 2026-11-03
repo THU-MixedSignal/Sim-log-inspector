@@ -17,19 +17,20 @@ CLI 默认输出文本；`--json` 和 HTTP 输出同样内容的 JSON，都带 `
 | `state` | complete、failed、incomplete、unknown、running、indexing 等 |
 | `ended` | 已结束：终态，或日志已有原生结尾行 |
 | `flags` | 关注原因：failed、rule、quiet（未结束且日志超过阈值未修改）、collector_error、source_error |
-| `analysis`、`stop` | 当前分析名，日志给出的瞬态结束时间 |
+| `analysis`、`stop` | 当前分析名（瞬态、DC、AC、Monte Carlo；取最近的分析横幅或头行的 `during` 子句），日志给出的瞬态结束时间 |
 | `t`、`pct` | 日志最近给出的仿真时间及其占结束时间的百分比（下限）；正常结束的运行不给 |
+| `meter` | Spectre 70 格进度条的读数，单位为百分比，误差在 ±1 格（约 1.4%）以内，不能当作下限；比 `pct` 靠前或没有时间时才给出；正常结束的运行不给。DC/AC 分析没有 `stop` 和 `t`，进度只来自这里 |
 | `n` | 问题组数：`E` 错误/致命，`W` 警告，`T` 测试台，`N` 提示 |
 | `errors` | 最多 2 个错误/致命组，按日志顺序（组摘要） |
 | `rules` | 每条规则一项：`rule`、`keys`（前 5 个）、`n`（总组数，多于 5 时）、最早一次的 `e`、`t`、`pct` |
 | `base` | 参考运行中没有的非 NOTICE 键：`ref`、`new`（前 5 个）、`n`（总数，多于 5 时） |
-| `frames` | 测试台记录数 `n`，最新的 `frame`、`code` |
+| `frames` | 解析出的 R4MEAS 帧数 `n`；其他测试台行数 `other`（无法解析的记录、原始 PASS/FAIL、块外未编号标签行）；最新一个解析帧的 `frame`、`code` |
 | `log_age` | 未结束的运行：日志距上次修改的秒数 |
 | `error` | 采集或读日志的错误 |
 | `gen` | 代次，大于 1 时给出 |
 | `last_problem` | 最新问题记录的证据 ID，页面据此决定是否重新取问题组 |
 
-组摘要：`e`（首条证据）、`sev`（原生级别，测试台为 INFO）、`key`（原生编号；无编号消息为“级别:数字掩码后的正文”；工具记录为 premature_termination、line_size_limit；测试台为 TB:…）、`n`（已打印次数）、`sup`（之后被逐码抑制）、`t`、`pct`（首条消息头行给出的仿真时间）、`msg`（摘要，status 里最长 120 字，show 里 160 字）。
+组摘要：`e`（首条证据）、`sev`（原生级别，测试台为 INFO）、`key`（原生编号；无编号消息为“级别:数字掩码后的正文”；工具记录为 premature_termination、line_size_limit；测试台为 TB:…，其中 Spectre 头行块外未编号的 `ERROR:` 等行为 `TB:reported_ERROR` 等，级别为 INFO，不计为 Spectre 错误）、`n`（已打印次数）、`sup`（之后被逐码抑制）、`t`、`pct`（首条消息头行给出的仿真时间）、`msg`（摘要，status 里最长 120 字，show 里 160 字）。
 
 `cursor` 形如 `3795.654c760c1427`：最新证据 ID 加状态摘要。把它传给 `wait`，两次调用之间的变化不会丢。
 
@@ -41,7 +42,7 @@ CLI 默认输出文本；`--json` 和 HTTP 输出同样内容的 JSON，都带 `
 
 ## evidence（GET /api/evidence?id=eNNN）
 
-`e`、`run`、`gen`、`path`、`line`、`off`（字节偏移）、`sev`、`key`、`t`、`pct`、测试台字段（`frame`、`code`、`valid`、`issue`）、`limitation`、`group`（`n`、`sup`、`first`、`last`）、`seen`（首次被采集的时刻）、`header`（头行 `line`、`raw`）、`raw`、`cont`（续行，最多 20 行；`cont_more` 表示还有）、`suppression`（紧随其后的逐码抑制行）。原文是入库时保存的那一份，不会因源日志轮换变成另一代。
+`e`、`run`、`gen`（代次，大于 1 或不是当前代次时给出）、`latest_gen`（证据来自旧代次时给出当前代次）、`replaced`（此后源文件被替换：`path`:`line` 指向的是旧内容；同一文件中追加的先前尝试没有这个键，行号仍有效）、`path`、`line`、`off`（字节偏移）、`sev`、`key`、`t`、`pct`、测试台字段（`frame`、`code`、`valid`、`issue`）、`limitation`、`group`（`n`、`sup`、`first`、`last`）、`seen`（首次被采集的时刻）、`header`（头行 `line`、`raw`）、`raw`、`cont`（续行，最多 20 行；`cont_more` 表示还有）、`suppression`（紧随其后的逐码抑制行）。原文是入库时保存的那一份，不会因源日志轮换变成另一代。
 
 ## wait
 
@@ -63,7 +64,7 @@ CLI 默认输出文本；`--json` 和 HTTP 输出同样内容的 JSON，都带 `
 
 ## details（GET /api/details?run=ID）
 
-`status`、`log`、`indexed`、`size`（字节）、`spectre`（版本）、`stops`（分析名到结束时间）、`footer`（errors、warnings、notices）、`suppressed`（原生汇总，不能分摊到编号）、`coverage`、`pending_line`、`checks`（state、log_status、raw 的观察结果）、`settings`（`name`、`req`、`eff`、`def`、`diff`）。
+`status`、`log`、`indexed`、`size`（字节）、`spectre`（版本）、`stops`（有结束时间的瞬态分析：分析名到结束时间）、`footer`（errors、warnings、notices）、`suppressed`（原生汇总，不能分摊到编号）、`coverage`、`pending_line`、`checks`（state、log_status、raw 的观察结果）、`settings`（`name`、`req`、`eff`、`def`、`diff`）。
 
 ## 另存（GET /api/export?run=ID&format=html|json）
 

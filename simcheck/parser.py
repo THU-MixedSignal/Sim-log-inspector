@@ -17,8 +17,17 @@ HEADER = re.compile(r'^(Warning|Notice|Error|Fatal error) (?:from|found by) spec
 HEADER_SEVERITY = {'Warning': 'WARNING', 'Notice': 'NOTICE', 'Error': 'ERROR', 'Fatal error': 'FATAL'}
 AT_TIME = re.compile(r'\bat time = (' + NUMBER + r')\s*([fpnuµmkMG]?s)\b')
 ANY_TIME = re.compile(r'\btime\s*=\s*(' + NUMBER + r')\s*([fpnuµmkMG]?s)\b')
-ANALYSIS = re.compile(r"(?:Transient Analysis|during (?:transient )?analysis)\s+[`']([^'`]+)['`]")
+# One banner starts each analysis: "Transient Analysis `tran': time = (0 s -> 20 ns)",
+# "DC Analysis `dc1': vcm = (1e-03 -> 809e-03)", "AC Analysis `ac1': freq = (1 MHz -> 2 MHz)",
+# "Monte Carlo Analysis `mc1': iteration = (1 -> 4)", "DC Analysis `op'".
+BANNER = re.compile(r"^([A-Z][A-Za-z]*(?: [A-Z][A-Za-z]*)?) Analysis [`']([^'`]+)['`]")
+# Headers name the innermost analysis first:
+# "during AC analysis `ac1', during Monte Carlo analysis `mc1'", "during IC analysis, during transient analysis `tran'".
+DURING = re.compile(r"\bduring (?:[A-Za-z]+ ){0,2}analysis [`']([^'`]+)['`]")
 TRAN_START = re.compile(r"^Transient Analysis [`']([^'`]+)['`]: time = \((.+?) -> (.+?)\)")
+# Spectre's progress meter: 70 cells, a digit after every six dots. Each line it prints
+# repeats the whole meter so far from column 0, often with testbench output after it.
+METER = '......9......8......7......6......5......4......3......2......1......0'
 TAG = re.compile(r'^\s*(WARNING|ERROR|FATAL|NOTICE)(?:\s*\(([^)]+)\))?\s*:\s*(.*)$')
 SUPPRESSED_TOTAL = re.compile(r'^\s*(\d+)\s+(warning|notice|error)s?\s+suppressed\b', re.I)
 FOOTER = re.compile(r'spectre completes with (\d+) errors?, (\d+) warnings?, and (\d+) notices?')
@@ -65,13 +74,30 @@ def initial():
     return {'analysis': None, 'analyses': {}, 'last_time_s': None, 'scope': 'requested',
             'native_errors': 0, 'fatal_seen': False, 'footer': None,
             'suppression_seen': False, 'suppressed_totals': {},
-            'settings': {}, 'version': None, 'frames': 0, 'last_frame': None,
-            'banner_seen': False, 'block': None, 'message': None}
+            'settings': {}, 'version': None, 'frames': 0, 'last_frame': None, 'last_code': None,
+            'meter': None, 'banner_seen': False, 'block': None, 'message': None}
 
 
 def stop_time(state):
     info = state['analyses'].get(state['analysis']) or {}
     return info.get('stop_time_s')
+
+
+def meter_cells(text):
+    """Length of the progress meter at the start of a line; 0 when the line has none."""
+    n = 0
+    for got, want in zip(text, METER):
+        if got != want:
+            break
+        n += 1
+    return n
+
+
+def read_meter(text, state):
+    """Keep the furthest meter of the current analysis. Also used on a last line that
+    Spectre has not finished: the meter grows there for hours, and nothing is indexed."""
+    if state['meter'] is not None and text[:1] == '.':
+        state['meter'] = max(state['meter'], meter_cells(text))
 
 
 def parse(line, state, line_no):
@@ -110,25 +136,29 @@ def parse(line, state, line_no):
     if version and ('spectre' in text.lower() or 'isr' in version[1]):
         state['version'] = version[1]
         emit('execution', 'version', version=version[1])
-    analysis = ANALYSIS.search(text)
-    if analysis:
-        state['analysis'] = analysis[1]
+    banner = BANNER.match(text)
+    during = None if banner else DURING.search(text)
+    if banner or during:
+        state['analysis'] = banner[2] if banner else during[1]
     logged = ANY_TIME.search(text)
-    if logged:
+    kind = (state['analyses'].get(state['analysis']) or {}).get('kind')
+    # "Accumulated DC solution time = 0 s" in a DC or AC analysis is not simulation time.
+    if logged and kind in (None, 'Transient'):
         observed_time = seconds(logged[1] + logged[2])
         if observed_time is not None:
             # Diagnostic summaries can say "accumulated from time = 0 s"
             # after a transient failure. Keep the furthest logged progress.
             previous = state['last_time_s']
             state['last_time_s'] = observed_time if previous is None else max(previous, observed_time)
-    if 'Transient Analysis' in text:
+    if banner:
         start = TRAN_START.match(text)
         stop = seconds(start[3]) if start else None
-        if start:
-            state['analyses'][start[1]] = {'stop_time_s': stop, 'line': line_no}
+        state['analyses'][banner[2]] = {'kind': banner[1], 'stop_time_s': stop, 'line': line_no}
         state['scope'] = 'effective'
         state['last_time_s'] = None
-        emit('settings_progress', 'analysis_start', stop_time_s=stop)
+        state['meter'] = 0
+        emit('settings_progress', 'analysis_start', stop_time_s=stop, analysis_type=banner[1])
+    read_meter(text, state)
     if 'Important parameter values:' in text:
         state['scope'] = 'effective'
     setting = SETTING.match(text)
@@ -162,9 +192,17 @@ def parse(line, state, line_no):
         emit('data_resources', 'suppression', 'NOTICE',
              related_message_line=last['line'] if last else None,
              problem_key=last['key'] if last else None)
-    elif tag:
+    elif tag and (tag[2] or (indented and state['block'] is not None)):
+        # Spectre's own: coded anywhere, uncoded only indented under its header line.
         severity, code, body = tag.groups()
         message(severity, code, body, 'tag')
+    elif tag and not (indented and state['message'] is not None):
+        # "ERROR: ..." outside any Spectre block was printed by something else, such as a
+        # testbench. It stays evidence under its own word but is not a Spectre error.
+        state['block'] = None
+        state['message'] = None
+        emit('testbench', 'raw_record', problem_key='TB:reported_' + tag[1],
+             limitation='uncoded tag outside a Spectre message block; not counted as a Spectre message')
     elif indented and state['message'] is not None and not setting:
         emit('diagnostics', 'message_continuation', related_message_line=state['message']['line'])
     elif indented and state['block'] is not None and not setting:
@@ -191,6 +229,7 @@ def parse(line, state, line_no):
                 fields.update(frame=int(values[0]), code_value=int(values[1]),
                               reported_valid=int(values[7]))
                 state['last_frame'] = fields['frame']
+                state['last_code'] = fields['code_value']
                 state['frames'] += 1
             except ValueError:
                 fields['parse_issue'] = 'non_integer_frame_or_code_or_valid'

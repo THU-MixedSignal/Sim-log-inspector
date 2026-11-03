@@ -1,5 +1,29 @@
 # Implementation log
 
+## 2026-11-03 — Native-review follow-ups: meter, frames, tags, generations, phases
+
+The user asked me to commit the live campaign work first, then fix the five issues its review found. Read README.md, plan/v1.md and the collector design notes first. The pending work was committed on branch `live-spectre-fixes`, not pushed:
+- 6a81db9: run close/save, export and compact rows;
+- 0070c84: native fixtures and the five live fixes.
+
+The five fixes, with their native evidence:
+- **Progress meter.** Spectre's 70-cell progress meter is read as the longest exact prefix within the current analysis. It resets at each analysis banner. It is also read from an unfinished last line, which is not indexed. It is reported as `meter` when it is ahead of the logged time. In native adc-a-tt the meter is the only progress after the transient starts (31/50/70 cells). In the noise run it is never more than 0.76 points ahead of the testbench frame time.
+- **Frame counts.** `frames.n` counts only parsed R4MEAS frames; the other testbench lines are counted as `other`. Native tb-records is now 3+3, not 6. The dashboard's measurement count and reload check use n+other.
+- **Uncoded tags.** An uncoded tag is native only when it is indented inside a Spectre header block; coded tags are native anywhere. Outside a block it becomes `TB:reported_<word>`, keeping its raw text and line. The 4 native uncoded FATAL lines all sit inside blocks.
+- **Older-generation evidence.** It carries `latest_gen`. The cursor's `file_generation` separates an appended attempt (path:line still valid) from a replaced file (`replaced`; path:line refers to the earlier content). A cursor written before this field existed counts as replaced.
+- **Analysis phases.** Analyses are named from banners (Transient, DC, AC, Monte Carlo) and from the first `during … analysis` clause in headers. Within known DC/AC/MC analyses, "time =" solver statistics no longer set the simulation time. details only lists stops for transient analyses.
+
+Store compatibility: old cursors get the newly added parser state keys filled with defaults. Schema 3 is unchanged. API 4 only gains keys, apart from the meaning of `frames.n`.
+
+Validation:
+- 100 unittest pass; node --check and git diff --check pass.
+- Old and new parser emit identical events on all 22 real repository logs.
+- A read-only aggregate over 210 local native DC/AC/MC logs: footer agreement 210/210; native error counts unchanged; 0 uncoded tags outside blocks; 821 problem events moved from setup to their analysis.
+- A live-collector demo in `.runtime/followups-20261103/` checked CLI, HTTP and wait: a log replacement woke wait with exit 0, and the old evidence was marked.
+- Dashboard checked at 1280×820 and 375×812. Fixed the timeline SVG `hidden` property, which never applied.
+
+I tried to import three sanitized native DC/AC/Monte Carlo logs from another local project as fixtures. The permission check refused, because the user had not named that source and destination. Nothing was copied; the tests use hand-written minimal lines and the import awaits the user's decision. No simulation actions and no source-log edits. Committed on `live-spectre-fixes` at the user's request; not pushed.
+
 ## 2026-11-03 — User-authorized native Spectre campaign
 
 Prepared16 isolated managed cases under the ADC project's separate scoped plan;

@@ -169,7 +169,9 @@ def stream_of(event):
 
 
 def _empty_cursor(path):
-    return {'path': str(path), 'inode': None, 'generation': 0, 'offset': 0, 'line': 0,
+    # file_generation: the generation that began reading the current file content;
+    # later generations of the same file are attempts appended to it.
+    return {'path': str(path), 'inode': None, 'generation': 0, 'file_generation': 0, 'offset': 0, 'line': 0,
             'prefix_len': 0, 'prefix_hash': '', 'anchor_hash': '', 'parser': parser.initial(),
             'dropping': False, 'limited': False}
 
@@ -191,7 +193,8 @@ def _new_generation(cur, source, st, f):
     f.seek(0)
     prefix = f.read(min(st.st_size, 4096))
     fresh = _empty_cursor(source)
-    fresh.update(inode=st.st_ino, generation=(cur['generation'] + 1 if cur else 1),
+    generation = cur['generation'] + 1 if cur else 1
+    fresh.update(inode=st.st_ino, generation=generation, file_generation=generation,
                  prefix_len=len(prefix), prefix_hash=hashlib.sha256(prefix).hexdigest(),
                  anchor_hash=hashlib.sha256(b'').hexdigest())
     return fresh
@@ -223,6 +226,7 @@ def _read(db, f, cur, config, final, now):
             continue
         oversized = len(chunk) > MAX_LINE
         if not chunk.endswith(b'\n') and not oversized and not final:
+            parser.read_meter(chunk[:len(parser.METER)].decode('ascii', 'replace'), cur['parser'])
             return True
         used += len(chunk)
         cur['offset'] = f.tell()
@@ -252,6 +256,9 @@ def scan(db, config, final=False):
     db.execute('BEGIN IMMEDIATE')
     row = db.execute('SELECT cursor FROM runs WHERE id=?', (config['id'],)).fetchone()
     cur = json.loads(row['cursor']) if row else None
+    if cur:
+        # Parser state keys added after this cursor was written start at their defaults.
+        cur['parser'] = {**parser.initial(), **cur['parser']}
     source = Path(config['log'])
     try:
         st = source.stat()
@@ -463,7 +470,6 @@ def _run_state(db, row, now):
         last_problem = max(last_problem, r['last'])
     records = db.execute("SELECT count(*) FROM events WHERE run_id=? AND generation=? AND category='testbench'",
                          (row['id'], gen)).fetchone()[0]
-    latest = measurements(db, row['id'], generation=gen, tail=1)
     last_event = db.execute('SELECT max(id) FROM events WHERE run_id=? AND generation=?',
                             (row['id'], gen)).fetchone()[0] or 0
     ended = status in ENDED or integrity.get('native_status', 'unknown') != 'unknown'
@@ -496,6 +502,7 @@ def _run_state(db, row, now):
         'state': {'status': status, 'ended': ended, 'analysis': analysis,
                   'last_logged_time_s': last_time, 'stop_time_s': stop,
                   'progress_at_least': last_time / stop if last_time is not None and stop else None,
+                  'meter_cells': p.get('meter'),
                   'observed_epoch': stored.get('observed_epoch'), 'source_mtime_epoch': mtime,
                   'quiet_for_s': quiet_for, 'quiet_after_s': quiet_after,
                   'backlog': bool(stored.get('backlog')),
@@ -509,7 +516,9 @@ def _run_state(db, row, now):
         'groups': groups,
         'rule_hits': hits,
         'baseline': None,
-        'measurements': {'records': records, 'latest': latest[0] if latest else None},
+        # records: every testbench line; frames: R4MEAS records the parser could read.
+        'measurements': {'records': records, 'frames': p.get('frames', 0), 'last_frame': p.get('last_frame'),
+                         'last_code': p.get('last_code')},
         'coverage': {'suppression_seen': p.get('suppression_seen', False),
                      'suppressed_totals': p.get('suppressed_totals', {}), 'limitations': limitations},
         'last_event_id': last_event}
@@ -587,9 +596,16 @@ def collector_brief(c):
 
 def _progress(state):
     # How far the simulation got matters until it finished normally; then the footer says enough.
-    if state['status'] == 'complete' or state['last_logged_time_s'] is None:
+    if state['status'] == 'complete':
         return {}
-    return {'t': sig(state['last_logged_time_s']), 'pct': pct(state['progress_at_least'])}
+    share = pct(state['progress_at_least'])
+    cells = state['meter_cells']
+    meter = round(100 * cells / len(parser.METER), 1) if cells else None
+    out = {'t': sig(state['last_logged_time_s']), 'pct': share}
+    # Between messages Spectre's meter runs ahead of the last logged time; give it when it says more.
+    if meter is not None and (share is None or meter > share):
+        out['meter'] = meter
+    return out
 
 
 def _rules(hits):
@@ -623,11 +639,11 @@ def _digest_run(run):
     st = run['state']
     errors = sorted((g for g in run['groups'] if g['severity'] in ('FATAL', 'ERROR')),
                     key=lambda g: g['first_evidence_id'])
+    m = run['measurements']
     frames = None
-    if run['measurements']['records']:
-        latest = run['measurements']['latest'] or {}
-        frames = _compact({'n': run['measurements']['records'], 'frame': latest.get('frame'),
-                           'code': latest.get('code')})
+    if m['records']:
+        frames = _compact({'n': m['frames'], 'other': max(0, m['records'] - m['frames']) or None,
+                           'frame': m['last_frame'], 'code': m['last_code']})
     base = None
     if run['baseline']:
         new = [k['problem_key'] for k in run['baseline']['keys_not_in_baseline'] if k['severity'] != 'NOTICE']
@@ -757,6 +773,13 @@ def evidence(db, event_id):
         return None
     event = json.loads(row['payload'])
     run, gen = event['run_id'], event['generation']
+    current = db.execute('SELECT cursor FROM runs WHERE id=?', (run,)).fetchone()
+    current = json.loads(current[0]) if current else {}
+    latest = current.get('generation', gen)
+    # A later generation either appended an attempt to the same file (path:line still holds)
+    # or replaced the file, so path:line now points into other content. Cursors written
+    # before file_generation existed cannot tell the two apart: treat them as replaced.
+    replaced = gen < latest and gen < current.get('file_generation', latest)
     # Continuation and suppression lines directly follow their message in the same block.
     scope = (run, gen, row['id'], row['id'] + 200)
     related = ("SELECT line, payload FROM events WHERE run_id=? AND generation=? AND id>? AND id<=?"
@@ -774,7 +797,8 @@ def evidence(db, event_id):
         group = _compact({'n': g['n'], 'sup': later is not None, 'first': g['first'], 'last': g['last']})
     t, stop = event.get('sim_time_s'), event.get('analysis_stop_s')
     out = _compact({
-        'v': API, 'e': row['id'], 'run': run, 'gen': gen if gen > 1 else None,
+        'v': API, 'e': row['id'], 'run': run, 'gen': gen if gen > 1 or gen < latest else None,
+        'latest_gen': latest if gen < latest else None, 'replaced': replaced,
         'path': event['source_path'], 'line': event['line'], 'off': event['byte_offset'],
         'sev': row['severity'] if row['stream'] == 'problem' else None, 'key': row['problem_key'],
         't': sig(t), 'pct': pct(t / stop) if t is not None and stop else None,
@@ -848,7 +872,8 @@ def details(db, run):
         'v': API, 'run': run, 'status': integrity.get('status'), 'log': stored.get('source_path'),
         'indexed': stored.get('indexed_bytes'), 'size': stored.get('source_bytes'),
         'spectre': p.get('version'),
-        'stops': {name: sig(a.get('stop_time_s')) for name, a in p.get('analyses', {}).items()},
+        'stops': {name: sig(a['stop_time_s']) for name, a in p.get('analyses', {}).items()
+                  if a.get('stop_time_s') is not None},
         'footer': p.get('footer'), 'suppressed': p.get('suppressed_totals'),
         'coverage': integrity.get('coverage_limited'), 'pending_line': integrity.get('pending_partial_line'),
         'checks': checks, 'settings': _settings(p.get('settings', {}))})

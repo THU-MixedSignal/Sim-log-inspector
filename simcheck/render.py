@@ -102,13 +102,18 @@ def state_text(r):
 
 
 def progress_text(r):
+    """'tran t>=1.14929ns/820ns (0.140%)', 'tran meter 71% of 359ns', or both."""
     if not r.get('analysis'):
         return ''
-    if r.get('t') is None:
-        return r['analysis']
-    stop = f"/{sim(r['stop'])}" if r.get('stop') else ''
-    share = f" ({pct(r['pct'])})" if r.get('pct') is not None else ''
-    return f"{r['analysis']} t>={sim(r['t'])}{stop}{share}"
+    parts = [r['analysis']]
+    if r.get('t') is not None:
+        stop = f"/{sim(r['stop'])}" if r.get('stop') else ''
+        share = f" ({pct(r['pct'])})" if r.get('pct') is not None else ''
+        parts.append(f"t>={sim(r['t'])}{stop}{share}")
+    if r.get('meter') is not None:
+        of = f" of {sim(r['stop'])}" if r.get('stop') and r.get('t') is None else ''
+        parts.append(f"meter {r['meter']:.0f}%{of}")
+    return ' '.join(parts)
 
 
 def group_line(g, baseline=None):
@@ -163,7 +168,8 @@ def status(d):
         f = r.get('frames')
         if f:
             latest = f" last {f['frame']} code {f.get('code', '-')}" if 'frame' in f and not r.get('ended') else ''
-            parts.append(f"frames {f['n']}{latest}")
+            other = f" (+{f['other']} other TB line{'s' if f['other'] > 1 else ''})" if f.get('other') else ''
+            parts.append(f"frames {f['n']}{latest}{other}")
         if r.get('log_age') is not None and 'quiet' not in r.get('flags', []):
             parts.append(f"log {age(r['log_age'])} ago")
         lines.append(' | '.join(p for p in parts if p))
@@ -194,7 +200,13 @@ def evidence(d):
     g = d.get('group')
     if g and (g['n'] > 1 or g.get('sup')):
         head.append(f"| group x{g['n']}{suppressed(g)}, first e{g['first']}, last e{g['last']}")
-    lines = [join(*head), f"{d['path']}:{d['line']}"]
+    where = f"{d['path']}:{d['line']}"
+    if d.get('replaced'):
+        where += (f" (generation {d['gen']}; the log was replaced since, now generation {d['latest_gen']}:"
+                  ' this line number refers to the earlier file)')
+    elif d.get('latest_gen'):
+        where += f" (earlier attempt, generation {d['gen']}; now {d['latest_gen']})"
+    lines = [join(*head), where]
     if d.get('header'):
         lines.append(f"  {d['header']['line']} {clip(d['header']['raw'])}")
     lines.append(f"> {d['line']} {clip(d['raw'])}")

@@ -231,7 +231,8 @@ class Boundaries(unittest.TestCase):
         self.assertEqual(r['integrity']['status'], 'failed')
 
     def test_fatal_exit_zero(self):
-        self.write('FATAL: Internal error\n' + FOOT)
+        # Native layout: the uncoded FATAL is indented under Spectre's own header line.
+        self.write('Fatal error found by spectre during topology check.\n    FATAL: Internal error\n' + FOOT)
         state = self.p / 'state'
         state.write_text('{"status":"limit_exceeded","exit_code":0,"reason":"output_size_limit"}')
         self.c['state'] = str(state)
