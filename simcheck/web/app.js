@@ -1,5 +1,5 @@
 'use strict';
-// Spectre 运行监视: only what is needed to decide whether a run needs attention.
+// Spectre Log Inspector: only what is needed to decide whether a run needs attention.
 // Log-derived text is always inserted with textContent, never parsed as HTML.
 (() => {
   const API = 4;
@@ -8,16 +8,16 @@
   const $ = (id) => document.getElementById(id);
 
   const STATUS = {
-    complete: '已结束', failed: '失败', unknown: '状态未知', incomplete: '证据不完整',
-    running: '运行中', indexing: '索引中', queued: '排队中', starting: '启动中',
-    submitted: '已提交', waiting: '等待中',
+    complete: 'Complete', failed: 'Failed', unknown: 'Unknown', incomplete: 'Incomplete evidence',
+    running: 'Running', indexing: 'Indexing', queued: 'Queued', starting: 'Starting',
+    submitted: 'Submitted', waiting: 'Waiting',
   };
   const SEV = {
-    FATAL: { glyph: '■', name: '致命', cls: 'critical' },
-    ERROR: { glyph: '■', name: '错误', cls: 'critical' },
-    WARNING: { glyph: '▲', name: '警告', cls: 'warning' },
-    NOTICE: { glyph: '●', name: '提示', cls: 'notice' },
-    INFO: { glyph: '◆', name: '测试台', cls: 'info' },
+    FATAL: { glyph: '■', name: 'Fatal', cls: 'critical' },
+    ERROR: { glyph: '■', name: 'Error', cls: 'critical' },
+    WARNING: { glyph: '▲', name: 'Warning', cls: 'warning' },
+    NOTICE: { glyph: '●', name: 'Notice', cls: 'notice' },
+    INFO: { glyph: '◆', name: 'Testbench', cls: 'info' },
   };
   const COUNTS = [['E', 'ERROR'], ['W', 'WARNING'], ['T', 'INFO'], ['N', 'NOTICE']];
   const LEVEL_RANK = { critical: 0, warning: 1, new: 2, none: 3 };
@@ -74,10 +74,10 @@
   function fmtAge(seconds) {
     if (!has(seconds)) return '—';
     const s = Math.max(0, seconds);
-    if (s < 90) return `${Math.round(s)} 秒`;
-    if (s < 5400) return `${Math.round(s / 60)} 分钟`;
-    if (s < 172800) return `${(s / 3600).toFixed(1)} 小时`;
-    return `${Math.round(s / 86400)} 天`;
+    if (s < 90) return `${Math.round(s)} s`;
+    if (s < 5400) return `${Math.round(s / 60)} min`;
+    if (s < 172800) return `${(s / 3600).toFixed(1)} h`;
+    return `${Math.round(s / 86400)} d`;
   }
   function bytes(n) {
     if (!has(n)) return '—';
@@ -85,7 +85,7 @@
     if (n < 1048576) return `${(n / 1024).toFixed(1)} KiB`;
     return `${(n / 1048576).toFixed(1)} MiB`;
   }
-  function clockTime(epoch) { return new Date(epoch * 1000).toLocaleTimeString('zh-CN', { hour12: false }); }
+  function clockTime(epoch) { return new Date(epoch * 1000).toLocaleTimeString('en-US', { hour12: false }); }
   function clamp(f) { return has(f) ? Math.min(1, Math.max(0, f)) : null; }
   function clip(text, n) { return text.length > n ? `${text.slice(0, n - 1)}…` : text; }
   function gkey(g) { return `${g.key}|${g.sev}`; }
@@ -126,9 +126,9 @@
 
   // ---------------------------------------------------------------- data flow
   function newText(g) {
-    const rules = g.rules ? `，命中规则「${g.rules.join('、')}」` : '';
-    const when = has(g.t) ? `，首次 ${fmtTime(g.t)}` : '';
-    return `新问题 ${clip(label(g), 60)}（${g.sev}）${rules}${when}`;
+    const rules = g.rules ? `, rule hit: ${g.rules.join(', ')}` : '';
+    const when = has(g.t) ? `, first at ${fmtTime(g.t)}` : '';
+    return `New problem ${clip(label(g), 60)} (${g.sev})${rules}${when}`;
   }
   async function syncShows(runs) {
     const events = [];
@@ -148,7 +148,7 @@
           if (g.sev !== 'NOTICE' || g.rules) events.push({ run: run.run, text: newText(g) });
         } else {
           for (const rule of (g.rules || []).filter((r) => !(old.rules || []).includes(r))) {
-            events.push({ run: run.run, text: `命中规则「${rule}」：${clip(label(g), 60)}` });
+            events.push({ run: run.run, text: `Rule hit "${rule}": ${clip(label(g), 60)}` });
           }
         }
       }
@@ -160,19 +160,19 @@
       const prev = ui.previous.get(run.run);
       if (prev) {
         if (prev.state !== run.state && ['failed', 'complete', 'incomplete'].includes(run.state)) {
-          events.unshift({ run: run.run, text: `状态变为「${STATUS[run.state] || run.state}」` });
+          events.unshift({ run: run.run, text: `Status changed to ${STATUS[run.state] || run.state}` });
         }
         const before = prev.flags || [];
         for (const flag of run.flags || []) {
           if (before.includes(flag)) continue;
-          if (flag === 'quiet') events.push({ run: run.run, text: `日志 ${fmtAge(run.log_age)}未更新` });
-          if (flag === 'collector_error') events.push({ run: run.run, text: '采集出错' });
-          if (flag === 'source_error') events.push({ run: run.run, text: '日志读取失败' });
+          if (flag === 'quiet') events.push({ run: run.run, text: `Log unchanged for ${fmtAge(run.log_age)}` });
+          if (flag === 'collector_error') events.push({ run: run.run, text: 'Collector error' });
+          if (flag === 'source_error') events.push({ run: run.run, text: 'Log read failed' });
         }
       }
       ui.previous.set(run.run, run);
     }
-    if (ui.collectorLive === true && !data.collector.live) events.push({ run: null, text: '采集器停止心跳' });
+    if (ui.collectorLive === true && !data.collector.live) events.push({ run: null, text: 'Collector heartbeat stopped' });
     ui.collectorLive = data.collector.live;
     // One notification per run per refresh: a failure usually arrives as several lines at once.
     const byRun = new Map();
@@ -180,8 +180,8 @@
       if (!byRun.has(e.run)) byRun.set(e.run, []);
       byRun.get(e.run).push(e.text);
     }
-    for (const [run, texts] of byRun) notify(run ? `Spectre ${run}` : 'Spectre 运行监视', texts.join('；'));
-    if (events.length) announce(events.map((e) => (e.run ? `${e.run}：` : '') + e.text).join('；'));
+    for (const [run, texts] of byRun) notify(run ? `Spectre ${run}` : 'Spectre Log Inspector', texts.join('; '));
+    if (events.length) announce(events.map((e) => (e.run ? `${e.run}: ` : '') + e.text).join('; '));
   }
   function notify(title, body) {
     if (!ui.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
@@ -192,14 +192,14 @@
     ui.busy = true;
     try {
       const data = await api('/api/status');
-      if (data.v !== API) throw new Error(`查看器接口版本 ${data.v} 与页面 ${API} 不同，请重启 simcheck。`);
+      if (data.v !== API) throw new Error(`Viewer API version ${data.v} differs from page version ${API}. Restart simcheck.`);
       ui.data = data;
       ui.error = null;
       detectChanges(data, await syncShows(data.runs));
       render();
       await refreshPanel();
     } catch (e) {
-      ui.error = e instanceof TypeError ? '连接不到查看器进程。' : e.message;
+      ui.error = e instanceof TypeError ? 'Cannot connect to the viewer.' : e.message;
       renderTopline();
     } finally {
       ui.busy = false;
@@ -216,9 +216,10 @@
     const banner = $('banner');
     banner.hidden = true;
     banner.className = 'banner';
+    box.classList.remove('offline');
     box.removeAttribute('title');
     if (ui.error) {
-      box.replaceChildren(glyph('ERROR'), document.createTextNode(' 无法读取数据'));
+      box.replaceChildren(glyph('ERROR'), document.createTextNode(' Unable to read data'));
       banner.textContent = ui.error;
       banner.classList.add('critical');
       banner.hidden = false;
@@ -227,16 +228,17 @@
     if (!ui.data) return;
     const c = ui.data.collector;
     if (c.live) {
-      box.replaceChildren(el('span', 'dot', '●'), document.createTextNode('采集中'));
-      box.title = `心跳 ${fmtAge(c.hb)}前，版本 ${c.version}，PID ${c.pid}`;
+      box.replaceChildren(el('span', 'dot', '●'), document.createTextNode('Collecting'));
+      box.title = `Heartbeat ${fmtAge(c.hb)} ago, version ${c.version}, PID ${c.pid}`;
       if (c.version && c.version !== ui.data.version) {
-        banner.textContent = `采集进程版本 ${c.version} 与查看器 ${ui.data.version} 不同`;
+        banner.textContent = `Collector version ${c.version} differs from viewer version ${ui.data.version}`;
         banner.hidden = false;
       }
     } else {
-      box.replaceChildren(glyph('WARNING'), document.createTextNode(has(c.hb) ? ` 采集器离线 ${fmtAge(c.hb)}` : ' 没有采集进程'));
-      banner.textContent = has(c.hb) ? `采集器离线，数据停在 ${clockTime(Date.now() / 1000 - c.hb)}` : '没有采集进程，数据不会更新';
-      banner.hidden = false;
+      box.classList.add('offline');
+      box.replaceChildren(glyph('WARNING'), document.createTextNode(has(c.hb)
+        ? ' Collector offline · data not updating' : ' No collector · data not updating'));
+      if (has(c.hb)) box.title = `Last heartbeat ${clockTime(Date.now() / 1000 - c.hb)}`;
     }
   }
 
@@ -248,19 +250,13 @@
     return newGroups(run).length ? 'new' : 'none';
   }
   function stateText(run) {
-    const f = run.flags || [];
-    if (f.includes('failed')) return STATUS.failed;
-    if (f.includes('rule')) return '命中规则';
-    if (f.includes('quiet')) return `日志 ${fmtAge(run.log_age)}未更新`;
-    if (f.includes('collector_error')) return '采集出错';
-    if (f.includes('source_error')) return '日志读取失败';
     return STATUS[run.state] || run.state;
   }
-  function countItems(run, named) {
+  function countItems(run) {
     const n = run.n || {};
     return COUNTS.filter(([letter]) => n[letter]).map(([letter, sev]) => {
       const span = el('span', 'count');
-      span.append(glyph(sev), el('span', named ? 'name' : 'sr-only', sevOf(sev).name), document.createTextNode(String(n[letter])));
+      span.append(glyph(sev), el('span', 'sr-only', sevOf(sev).name), document.createTextNode(String(n[letter])));
       return span;
     });
   }
@@ -273,24 +269,26 @@
     const name = el('span', 'run-name');
     const side = el('span', 'run-side');
     const counts = el('span', 'run-counts');
-    const meta = el('span', 'run-meta');
     const mini = svg('svg', { 'aria-hidden': 'true', focusable: 'false' }, 'mini');
-    button.append(name, side, counts, meta, mini);
+    button.append(name, side, counts, mini);
     button.addEventListener('click', () => select(id));
     li.append(button);
-    row = { li, button, name, side, counts, meta, mini };
+    row = { li, button, name, side, counts, mini };
     ui.rows.set(id, row);
     return row;
   }
   function updateRow(row, run, lvl) {
     row.button.className = `run-row level-${lvl}`;
+    row.button.dataset.state = run.state;
     row.button.setAttribute('aria-current', run.run === ui.selected ? 'true' : 'false');
+    const reasons = { failed: 'Failed', rule: 'Rule hit', quiet: 'Log unchanged',
+      collector_error: 'Collector error', source_error: 'Log read failed' };
+    row.button.title = (run.flags || []).map((f) => reasons[f] || f).join(', ');
     const fresh = newGroups(run).length;
     row.name.replaceChildren(document.createTextNode(run.run));
-    if (fresh) row.name.append(el('span', 'badge-new', `新 ${fresh}`));
+    if (fresh) row.name.append(el('span', 'badge-new', `${fresh} new`));
     row.side.textContent = stateText(run);
-    row.counts.replaceChildren(...countItems(run, false));
-    row.meta.textContent = run.ended ? '' : has(run.pct) ? fmtPct(run.pct) : has(run.log_age) ? `${fmtAge(run.log_age)}前` : '';
+    row.counts.replaceChildren(...countItems(run));
   }
   function railOrder(runs) {
     // Running runs first within a level: stopping those is what saves simulation time.
@@ -303,14 +301,26 @@
     const active = document.activeElement;
     const list = $('runs');
     const ordered = railOrder(runs);
+    const picker = $('run-select');
+    const options = new Map([...picker.options].map((o) => [o.value, o]));
     ordered.forEach(({ r, lvl }, i) => {
       const row = rowFor(r.run);
       updateRow(row, r, lvl);
       if (list.children[i] !== row.li) list.insertBefore(row.li, list.children[i] || null);
+      const option = options.get(r.run) || el('option');
+      option.value = r.run;
+      const text = `${r.run} — ${stateText(r)}`;
+      if (option.textContent !== text) option.textContent = text;
+      if (picker.children[i] !== option) picker.insertBefore(option, picker.children[i] || null);
     });
     for (const id of [...ui.rows.keys()]) {
       if (!runs.some((r) => r.run === id)) { ui.rows.get(id).li.remove(); ui.rows.delete(id); }
     }
+    for (const option of [...picker.options]) {
+      if (!runs.some((r) => r.run === option.value)) option.remove();
+    }
+    if (picker.value !== ui.selected) picker.value = ui.selected || '';
+    picker.disabled = !runs.length;
     for (const { r } of ordered) drawTimeline(ui.rows.get(r.run).mini, r, true);
     if (active && document.contains(active) && document.activeElement !== active) active.focus({ preventScroll: true });
   }
@@ -327,7 +337,7 @@
     const cache = ui.shows.get(run.run);
     const groups = cache ? cache.data.groups : [];
     const width = Math.max(target.clientWidth || 0, mini ? 120 : 320);
-    const height = mini ? 12 : 60;
+    const height = mini ? 8 : 52;
     // Redraw only when something drawn changed; rebuilding on every poll would drop keyboard focus.
     const sig = JSON.stringify([width, run.state, run.stop, run.pct, run.ended, run.analysis, cache ? cache.sig : null]);
     if (target.dataset.sig === sig) return;
@@ -339,7 +349,7 @@
       const pad = mini ? 4 : 10;
       const x0 = pad;
       const span = width - 2 * pad;
-      const trackY = mini ? 5 : 32;
+      const trackY = mini ? 2 : 24;
       const trackH = mini ? 3 : 6;
       const ended = run.ended ? ' ended' : '';
       if (!mini) {
@@ -383,7 +393,7 @@
           group.setAttribute('tabindex', '0');
           group.setAttribute('role', 'button');
           group.setAttribute('data-key', gkey(earliest));
-          group.setAttribute('aria-label', `${c.members.map((m) => clip(label(m.g), 40)).join('、')}，最早 ${fmtTime(earliest.t)}`);
+          group.setAttribute('aria-label', `${c.members.map((m) => clip(label(m.g), 40)).join(', ')}, first at ${fmtTime(earliest.t)}`);
           group.append(svg('circle', { cx: c.x, cy: y, r: 12 }, 'hit'));
           if (c.members.some((m) => m.hit)) group.append(svg('circle', { cx: c.x, cy: y, r: 8.5 }, 'halo'));
           const show = (e) => showTip(e.currentTarget, c.members.map((m) => m.g));
@@ -394,7 +404,7 @@
           group.addEventListener('click', () => openGroup(earliest));
           group.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGroup(earliest); } });
           if (c.members.length > 1 && c.x - 4 > labelEnd) {
-            const text = `${c.members.length} 组，最早 ${fmtTime(earliest.t)}（${fmtPct(earliest.pct)}）`;
+            const text = `${c.members.length} groups, first at ${fmtTime(earliest.t)} (${fmtPct(earliest.pct)})`;
             const t = svg('text', { x: Math.max(0, c.x - 4), y: y - 13 }, 'cluster-label');
             t.textContent = text;
             parts.push(t);
@@ -417,9 +427,9 @@
     const lines = [];
     for (const g of groups.slice(0, 6)) {
       lines.push(el('strong', null, clip(label(g), 60)),
-        el('span', null, `${sevOf(g.sev).name} ×${g.n}${g.sup ? '+' : ''}，首次 ${fmtTime(g.t)}（${fmtPct(g.pct)}）`));
+        el('span', null, `${sevOf(g.sev).name} ×${g.n}${g.sup ? '+' : ''}, first at ${fmtTime(g.t)} (${fmtPct(g.pct)})`));
     }
-    if (groups.length > 6) lines.push(el('span', null, `另有 ${groups.length - 6} 组`));
+    if (groups.length > 6) lines.push(el('span', null, `${groups.length - 6} more groups`));
     tip.replaceChildren(...lines);
     tip.hidden = false;
     const r = anchor.getBoundingClientRect();
@@ -431,39 +441,43 @@
   function hideTip() { $('tooltip').hidden = true; }
 
   // ---------------------------------------------------------------- run header
-  function fact(main, sub, cls) {
-    const span = el('span', 'fact' + (cls ? ' ' + cls : ''), main);
-    if (sub) span.append(el('small', null, sub));
-    return span;
-  }
   function renderHead(run) {
     $('run-title').textContent = run.run;
-    $('run-state').textContent = (STATUS[run.state] || run.state) + (run.gen ? `（第 ${run.gen} 次启动）` : '');
-    const chips = (run.rules || []).map((r) => chip(`规则 ${r.rule}`, 'critical'));
+    const state = $('run-state');
+    state.textContent = stateText(run);
+    state.className = 'run-state' + (run.state === 'failed' ? ' is-failed'
+      : ['unknown', 'incomplete'].includes(run.state) ? ' is-uncertain' : '');
+    const chips = [];
     const f = run.flags || [];
-    if (f.includes('quiet')) chips.push(chip(`日志 ${fmtAge(run.log_age)}未更新`, 'warning'));
-    if (f.includes('collector_error')) chips.push(chip('采集出错', 'warning', run.error));
-    if (f.includes('source_error')) chips.push(chip('日志读取失败', 'warning', run.error));
+    if (f.includes('quiet')) chips.push(chip(`Log unchanged for ${fmtAge(run.log_age)}`, 'warning'));
+    if (f.includes('collector_error')) chips.push(chip('Collector error', 'warning', run.error));
+    if (f.includes('source_error')) chips.push(chip('Log read failed', 'warning', run.error));
     $('run-chips').replaceChildren(...chips);
     const fresh = newGroups(run).length;
     $('ack').hidden = !fresh;
-    $('ack').textContent = `标为已读（新 ${fresh}）`;
-    const facts = countItems(run, true);
-    for (const c of facts) c.classList.add('fact');
-    if (has(run.t)) facts.push(fact(has(run.stop) ? `${fmtTime(run.t)} / ${fmtTime(run.stop)}` : fmtTime(run.t), fmtPct(run.pct)));
-    const frames = run.frames;
-    if (frames && !run.ended && has(frames.frame)) facts.push(fact(`帧 ${frames.frame}`, `码 ${frames.code}`));
-    if (!run.ended && has(run.log_age)) facts.push(fact(`日志 ${fmtAge(run.log_age)}前`));
-    if (run.error) facts.push(fact(clip(run.error, 140), '', 'error'));
-    $('facts').replaceChildren(...facts);
-    $('timeline-box').hidden = !run.stop;
+    $('ack').textContent = `Mark read (${fresh} new)`;
+    const meta = [];
+    if (run.gen) meta.push(`Generation ${run.gen}`);
+    if (!run.ended && has(run.log_age)) meta.push(`Log updated ${fmtAge(run.log_age)} ago`);
+    $('facts').textContent = meta.join(' · ');
+    $('run-error').hidden = !run.error;
+    $('run-error').textContent = run.error || '';
+    const progress = $('progress');
+    progress.hidden = !has(run.t);
+    progress.replaceChildren();
+    if (has(run.t)) {
+      progress.append(document.createTextNode(run.stop ? `${fmtTime(run.t)} / ${fmtTime(run.stop)}` : fmtTime(run.t)));
+      if (has(run.pct)) progress.append(el('small', null, fmtPct(run.pct)));
+    }
+    $('timeline-box').hidden = !run.stop && !has(run.t);
+    $('timeline').hidden = !run.stop;
   }
 
   // ---------------------------------------------------------------- problems
   function groupId(run, g) { return `${run.run}|${gkey(g)}`; }
   function phaseTitle(phase) {
-    if (phase === 'setup') return '读入阶段';
-    if (phase === 'testbench') return '测试台';
+    if (phase === 'setup') return 'Setup';
+    if (phase === 'testbench') return 'Testbench';
     return phase;
   }
   function renderProblems(run, force) {
@@ -485,7 +499,7 @@
     const first = (p) => Math.min(...sections.get(p).map((g) => g.e));
     const order = [...sections.keys()].sort((a, b) => rank(a) - rank(b) || first(a) - first(b));
     const nodes = [];
-    if (!show.groups.length) nodes.push(el('p', 'panel-note', '没有问题记录。'));
+    if (!show.groups.length) nodes.push(el('p', 'panel-note', 'No problem records.'));
     for (const phase of order) {
       const section = el('section', 'phase');
       section.append(el('h3', 'phase-title', phaseTitle(phase)));
@@ -498,7 +512,7 @@
         const foldId = `${run.run}|${phase}`;
         fold.open = ui.openFolds.has(foldId);
         fold.addEventListener('toggle', () => (fold.open ? ui.openFolds.add(foldId) : ui.openFolds.delete(foldId)));
-        fold.append(el('summary', null, `提示 ${notices.children.length}`), notices);
+        fold.append(el('summary', null, `Notices ${notices.children.length}`), notices);
         section.append(fold);
       }
       nodes.push(section);
@@ -518,17 +532,27 @@
     head.dataset.group = id;
     head.setAttribute('aria-expanded', ui.expanded.has(id) ? 'true' : 'false');
     const sev = el('span', 'g-sev');
-    sev.append(glyph(g.sev), el('span', 'sr-only', sevOf(g.sev).name));
-    const count = el('span', 'g-count', `×${g.n}${g.sup ? '+' : ''}`);
-    if (g.sup) count.title = '之后被抑制，实际次数更多';
-    const when = el('span', 'g-when', has(g.t) ? `${fmtTime(g.t)} ${fmtPct(g.pct)}` : '');
+    sev.append(glyph(g.sev));
+    if (!uncoded(g)) sev.append(el('span', 'sr-only', sevOf(g.sev).name));
+    const body = el('span', 'g-body');
+    const main = el('span', 'g-main');
+    const meta = el('span', 'g-meta');
+    if (g.n > 1 || g.sup) {
+      const count = el('span', 'g-count', `×${g.n}${g.sup ? '+' : ''}`);
+      if (g.sup) count.title = 'Further occurrences suppressed; actual total unknown';
+      meta.append(count);
+    }
+    if (has(g.t)) meta.append(el('span', 'g-when', `First ${fmtTime(g.t)}`));
     const flags = el('span', 'g-flags');
-    if ((g.sev !== 'NOTICE' || g.rules) && !seen.has(gkey(g))) flags.append(chip('新', 'new'));
-    if (g.rules) flags.append(chip('规则', 'critical', g.rules.join('、')));
-    if (g.base_new) flags.append(chip('参考无', 'warning', `参考运行 ${show.baseline} 中没有`));
+    if ((g.sev !== 'NOTICE' || g.rules) && !seen.has(gkey(g))) flags.append(chip('New', 'new'));
+    if (g.rules) flags.append(chip('Rule hit', '', g.rules.join(', ')));
+    if (g.base_new) flags.append(chip('Not in baseline', '', `Absent from baseline run ${show.baseline}`));
     const msg = el('span', 'g-msg', g.msg);
     msg.title = g.msg;
-    head.append(sev, el('span', 'g-key', uncoded(g) ? '—' : g.key), count, when, flags, msg);
+    main.append(el('span', 'g-key', uncoded(g) ? sevOf(g.sev).name : g.key), msg);
+    if (flags.children.length) meta.append(flags);
+    body.append(main, meta);
+    head.append(sev, body);
     head.addEventListener('click', () => toggleGroup(run, g, li, head));
     li.append(head);
     if (ui.expanded.has(id)) li.append(evidenceBox(run, g));
@@ -562,25 +586,38 @@
     if (!ui.evidence.has(id)) ui.evidence.set(id, await api('/api/evidence', { id }));
     return ui.evidence.get(id);
   }
-  function evidenceBox(run, g) {
+  function evidenceBox(run, g, focusWhich = null) {
     const box = el('div', 'evidence');
-    box.append(el('p', 'panel-note', '读取原文…'));
+    box.append(el('p', 'panel-note', 'Loading evidence…'));
     const id = groupId(run, g);
     const which = ui.expanded.get(id) || g.e;
     getEvidence(which).then((e) => {
+      const context = el('div', 'evidence-context');
+      context.append(el('span', null, g.sev), el('span', null,
+        `${g.n} printed${g.sup ? '; further occurrences suppressed, total unknown' : ''}`));
+      context.append(el('span', null, has(g.t)
+        ? `First ${fmtTime(g.t)}${has(g.pct) ? ` (${fmtPct(g.pct)})` : ''}` : 'Time not reported'));
+      if (g.rules) context.append(el('span', null, `Rules: ${g.rules.join(', ')}`));
+      if (g.base_new) {
+        const show = ui.shows.get(run.run);
+        if (show) context.append(el('span', null, `Absent from baseline ${show.data.baseline}`));
+      }
       const meta = el('div', 'evidence-meta');
+      let focusButton = null;
       if (g.last) {
-        for (const [text, target] of [['首条', g.e], ['末条', g.last]]) {
-          const b = el('button', 'quiet-button', text);
+        for (const [text, target] of [['First', g.e], ['Last', g.last]]) {
+          const b = el('button', 'text-button', text);
           b.type = 'button';
           b.setAttribute('aria-pressed', target === which ? 'true' : 'false');
-          b.addEventListener('click', () => { ui.expanded.set(id, target); box.replaceWith(evidenceBox(run, g)); });
+          b.addEventListener('click', () => { ui.expanded.set(id, target); box.replaceWith(evidenceBox(run, g, target)); });
+          if (target === focusWhich) focusButton = b;
           meta.append(b);
         }
       }
       meta.append(el('code', 'loc', `${e.path}:${e.line}`));
-      box.replaceChildren(meta, logView(e));
-    }).catch((err) => box.replaceChildren(el('p', 'panel-note', `原文读取失败：${err.message}`)));
+      box.replaceChildren(context, meta, logView(e));
+      if (focusButton && box.isConnected) focusButton.focus({ preventScroll: true });
+    }).catch((err) => box.replaceChildren(el('p', 'panel-note', `Unable to load evidence: ${err.message}`)));
     return box;
   }
   function logLine(number, text, cls) {
@@ -622,19 +659,25 @@
   }
   function renderMeasurements(run) {
     const m = ui.meas;
+    const active = document.activeElement;
+    const focused = $('measure-body').contains(active) ? active.dataset.evidence : null;
     const rows = [];
     for (const r of m.rows) {
       const tr = el('tr', r.valid === 0 || r.issue ? 'flag' : '');
       if (has(r.frame)) {
         tr.append(el('td', null, r.frame), el('td', null, has(r.code) ? r.code : '—'), el('td', null, has(r.valid) ? r.valid : '—'));
       } else {
-        const td = el('td', null, [r.issue, r.raw].filter(Boolean).join('：'));
+        const td = el('td', null, [r.issue, r.raw].filter(Boolean).join(': '));
         td.colSpan = 3;
         tr.append(td);
       }
       const cell = el('td');
-      const b = el('button', 'quiet-button', m.open.has(r.e) ? '收起' : '原文');
+      const open = m.open.has(r.e);
+      const b = el('button', 'text-button', open ? 'Hide' : 'View');
       b.type = 'button';
+      b.dataset.evidence = String(r.e);
+      b.setAttribute('aria-expanded', open ? 'true' : 'false');
+      b.setAttribute('aria-label', `${open ? 'Hide' : 'Show'} evidence for ${has(r.frame) ? `frame ${r.frame}` : `record e${r.e}`}`);
       b.addEventListener('click', () => {
         if (m.open.has(r.e)) m.open.delete(r.e); else m.open.add(r.e);
         renderMeasurements(run);
@@ -652,7 +695,11 @@
       }
     }
     $('measure-body').replaceChildren(...rows);
-    $('measure-note').textContent = m.total ? `最新 ${m.rows.length} / ${m.total}` : '没有测试台记录';
+    if (focused) {
+      const again = [...$('measure-body').querySelectorAll('[data-evidence]')].find((b) => b.dataset.evidence === focused);
+      if (again) again.focus({ preventScroll: true });
+    }
+    $('measure-note').textContent = m.total ? `Latest ${m.rows.length} / ${m.total}` : 'No testbench records';
     $('measure-earlier').hidden = !m.older;
   }
 
@@ -677,36 +724,36 @@
     const items = [];
     const f = d.footer;
     items.push(f
-      ? checkRow(f.errors ? 'state-bad' : 'state-ok', f.errors ? '✗' : '✓', '原生结尾', `${f.errors} errors, ${f.warnings} warnings, ${f.notices} notices`)
-      : checkRow('state-gap', '…', '原生结尾', '尚未出现'));
-    const names = { state: '状态文件', log_status: 'logStatus', raw: '波形 raw' };
+      ? checkRow(f.errors ? 'state-bad' : 'state-ok', f.errors ? '✗' : '✓', 'Native footer', `${f.errors} errors, ${f.warnings} warnings, ${f.notices} notices`)
+      : checkRow('state-gap', '…', 'Native footer', 'Not yet observed'));
+    const names = { state: 'State file', log_status: 'logStatus', raw: 'Raw (head/tail)' };
     for (const c of d.checks || []) {
       const name = names[c.check] || c.check;
-      if (c.status === 'not_checked') { items.push(checkRow('state-none', '—', name, '未配置')); continue; }
+      if (c.status === 'not_checked') { items.push(checkRow('state-none', '—', name, 'Not configured')); continue; }
       if (c.status !== 'observed') { items.push(checkRow('state-gap', '!', name, c.detail || c.format || c.status)); continue; }
       if (c.check === 'state') {
         const bad = c.exit_code || ['failed', 'limit_exceeded', 'rejected', 'cancelled', 'killed'].includes(c.reported_status);
         items.push(checkRow(bad ? 'state-bad' : 'state-ok', bad ? '✗' : '✓', name,
-          `${c.reported_status}，exit ${has(c.exit_code) ? c.exit_code : '—'}${c.reason ? `，${c.reason}` : ''}`));
+          `${c.reported_status}, exit ${has(c.exit_code) ? c.exit_code : '—'}${c.reason ? `, ${c.reason}` : ''}`));
       } else if (c.check === 'log_status') {
         const ok = c.last_status === 'PASS';
         const bad = ['FAIL', 'FAILED', 'ERROR'].includes(c.last_status);
         items.push(checkRow(ok ? 'state-ok' : bad ? 'state-bad' : 'state-gap', ok ? '✓' : bad ? '✗' : '!', name,
-          `${c.analysis || '—'} ${c.last_status || '未出现'}`));
+          `${c.analysis || '—'} ${c.last_status || 'Not observed'}`));
       } else {
         const ok = c.end_marker && c.expected_stop_reached !== false;
         items.push(checkRow(ok ? 'state-ok' : 'state-gap', ok ? '✓' : '!', name,
-          `END ${c.end_marker ? '有' : '无'}，最后 ${fmtTime(c.last_saved_time_s)}${c.expected_stop_reached === false ? '，未到结束时间' : ''}，${bytes(c.size_bytes)}`));
+          `END ${c.end_marker ? 'present' : 'missing'}, last ${fmtTime(c.last_saved_time_s)}${c.expected_stop_reached === false ? ', stop time not reached' : ''}, ${bytes(c.size_bytes)}`));
       }
     }
     if (has(d.size)) {
       const behind = (d.indexed || 0) < d.size;
-      items.push(checkRow(behind ? 'state-gap' : 'state-ok', behind ? '…' : '✓', '索引', `${bytes(d.indexed || 0)} / ${bytes(d.size)}`));
+      items.push(checkRow(behind ? 'state-gap' : 'state-ok', behind ? '…' : '✓', 'Indexed', `${bytes(d.indexed || 0)} / ${bytes(d.size)}`));
     }
     const totals = Object.entries(d.suppressed || {});
     if (totals.length) {
-      items.push(checkRow('state-none', '·', '原生抑制',
-        totals.map(([k, v]) => `${k === 'warning' ? '警告' : k === 'notice' ? '提示' : k} ${v.toLocaleString('zh-CN')}`).join('，')));
+      items.push(checkRow('state-none', '·', 'Native suppression',
+        totals.map(([k, v]) => `${k} ${v.toLocaleString('en-US')}`).join(', ')));
     }
     if (d.spectre) items.push(checkRow('state-none', '·', 'Spectre', d.spectre));
     const list = el('ul', 'checks');
@@ -715,13 +762,13 @@
     if ((d.settings || []).length) {
       const table = el('table', 'data-table');
       const head = el('tr');
-      for (const h of ['参数', '请求', '生效']) { const th = el('th', null, h); th.scope = 'col'; head.append(th); }
+      for (const h of ['Parameter', 'Requested', 'Effective']) { const th = el('th', null, h); th.scope = 'col'; head.append(th); }
       table.createTHead().append(head);
       const body = table.createTBody();
       for (const s of d.settings) {
         const tr = el('tr', s.diff ? 'differs' : '');
         const eff = el('td', null, s.eff || '—');
-        if (s.diff) eff.append(document.createTextNode(' '), chip('不同', 'warning'));
+        if (s.diff) eff.append(document.createTextNode(' '), chip('Differs', 'warning'));
         tr.append(el('td', null, s.name), el('td', null, s.req || '—'), eff);
         body.append(tr);
       }
@@ -744,8 +791,8 @@
         renderDetails(await loadDetails(run));
       }
     } catch (e) {
-      if (ui.tab === 'measurements') $('measure-note').textContent = `读取失败：${e.message}`;
-      else $('panel-' + ui.tab).replaceChildren(el('p', 'panel-note', `读取失败：${e.message}`));
+      if (ui.tab === 'measurements') $('measure-note').textContent = `Unable to load data: ${e.message}`;
+      else $('panel-' + ui.tab).replaceChildren(el('p', 'panel-note', `Unable to load data: ${e.message}`));
     }
   }
   function setTab(name) {
@@ -760,7 +807,7 @@
     refreshPanel();
   }
   function renderTabs(run) {
-    const names = { problems: '问题', measurements: '测量', details: '详情' };
+    const names = { problems: 'Problems', measurements: 'Measurements', details: 'Details' };
     const counts = { problems: groupsOf(run.run).length, measurements: run.frames ? run.frames.n : 0 };
     for (const tab of document.querySelectorAll('.tab')) {
       tab.replaceChildren(document.createTextNode(names[tab.dataset.tab]));
@@ -787,7 +834,7 @@
   }
   function updateTitle(runs) {
     const n = runs.filter((r) => level(r) !== 'none').length;
-    document.title = n ? `(${n}) Spectre 运行监视` : 'Spectre 运行监视';
+    document.title = n ? `(${n}) Spectre Log Inspector` : 'Spectre Log Inspector';
   }
   function render() {
     renderTopline();
@@ -814,16 +861,16 @@
     pause.addEventListener('click', () => {
       ui.paused = !ui.paused;
       pause.setAttribute('aria-pressed', ui.paused ? 'true' : 'false');
-      pause.textContent = ui.paused ? '继续' : '暂停';
+      pause.textContent = ui.paused ? 'Resume updates' : 'Pause updates';
     });
     const bell = $('notify');
     const sync = () => {
       bell.setAttribute('aria-pressed', ui.notify ? 'true' : 'false');
-      bell.textContent = ui.notify ? '提醒已开' : '提醒';
+      bell.textContent = ui.notify ? 'Notifications on' : 'Notifications';
     };
     if (!('Notification' in window)) {
       bell.disabled = true;
-      bell.title = '浏览器不支持提醒';
+      bell.title = 'This browser does not support notifications';
     } else {
       ui.notify = localStorage.getItem('simcheck.notify') === 'on' && Notification.permission === 'granted';
       sync();
@@ -833,13 +880,14 @@
         } else {
           const permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
           ui.notify = permission === 'granted';
-          bell.title = ui.notify ? '' : '浏览器没有允许本页发送提醒';
+          bell.title = ui.notify ? '' : 'Notifications are not allowed for this page';
         }
         localStorage.setItem('simcheck.notify', ui.notify ? 'on' : 'off');
         sync();
       });
     }
     $('ack').addEventListener('click', () => { const run = currentRun(); if (run) acknowledge(run); });
+    $('run-select').addEventListener('change', (e) => select(e.target.value));
     $('measure-earlier').addEventListener('click', () => { const run = currentRun(); if (run) loadMeasurements(run, 'earlier'); });
     const tabs = [...document.querySelectorAll('.tab')];
     for (const tab of tabs) {

@@ -1,5 +1,148 @@
 # 验证记录
 
+## GitHub 发布前检查 — 2026-11-03
+
+用户明确授权整理提交并发布 GitHub；已创建私有仓库
+https://github.com/chenzc24/spectre-log-inspector，origin 使用 HTTPS。只纳入应用、
+说明、已脱敏真实样例及合成样例/来源、测试；本地 .claude 配置、原始私有日志、
+数据库、运行状态和构建产物留在忽略目录。检查当前候选内容及 103 个历史 blob，
+未发现常见凭据模式或历史私有/运行产物文件；不在记录中打印凭据内容。
+
+68 项 unittest 通过。7 次 CLI 检查扫描 8 组真实脱敏样例和 6 个合成案例，状态、
+原文位置、测量、不完整结果及 wait 离线退出码符合预期；11 次 HTTP 请求通过。
+离线 pip wheel 构建及包资源/入口/零第三方运行依赖核查通过；node --check、
+git diff --check 通过。浏览器核对当前界面和展开原文的级别、规则、抑制范围、路径
+行号，控制台无错误。该检查不增加真实 SSH 或运行中 Spectre 的验证范围。
+输出记录在 `.runtime/github-publish-0ktlyzy2/`；推送后仍需从 GitHub 冷克隆验收。
+
+## 正文优先与界面删重 — 2026-11-03
+
+合并采集状态为一处，删除页头重复问题计数、规则名单与侧栏百分比；进度集中在
+时间轴附近。问题正文优先占宽并允许两行，15px 深色；次数、首次时间和规则/参考
+标记为 12px 灰字，单次打印不反复显示 ×1。展开后保留原生级别、打印/抑制范围、
+首次时间、规则名、参考运行、来源路径/行号及原文。测量页使用轻量 View/Hide 按钮；
+First/Last 与测量展开保持键盘焦点。英文、白色和关键状态保留。
+
+**自动检查**：最终 `python -m unittest discover -s tests -v` 68 项通过；
+`node --check simcheck/web/app.js`、`git diff --check` 通过。5 次 CLI 命令和
+9 次 HTTP 请求通过，接口原文相等，failed/unknown/incomplete 状态保持。
+
+**页面检查**：应用内浏览器 1100×820 桌面、375×812 窄屏均无横向溢出；计算样式
+核对正文 15px、辅助 12px，白色主体。桌面 CMI-2753 正文含限制值可完整显示。
+窄屏改为原生运行选择器，区域实测 56px；修正了单列网格把空余高度分给选择器的
+问题。核对键盘 Enter 展开、First/Last 与抑制行、规则/参考信息、测量原文及焦点。
+100% 无结尾仍为 Unknown，缺 END 的 raw 仍为 Incomplete evidence，FATAL+exit0
+仍为 Failed；这些状态用明确文字和高对比色保留。页面无控制台错误。
+
+检查使用既有合成样例；8 组真实语料仍由完整套件回归。通知权限未请求，未修改
+采集器、解析器、CLI/API 或源日志。产物位于 `.runtime/ui-hierarchy-09o5es0n/`：
+`unittest-final.txt`、`smoke.json`、`dashboard.jpg`、`mobile.jpg`。
+
+## 仓库链接冷启动与 SSH 配置说明 — 2026-11-03
+
+**源码冷启动**：将已提交 HEAD `4d18835afadcbacd8462c5b7b572d2bbc9b69e7b`
+以本地 Git 传输克隆到仓库外的空格路径，清除 PYTHONPATH/PYTHONHOME/SIMCHECK_DB，
+用 `python -S -m simcheck` 排除 site-packages 依赖。无需 pip，版本命令和 8 组
+已跟踪真实样例扫描成功，完成/失败状态全部符合预期。这验证已提交源码的启动能力；
+不是外部仓库 URL、远端权限或 Linux 的验证。未提交说明/修复不会进入这个克隆。
+
+**文档调整**：README 和 AGENTS 指向仓库优先的 Agent 上手流程；补充 SSH 连接与
+Git 权限/运行清单的边界、远端采集和 SSH 会话寿命、同端口转发以及模板。仅改文档
+和无凭据配置样例，没有增加 SSH 连接代码或改动用户的 .ssh 配置。
+
+**SSH 模板**：使用本机 Windows OpenSSH 执行 `ssh -G -F examples/ssh_config.example
+spectre-box`，检查示例 hostname/user/port、BatchMode、IdentitiesOnly 和严格主机
+校验。只解析指定模板，没有连接主机，没有读取/写入私钥或改变已信任主机列表。
+真实登录、跳板机、转发策略、服务端 Python 和日志权限仍需在授权环境实测。
+
+**回归**：68 项 unittest 通过；复用现有本地查看器完成 10 次 HTTP 检查（状态、
+原文、测量、完整性、资源、Host 403）。浏览器刷新后六个案例可见，控制台无错误；
+界面另有并行任务在修改，本次没有改布局或对其完成状态作保证。`git diff --check`
+通过。记录在 `.runtime/repo-onboarding-lq1rwi7b/`。无仿真操作、无远端连接、无
+commit/push；当前本地仍未配置 Git remote，发布入口本身尚未验证。
+
+## 可迁移交付 — 2026-11-03
+
+**发现并修复**：原 `pyproject.toml` 已声明 console script 和页面资源，但从仓库实际
+执行离线 `pip wheel --no-build-isolation --no-deps --no-index` 失败，原因是自动发现
+到 `plan` 与 `simcheck` 两个顶层包。显式限定应用包为 `simcheck` 后，同一命令成功。
+wheel 包含 CLI 和 3 个页面资源，未声明第三方运行时依赖。增加离线交付打包脚本及
+安装/Agent 契约；没有新增 MCP、公开发布、上传、commit 或 push。
+
+**接收方实测**：在仓库外的系统临时目录（路径含空格）解压交付 ZIP，创建全新 venv，
+用 `pip install --no-index --no-deps` 安装 wheel。在另一工作目录运行安装后的
+`simcheck.exe` 及隔离模式 `python -I -m simcheck`，确认模块来自该 venv 的
+site-packages，未通过当前源码/PYTHONPATH 工作。11 次安装/CLI/模块检查通过，
+6 个搬迁样例状态、原文行号、测量和完整性结果保持一致。接收方不需要 Git 或源码。
+
+**安装版链路**：通过安装版 CLI 启动采集和 HTTP，11 次请求验证 health、页面资源、
+show/evidence/measurements/details、403/404；在接收目录追加一条专用合成日志，
+`wait` 返回新 WARNING，show 中的规则命中及原文位置正确。此处仍是合成追加测试，
+不是运行中的真实 Spectre 实机验证。只终止这次创建的监测进程。
+
+**页面**：应用内浏览器打开安装版的独立 `serve`，六个案例加载，展开原文定位到
+搬迁后的目录；截图检查桌面布局可读，控制台无错误。未将本次检查算作全平台或
+完整响应式矩阵验证。源码中的英文/白色界面工作由另一个任务负责，没有在这里改动。
+
+**回归与交付范围**：68 项 unittest 全部通过（新增 3 项：样例搬迁后结果、拒绝
+未记录的输入路径、拒绝 hash 不符的样例）。`git diff --check` 通过。ZIP 仅含 wheel、
+安装/Agent/API 说明、清单模板、6 个合成案例、来源和 hash；不含真实日志、数据库、
+运行状态、凭据或 Python 解释器。BUILD.json 记录源码快照 hash，FILES.sha256 和
+ZIP 外的 SHA-256 校验文件用于完整性核对，不是签名。审计输出位于忽略目录
+`.runtime/portability-20261103-3535xnja/`。当前安装实测 Windows/Python 3.13，
+Linux/macOS、最低 Python 3.10 和真实 SSH 链路尚未验证；wheel 的平台无关标签
+不等于这些环境已通过测试。原始日志/PDK/ADC 脚本和仿真始终未动。
+
+## 英文界面与白色主题 — 2026-11-03
+
+页面控件、状态、提示、ARIA 名称、时间标签、浏览器通知文案统一为英文；固定浅色
+配色，body 和主区域为白色，侧栏为浅灰色，系统深色偏好不再覆盖。原始日志证据与
+用户定义值保留原文。Pause updates / Resume updates 明确表示页面刷新动作。
+
+`node --check simcheck/web/app.js` 通过；最终完整 unittest 套件 68 项通过，包含
+另一 worker 同期新增的 3 项分发测试。此前完整运行中的拒绝 POST 用例出现 Windows
+10053 连接中止；该用例改发空 POST，仍验证 HTTP 501，未修改服务端。5 次 CLI
+命令、9 次 HTTP 请求通过，核对证据内容及 unknown/incomplete 状态保持一致；
+实际提供的三份页面资源不含中文界面文本。
+
+应用内浏览器检查 1100×820 桌面、375×812 窄屏：body/main 计算背景均为白色，
+无横向溢出；核对问题展开、First/Last、抑制原文、Measurements 的 valid=0 与
+short_record、Details 的 requested/effective 与完整性信息、Pause/Resume。
+浏览器通知权限未请求。产物在 `.runtime/ui-english-light-hp7xjjkx/`：
+`unittest-final.txt`、`smoke.json`、`dashboard.jpg`。本次只修改界面资源、说明记录
+和上述测试请求；无仿真操作，无 commit/push。
+
+## 重构验证审计与合成案例 — 2026-11-03
+
+**历史记录核对**：本文件与 `plan/log.md` 分别记录 v0.1/v0.2/v0.3/v0.4
+的 22/24/52/57 项测试，以及 CLI、HTTP、页面检查。Git 当前可见 v0.3、v0.4
+两个提交；v0.1/v0.2 的依据为实施与验证记录。不能据此独立证明每个 worker 的每次
+重构后都运行过验证，也没有把这些历史数字算作本次重新执行的结果。
+
+**本次基线**：运行规定的完整 unittest 命令，57 项中 1 项报错：外部 Host 校验测试
+收到空响应，JSON 解码失败。对照实测显示，环境存在 HTTP 代理，默认 urllib opener
+收到代理生成的空 HTTP 502；`ProxyHandler({})` 直连本机得到预期 JSON HTTP 403。
+仅修改测试请求为显式直连并设置 5 秒超时，服务端 Host 校验和解析器保持原样。
+
+**最终测试**：`python -m unittest discover -s tests -v` 65 项通过。新增 8 项固定核对
+6 个合成案例：来源/hash、六种场景的状态、FATAL 与 exit 0 冲突、带/不带时间的
+消息、NOTICE 级别、未知编号、已打印次数与抑制分离、原文行号/字节偏移、测试台
+invalid/截短记录、设置差异、raw 完整/不完整、分析名不匹配、重扫幂等和输入不变。
+所有样例均为手写，没有启动模拟器；入口与边界见 [样例说明](examples.md)。
+
+**本次冒烟**：对独立临时库执行 13 次 CLI 调用、16 次 HTTP 请求，检查
+status/show/evidence/measurements/details 的结果一致、health 正常、3 个静态资源
+可取、外部 Host 返回 403、未知 run 返回 404；没有采集器时 wait 退出 4。
+页面通过应用内浏览器检查：六个运行及状态、时间轴、原文展开与路径行号、测量的
+valid=0 和 short_record、requested/effective 对照、raw 缺少 END 与结束时间不足。
+默认深色桌面布局可读，页面错误日志为空。未重新做完整浅色/窄屏矩阵或通知权限测试。
+
+**产物与边界**：临时输出位于忽略目录 `.runtime/audit-20261103-kt57edu1/`，
+含 `examples.sqlite`、`status.txt`、`evidence.txt`、`smoke.json`、`unittest.txt`。
+`git diff --check` 通过，新增非 fixture 文件也检查了空白。本次未重新扫描私有
+原始日志；8 组既有脱敏真实语料由完整测试套件回归。真实 source log、PDK、ADC
+脚本及仿真均未修改；无 commit/push。新增合成样例不构成新厂商格式或全波形验证。
+
 ## v0.4 执行 Agent 为主要读者 — 2026-11-02
 
 **测试**：`python -m unittest discover -s tests -v` 57 项通过。新增覆盖：status 对 8 组示例日志小于 5 KB 且没有 null、false 或空集合；运行排序（失败、命中规则在前，正常结束且无关注的在最后）；失败运行按日志顺序给出首个错误（minstep 为 SPECTRE-16927 @1.14929ns，output_limit 为 SPECTRE-27 与 SPECTRE-7082）；show 默认隐藏未命中规则的 NOTICE 组并给出数量；新问题组命中规则时只产生一条变化；wait 结果不附带运行摘要并给出下一条命令；文本中的句柄与 path:line；`SIMCHECK_DB`；`--json`、`--db` 写在子命令前后都有效；格式不对的句柄被拒绝。
