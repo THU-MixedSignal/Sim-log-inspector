@@ -177,12 +177,38 @@ class Http(unittest.TestCase):
     def test_errors_are_json(self):
         for path, expected in (('/api/evidence?id=abc', 400), ('/api/evidence?id=e999999', 404),
                                ('/api/show', 400), ('/api/details?run=none', 404),
-                               ('/api/status?run=none', 404), ('/nope', 404)):
+                               ('/api/status?run=none', 404), ('/nope', 404),
+                               ('/api/export', 400), ('/api/export?run=none', 404),
+                               ('/api/export?run=t&format=exe', 400)):
             status, body = self.json(path)
             self.assertEqual((status, body['error']['status']), (expected, expected), path)
         # Only the unsupported method matters here. An empty POST avoids a
         # Windows connection reset when the server closes with unread body data.
         self.assertEqual(self.get('/api/status', data=b'')[0], 501)
+
+    def test_saved_html_and_json_are_downloads_with_original_evidence(self):
+        code, headers, body = self.get('/api/export?run=t&format=json')
+        saved = json.loads(body)
+        self.assertEqual((code, headers['Content-Length']), (200, str(len(body))))
+        self.assertIn('attachment; filename="t-g1-', headers['Content-Disposition'])
+        self.assertEqual(saved['summary']['state'], 'complete')
+        self.assertEqual(saved['scope']['events'], len(saved['events']))
+        self.assertTrue(saved['export_complete'])
+        warning = next(e for e in saved['events'] if e.get('code') == 'X-1')
+        self.assertIn('<script>alert(1)</script>', warning['raw'])
+        self.assertEqual((warning['severity'], warning['line']), ('WARNING', 2))
+        code, headers, body = self.get('/api/export?run=t&format=html')
+        html = body.decode('utf-8')
+        self.assertEqual(code, 200)
+        self.assertIn('.html"', headers['Content-Disposition'])
+        self.assertIn('<html lang="en">', html)
+        self.assertNotIn('<script>', html)
+        self.assertIn('&lt;script&gt;alert(1)&lt;/script&gt;', html)
+        self.assertIn('µV', html)
+        self.assertIn('Snapshot export complete.', html)
+        self.assertIn("default-src 'none'", headers['Content-Security-Policy'])
+        self.assertEqual(self.get('/api/export?run=t', host=f'attacker.example:{self.port}')[0], 403)
+        self.assertEqual(self.get('/api/export?run=t', data=b'')[0], 501)
 
     def test_foreign_host_is_rejected(self):
         status, body = self.json('/api/status', host=f'attacker.example:{self.port}')

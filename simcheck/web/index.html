@@ -18,9 +18,14 @@
 <div id="banner" class="banner" role="alert" hidden></div>
 <main class="layout">
   <aside class="run-panel">
+    <div class="history-tools" id="history-tools" hidden>
+      <button id="restore-runs" class="text-button" type="button">Restore closed</button>
+    </div>
     <div class="run-picker">
       <label class="sr-only" for="run-select">Run</label>
       <select id="run-select"></select>
+      <button id="save-current" class="icon-button" type="button" aria-label="Save run" title="Save run" aria-haspopup="menu" aria-expanded="false">↓</button>
+      <button id="close-current" class="icon-button" type="button" aria-label="Close run" title="Close from list; keep evidence">×</button>
     </div>
     <nav class="rail" aria-label="Runs"><ul id="runs" class="runs"></ul></nav>
   </aside>
@@ -58,5 +63,9 @@
 </main>
 <div id="live" class="sr-only" aria-live="polite"></div>
 <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+<div id="save-menu" class="save-menu" role="menu" aria-label="Save run" hidden>
+  <a id="save-html" role="menuitem" download>HTML report</a>
+  <a id="save-json" role="menuitem" download>JSON data</a>
+</div>
 </body>
 </html>

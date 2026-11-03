@@ -65,6 +65,25 @@ CLI 默认输出文本；`--json` 和 HTTP 输出同样内容的 JSON，都带 `
 
 `status`、`log`、`indexed`、`size`（字节）、`spectre`（版本）、`stops`（分析名到结束时间）、`footer`（errors、warnings、notices）、`suppressed`（原生汇总，不能分摊到编号）、`coverage`、`pending_line`、`checks`（state、log_status、raw 的观察结果）、`settings`（`name`、`req`、`eff`、`def`、`diff`）。
 
+## 另存（GET /api/export?run=ID&format=html|json）
+
+返回带 `Content-Disposition: attachment` 的 UTF-8 文件，默认 JSON。导出在一个
+SQLite 只读事务内完成；不重新读取源日志，不修改采集器、数据库或仿真。
+HTML 为不依赖服务的静态报告。JSON 为独立导出格式（`export_version: 1`，内含
+API `v: 4`），包括：
+
+- `run`、`saved_at`（UTC）、工具 `version`。
+- `scope`：`generation`、`events` 总数、`problem_groups` 总数、`source_files_embedded: false`。
+- `summary`、`problems`、`details`：相同快照内的状态、问题组与完整性/设置。
+- `coverage`：抑制汇总和原有证据限制。
+- `events`：当前代次全部已入库事件的原始负载，加 `event_id`、`observed_epoch`；不受测量分页的 500 条上限影响。
+- `export_complete: true`：文件成功导出，与运行是否成功无关；unknown/incomplete/failed 原样保留。
+
+问题摘要保留原有最多 500 组和文本长度限制；`scope.problem_groups` 给出实际总组数，
+所有原始事件仍在 `events` 中，HTML 的 Stored evidence 部分同样全列。源文件未入库的
+行和波形文件不嵌入快照。先分块序列化到临时文件（超过 1 MiB 转磁盘），成功后带
+Content-Length 下载；源日志轮换或离线不会改变已保存原文。
+
 ## health（GET /api/health）
 
 `status`（ok 或 degraded）、`version`、`pid`、`started`、`db`、`collector`；数据库不可用时给 `error`。

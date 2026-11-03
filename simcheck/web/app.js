@@ -28,6 +28,7 @@
     shows: new Map(), rows: new Map(), previous: new Map(), evidence: new Map(),
     expanded: new Map(), openFolds: new Set(), fresh: new Set(), details: new Map(),
     meas: null, problemSig: '', collectorLive: null, notify: false,
+    closed: new Map(), saveMenu: null,
   };
 
   // ---------------------------------------------------------------- helpers
@@ -92,6 +93,74 @@
   function uncoded(g) { return g.key.startsWith(`${g.sev}:`); }
   function label(g) { return uncoded(g) ? g.msg : g.key; }
   function announce(text) { $('live').textContent = text; }
+
+  // Closing changes this browser's list only; a new generation becomes visible again.
+  function readClosed() {
+    try {
+      const rows = JSON.parse(localStorage.getItem('simcheck.closed') || '[]');
+      return new Map(Array.isArray(rows) ? rows.filter((r) => Array.isArray(r)
+        && typeof r[0] === 'string' && Number.isInteger(r[1]) && r[1] >= 1) : []);
+    } catch (_) { return new Map(); }
+  }
+  function isClosed(run) { return ui.closed.get(run.run) === (run.gen || 1); }
+  function openRuns() { return ui.data ? ui.data.runs.filter((r) => !isClosed(r)) : []; }
+  function saveClosed() {
+    try { localStorage.setItem('simcheck.closed', JSON.stringify([...ui.closed])); return true; }
+    catch (_) { return false; }
+  }
+  function focusHistory(id, action = 'button') {
+    if ($('run-select').getClientRects().length) {
+      (id ? $('run-select') : $('restore-runs')).focus();
+    } else {
+      (ui.rows.get(id)?.[action] || $('restore-runs')).focus();
+    }
+  }
+  function closeRun(id) {
+    const run = ui.data?.runs.find((r) => r.run === id);
+    if (!run) return;
+    const before = railOrder(openRuns());
+    const index = before.findIndex(({ r }) => r.run === id);
+    ui.closed.set(id, run.gen || 1);
+    const saved = saveClosed();
+    closeSaveMenu();
+    render();
+    refreshPanel();
+    const remaining = railOrder(openRuns());
+    focusHistory(remaining[Math.min(index, remaining.length - 1)]?.r.run, 'close');
+    announce(`Closed ${id} from the list. Evidence kept.${saved ? '' : ' Browser storage unavailable; closed for this session only.'}`);
+  }
+  function restoreRuns() {
+    const restored = ui.data.runs.filter(isClosed);
+    ui.closed.clear();
+    saveClosed();
+    render();
+    refreshPanel();
+    focusHistory(ui.selected);
+    announce(`Restored ${restored.length} runs.`);
+  }
+  function closeSaveMenu(focus = false) {
+    const button = ui.saveMenu?.button;
+    $('save-menu').hidden = true;
+    if (button) button.setAttribute('aria-expanded', 'false');
+    ui.saveMenu = null;
+    if (focus && button?.isConnected) button.focus();
+  }
+  function showSaveMenu(id, button) {
+    if (ui.saveMenu?.button === button) { closeSaveMenu(true); return; }
+    closeSaveMenu();
+    const menu = $('save-menu');
+    for (const format of ['html', 'json']) {
+      $('save-' + format).href = '/api/export?' + new URLSearchParams({ run: id, format });
+    }
+    menu.setAttribute('aria-label', `Save ${id}`);
+    menu.hidden = false;
+    const rect = button.getBoundingClientRect();
+    menu.style.left = `${Math.max(8, Math.min(rect.left, document.documentElement.clientWidth - menu.offsetWidth - 8))}px`;
+    menu.style.top = `${Math.max(8, Math.min(rect.bottom + 4, document.documentElement.clientHeight - menu.offsetHeight - 8))}px`;
+    button.setAttribute('aria-expanded', 'true');
+    ui.saveMenu = { run: id, button };
+    $('save-html').focus();
+  }
 
   async function api(path, params) {
     const url = params ? `${path}?${new URLSearchParams(params)}` : path;
@@ -263,7 +332,7 @@
   function rowFor(id) {
     let row = ui.rows.get(id);
     if (row) return row;
-    const li = el('li');
+    const li = el('li', 'run-item');
     const button = el('button', 'run-row');
     button.type = 'button';
     const name = el('span', 'run-name');
@@ -272,8 +341,23 @@
     const mini = svg('svg', { 'aria-hidden': 'true', focusable: 'false' }, 'mini');
     button.append(name, side, counts, mini);
     button.addEventListener('click', () => select(id));
-    li.append(button);
-    row = { li, button, name, side, counts, mini };
+    const actions = el('div', 'run-actions');
+    const save = el('button', 'icon-button', '↓');
+    save.type = 'button';
+    save.dataset.saveRun = id;
+    save.setAttribute('aria-label', `Save ${id}`);
+    save.setAttribute('aria-haspopup', 'menu');
+    save.setAttribute('aria-expanded', 'false');
+    save.title = 'Save run';
+    save.addEventListener('click', () => showSaveMenu(id, save));
+    const close = el('button', 'icon-button', '×');
+    close.type = 'button';
+    close.setAttribute('aria-label', `Close ${id}`);
+    close.title = 'Close from list; keep evidence';
+    close.addEventListener('click', () => closeRun(id));
+    actions.append(save, close);
+    li.append(button, actions);
+    row = { li, button, name, side, counts, mini, save, close };
     ui.rows.set(id, row);
     return row;
   }
@@ -321,6 +405,13 @@
     }
     if (picker.value !== ui.selected) picker.value = ui.selected || '';
     picker.disabled = !runs.length;
+    $('save-current').disabled = $('close-current').disabled = !runs.length;
+    $('save-current').dataset.saveRun = ui.selected || '';
+    $('save-current').setAttribute('aria-label', `Save ${ui.selected || 'run'}`);
+    $('close-current').setAttribute('aria-label', `Close ${ui.selected || 'run'}`);
+    const closed = ui.data.runs.filter(isClosed).length;
+    $('history-tools').hidden = !closed;
+    $('restore-runs').textContent = `Restore closed (${closed})`;
     for (const { r } of ordered) drawTimeline(ui.rows.get(r.run).mini, r, true);
     if (active && document.contains(active) && document.activeElement !== active) active.focus({ preventScroll: true });
   }
@@ -532,27 +623,25 @@
     head.dataset.group = id;
     head.setAttribute('aria-expanded', ui.expanded.has(id) ? 'true' : 'false');
     const sev = el('span', 'g-sev');
+    sev.title = g.sev;
     sev.append(glyph(g.sev));
     if (!uncoded(g)) sev.append(el('span', 'sr-only', sevOf(g.sev).name));
-    const body = el('span', 'g-body');
-    const main = el('span', 'g-main');
-    const meta = el('span', 'g-meta');
+    const count = el('span', 'g-count');
     if (g.n > 1 || g.sup) {
-      const count = el('span', 'g-count', `×${g.n}${g.sup ? '+' : ''}`);
+      count.textContent = `×${g.n}${g.sup ? '+' : ''}`;
       if (g.sup) count.title = 'Further occurrences suppressed; actual total unknown';
-      meta.append(count);
     }
-    if (has(g.t)) meta.append(el('span', 'g-when', `First ${fmtTime(g.t)}`));
+    const when = el('span', 'g-when', has(g.t) ? `${fmtTime(g.t)} ${fmtPct(g.pct)}`.trim() : '');
+    when.title = has(g.t) ? 'First logged occurrence' : 'Time not reported';
     const flags = el('span', 'g-flags');
-    if ((g.sev !== 'NOTICE' || g.rules) && !seen.has(gkey(g))) flags.append(chip('New', 'new'));
     if (g.rules) flags.append(chip('Rule', 'critical', g.rules.join(', ')));
     if (g.base_new) flags.append(chip('Not in baseline', 'warning', `Absent from baseline run ${show.baseline}`));
+    if ((g.sev !== 'NOTICE' || g.rules) && !seen.has(gkey(g))) flags.append(chip('New', 'new'));
     const msg = el('span', 'g-msg', g.msg);
     msg.title = g.msg;
-    main.append(el('span', 'g-key', uncoded(g) ? sevOf(g.sev).name : g.key), msg);
-    if (flags.children.length) meta.append(flags);
-    body.append(main, meta);
-    head.append(sev, body);
+    const key = el('span', 'g-key', uncoded(g) ? sevOf(g.sev).name : g.key);
+    key.title = uncoded(g) ? g.sev : g.key;
+    head.append(sev, key, count, when, flags, msg);
     head.addEventListener('click', () => toggleGroup(run, g, li, head));
     li.append(head);
     if (ui.expanded.has(id)) li.append(evidenceBox(run, g));
@@ -592,17 +681,8 @@
     const id = groupId(run, g);
     const which = ui.expanded.get(id) || g.e;
     getEvidence(which).then((e) => {
-      const context = el('div', 'evidence-context');
-      context.append(el('span', null, g.sev), el('span', null,
-        `${g.n} printed${g.sup ? '; further occurrences suppressed, total unknown' : ''}`));
-      context.append(el('span', null, has(g.t)
-        ? `First ${fmtTime(g.t)}${has(g.pct) ? ` (${fmtPct(g.pct)})` : ''}` : 'Time not reported'));
-      if (g.rules) context.append(el('span', null, `Rules: ${g.rules.join(', ')}`));
-      if (g.base_new) {
-        const show = ui.shows.get(run.run);
-        if (show) context.append(el('span', null, `Absent from baseline ${show.data.baseline}`));
-      }
       const meta = el('div', 'evidence-meta');
+      const controls = el('div', 'evidence-switch');
       let focusButton = null;
       if (g.last) {
         for (const [text, target] of [['First', g.e], ['Last', g.last]]) {
@@ -611,11 +691,11 @@
           b.setAttribute('aria-pressed', target === which ? 'true' : 'false');
           b.addEventListener('click', () => { ui.expanded.set(id, target); box.replaceWith(evidenceBox(run, g, target)); });
           if (target === focusWhich) focusButton = b;
-          meta.append(b);
+          controls.append(b);
         }
       }
-      meta.append(el('code', 'loc', `${e.path}:${e.line}`));
-      box.replaceChildren(context, meta, logView(e));
+      meta.append(controls, el('code', 'loc', `${e.path}:${e.line}`));
+      box.replaceChildren(meta, logView(e));
       if (focusButton && box.isConnected) focusButton.focus({ preventScroll: true });
     }).catch((err) => box.replaceChildren(el('p', 'panel-note', `Unable to load evidence: ${err.message}`)));
     return box;
@@ -658,6 +738,7 @@
     renderMeasurements(run);
   }
   function renderMeasurements(run) {
+    if (!ui.meas || ui.meas.run !== run.run || ui.selected !== run.run) return;
     const m = ui.meas;
     const active = document.activeElement;
     const focused = $('measure-body').contains(active) ? active.dataset.evidence : null;
@@ -788,9 +869,11 @@
         if (!ui.meas || ui.meas.run !== run.run || ui.meas.gen !== gen) await loadMeasurements(run, 'initial');
         else if ((run.frames ? run.frames.n : 0) !== ui.meas.total) await loadMeasurements(run, 'newer');
       } else if (ui.tab === 'details') {
-        renderDetails(await loadDetails(run));
+        const details = await loadDetails(run);
+        if (ui.selected === run.run && ui.tab === 'details') renderDetails(details);
       }
     } catch (e) {
+      if (ui.selected !== run.run) return;
       if (ui.tab === 'measurements') $('measure-note').textContent = `Unable to load data: ${e.message}`;
       else $('panel-' + ui.tab).replaceChildren(el('p', 'panel-note', `Unable to load data: ${e.message}`));
     }
@@ -821,10 +904,12 @@
     return { run: p.get('run'), tab: p.get('tab') };
   }
   function writeHash() {
-    if (ui.selected) history.replaceState(null, '', `#${new URLSearchParams({ run: ui.selected, tab: ui.tab })}`);
+    history.replaceState(null, '', `#${new URLSearchParams(ui.selected
+      ? { run: ui.selected, tab: ui.tab } : { tab: ui.tab })}`);
   }
   function select(id) {
     if (ui.selected === id) return;
+    closeSaveMenu();
     ui.selected = id;
     ui.problemSig = '';
     ui.meas = null;
@@ -839,10 +924,14 @@
   function render() {
     renderTopline();
     if (!ui.data) return;
-    const runs = ui.data.runs;
+    const runs = openRuns();
     $('empty').hidden = runs.length > 0;
     $('run-view').hidden = runs.length === 0;
-    if (!runs.length) { renderRail(runs); updateTitle(runs); return; }
+    if (!runs.length) {
+      if (ui.selected) { ui.selected = null; writeHash(); }
+      $('empty').textContent = ui.data.runs.length ? 'All runs are closed.' : 'No run data yet.';
+      renderRail(runs); updateTitle(runs); return;
+    }
     if (!runs.some((r) => r.run === ui.selected)) {
       ui.selected = railOrder(runs)[0].r.run;
       writeHash();
@@ -888,6 +977,26 @@
     }
     $('ack').addEventListener('click', () => { const run = currentRun(); if (run) acknowledge(run); });
     $('run-select').addEventListener('change', (e) => select(e.target.value));
+    $('restore-runs').addEventListener('click', restoreRuns);
+    $('save-current').addEventListener('click', (e) => { if (ui.selected) showSaveMenu(ui.selected, e.currentTarget); });
+    $('close-current').addEventListener('click', () => { if (ui.selected) closeRun(ui.selected); });
+    for (const link of $('save-menu').querySelectorAll('a')) link.addEventListener('click', () => closeSaveMenu(true));
+    document.addEventListener('click', (e) => {
+      if (!$('save-menu').contains(e.target) && !e.target.closest('[data-save-run]')) closeSaveMenu();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (!ui.saveMenu) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeSaveMenu(true); }
+      else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) {
+        e.preventDefault();
+        const links = [...$('save-menu').querySelectorAll('a')];
+        const index = links.indexOf(document.activeElement);
+        const next = e.key === 'Home' ? 0 : e.key === 'End' ? links.length - 1
+          : (index + (e.key === 'ArrowUp' ? -1 : 1) + links.length) % links.length;
+        links[next].focus();
+      }
+    });
+    window.addEventListener('scroll', () => closeSaveMenu(), true);
     $('measure-earlier').addEventListener('click', () => { const run = currentRun(); if (run) loadMeasurements(run, 'earlier'); });
     const tabs = [...document.querySelectorAll('.tab')];
     for (const tab of tabs) {
@@ -902,12 +1011,14 @@
     }
     let resize = null;
     window.addEventListener('resize', () => {
+      closeSaveMenu();
       clearTimeout(resize);
       resize = setTimeout(() => { if (ui.data && currentRun()) render(); }, 150);
     });
   }
 
   const initial = readHash();
+  ui.closed = readClosed();
   ui.selected = initial.run;
   setupControls();
   setTab(['problems', 'measurements', 'details'].includes(initial.tab) ? initial.tab : 'problems');

@@ -1,5 +1,87 @@
 # Implementation log
 
+## 2026-11-03 — Close and save sidebar runs
+
+User requested closing sidebar history entries and saving them; explicitly chose
+both HTML and JSON. Read README.md and plan/v1.md. Add sibling save/close buttons
+without changing compact problem rows. Closing is reversible browser-local
+hiding, remembered for the current generation, with a restore entry and sensible
+selection/focus when the selected or last open run is closed. Keep collection
+and source evidence intact. Save through a read-only download endpoint: a
+consistent SQLite snapshot, HTML offline report or JSON with current-generation
+stored events, original text/severity/locations and coverage limits. Validate
+exports, escaping/error paths, read-only behavior, UI close/restore/persistence,
+desktop/narrow appearance, CLI/HTTP and the full suite. No simulation actions,
+source-log edits or commit/push.
+
+Implemented sibling ↓/× actions, a two-format save menu, generation-scoped local
+history hiding and Restore closed; mobile uses the same actions by the picker.
+Preserve the selected run when another is closed; choose the next open run when
+needed and focus Restore when none remain. Rechecked persistence after reload,
+all six closed/restored, menu arrows/Escape, mobile focus and overflow. Adjusted
+menu bounds to clientWidth so the scrollbar does not clip the right edge.
+
+Read-only /api/export prepares an atomic download from one SQLite transaction,
+spooling over 1 MiB to disk and sending Content-Length. JSON includes every stored
+current-generation event; HTML provides problems/checks and the same complete
+stored evidence. Source text, locations, severity, suppression and coverage limits
+remain intact; filenames/HTML are escaped. No source files need to be present.
+
+Validation: current full checkout passes 79 unittest tests, including eight new
+export/interface checks. 6 CLI commands, 16 HTTP requests, six evidence lookups
+and all exported events checked against original sanitized source lines. Native
+browser menu downloaded HTML and JSON successfully. 1440×850 and 375×812 UI
+inspected; console clean. HTML download/static content verified; local file URL
+rendering is unavailable under the in-app browser URL policy and was not bypassed.
+Artifacts: .runtime/ui-history-20261103/ (unittest-final.txt, smoke.json, browser-check.json,
+demo-warning.html/json, export-http.html/json, dashboard.jpg, mobile.jpg).
+Updated README/schema/design/plan. Restarted only this task's known read-only
+serve process on 127.0.0.1:55921 (current PID 39536). Preserved unrelated parallel
+parser/integrity/store changes. No simulation actions, source edits or commit/push.
+
+## 2026-11-03 — Restore the original compact row layout
+
+User supplied the preferred original screenshot and rejected the extra stacked
+layout/cards. Read README.md and plan/v1.md. Restore severity, identifier, count,
+time/percentage, tags and message to one desktop row; change hierarchy through
+type size/color only. Restore expansion to First/Last plus source path followed
+directly by original log lines. Remove added facts/detail cards and repeated
+labels. Keep English, white theme, colored outlined tags, native evidence and
+keyboard focus behavior. Limit wrapping to narrow layouts. No parser, collector,
+CLI/API, source-log or simulation changes; no commit/push.
+
+Validated: 68 unittest tests, node --check and git diff --check pass; 6 CLI
+commands and 14 HTTP requests pass, including six original evidence records.
+Browser inspected all five expanded groups at 1440×850 and 375×812 with no
+horizontal page overflow and no facts/detail cards. Desktop identifier, count,
+time, tag area and body share column positions; body is 15px dark, count/time
+12px gray. Rule/baseline tooltip details, First/Last, suppression line and focus
+remain available. No console errors. Reused localhost viewer. Artifacts in
+.runtime/ui-compact-20261103/: unittest-final.txt, smoke.json, browser-check.json,
+all-expanded.jpg, mobile-expanded.jpg, dashboard.jpg and problem-row.jpg.
+
+## 2026-11-03 — Align problem rows and expanded evidence
+
+User requested fixed positions for tags and gray metadata and a review of every
+expanded row. Read README.md and plan/v1.md first. Replace content-sized flex
+positions with shared grids for identifier/body and count/time/tag slots; keep
+empty slots so missing data does not shift other fields. Preserve red Rule and
+amber baseline tags, English, white theme, critical states and original evidence.
+Organize expansion into consistent facts, rule/reference details, source controls
+and raw text. All five demo problem groups were opened and inspected together,
+including single/multiple records, untimed evidence and suppression. Desktop
+1100×820 and narrow 375×812 keep identifiers/messages/tags aligned with no page
+overflow; expanded facts, source paths and raw boxes share positions. Keyboard
+First/Last and measurement evidence retain focus and original text. English,
+white theme and critical states remain intact.
+
+Validated: 68 unittest tests, node --check and git diff --check pass; 6 CLI and
+14 HTTP smoke checks pass, including all six first/last source evidence records
+and failed/unknown/incomplete states. Reused the existing localhost viewer.
+Artifacts: .runtime/ui-alignment-20261103/ (unittest-final.txt, smoke.json,
+all-expanded.jpg, mobile-expanded.jpg, dashboard.jpg). Updated usage/design and
+validation notes. No parser, collector, CLI/API or source-log changes. No commit/push.
+
 ## 2026-11-03 — Restore outlined status tags
 
 User asked to restore the colored tag outlines, especially the red Rule tag.

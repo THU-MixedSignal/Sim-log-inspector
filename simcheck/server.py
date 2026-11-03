@@ -1,10 +1,11 @@
 """Localhost-only, read-only HTTP interface. No filesystem, process or write endpoints.
 
 The JSON is the same compact contract as `simcheck --json`: /api/status, /api/show,
-/api/evidence, /api/measurements, /api/details, /api/health.
+/api/evidence, /api/measurements, /api/details, /api/health. /api/export downloads a saved snapshot.
 """
 import json
 import os
+import shutil
 import socket
 import sqlite3
 import time
@@ -14,6 +15,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from . import __version__
+from .export import REPORT_CSP, export_file
 from .store import (API, SchemaError, collector_brief, collector_status, details, evidence, evidence_id,
                     measurement_page, open_readonly, show, status)
 
@@ -73,6 +75,17 @@ def handler(database, started=None):
                 if url.path in ASSETS:
                     name, kind = ASSETS[url.path]
                     self._send(200, (WEB / name).read_bytes(), kind)
+                elif url.path == '/api/export':
+                    format = q.get('format', 'json')
+                    if format not in ('html', 'json'):
+                        raise ApiError(400, 'format must be html or json')
+                    with open_readonly(database) as db:
+                        file, name, kind = export_file(db, _run(q), format)
+                    with file:
+                        size = file.seek(0, 2)
+                        file.seek(0)
+                        self._headers(200, size, kind, name, REPORT_CSP if format == 'html' else CSP)
+                        shutil.copyfileobj(file, self.wfile, 65536)
                 else:
                     body = json.dumps(self._api(url.path, q), ensure_ascii=False, separators=(',', ':'))
                     self._send(200, body.encode('utf-8'), 'application/json; charset=utf-8')
@@ -120,16 +133,21 @@ def handler(database, started=None):
                     raise ApiError(404, 'not found')
                 return result
 
-        def _send(self, status_code, body, kind):
+        def _headers(self, status_code, size, kind, filename=None, csp=CSP):
             self.send_response(status_code)
             self.send_header('Content-Type', kind)
-            self.send_header('Content-Length', str(len(body)))
+            self.send_header('Content-Length', str(size))
+            if filename:
+                self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
             self.send_header('Cache-Control', 'no-store')
             self.send_header('X-Content-Type-Options', 'nosniff')
             self.send_header('Referrer-Policy', 'no-referrer')
             self.send_header('Cross-Origin-Resource-Policy', 'same-origin')
-            self.send_header('Content-Security-Policy', CSP)
+            self.send_header('Content-Security-Policy', csp)
             self.end_headers()
+
+        def _send(self, status_code, body, kind):
+            self._headers(status_code, len(body), kind)
             self.wfile.write(body)
 
         def _error(self, status_code, message):
