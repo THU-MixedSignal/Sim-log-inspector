@@ -1,0 +1,226 @@
+
+Spectre (R) Circuit Simulator
+Version 21.1.0.509.isr12 64bit -- 24 Sep 2022
+Copyright (C) 1989-2022 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: <user>   Host: <host>   HostID: <id>   PID: <pid>
+Memory  available: 46.9006 GB  physical: 134.5838 GB
+Linux   : CentOS Linux release 7.9.2009 (Core)
+CPU Type: Intel(R) Xeon(R) Gold 6248R CPU @ 3.00GHz
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3195.2] ( 48 ),  2 [3202.1] ( 50 ),  4 [3198.7] ( 52 )
+                 6 [3204.7] ( 54 ),  8 [3189.7] ( 56 ), 10 [3189.7] ( 58 )
+                12 [3181.5] ( 60 ), 14 [3189.7] ( 62 ), 16 [3199.4] ( 64 )
+                18 [3195.4] ( 66 ), 20 [3189.3] ( 68 ), 22 [3193.4] ( 70 )
+                24 [3200.0] ( 72 ), 26 [3187.3] ( 74 ), 28 [3196.7] ( 76 )
+                30 [3189.7] ( 78 ), 32 [3193.5] ( 80 ), 34 [3213.7] ( 82 )
+                36 [3203.4] ( 84 ), 38 [3189.7] ( 86 ), 40 [3208.2] ( 88 )
+                42 [3212.2] ( 90 ), 44 [3198.7] ( 92 ), 46 [3212.0] ( 94 )
+        1:       1 [3271.2] ( 49 ),  3 [3288.4] ( 51 ),  5 [3272.3] ( 53 )
+                 7 [3273.7] ( 55 ),  9 [3272.5] ( 57 ), 11 [3276.5] ( 59 )
+                13 [3276.9] ( 61 ), 15 [3234.4] ( 63 ), 17 [3263.5] ( 65 )
+                19 [3273.2] ( 67 ), 21 [3270.3] ( 69 ), 23 [3273.0] ( 71 )
+                25 [3244.6] ( 73 ), 27 [3274.1] ( 75 ), 29 [3274.1] ( 77 )
+                31 [3259.6] ( 79 ), 33 [3244.6] ( 81 ), 35 [3268.4] ( 83 )
+                37 [3273.6] ( 85 ), 39 [3276.7] ( 87 ), 41 [3276.3] ( 89 )
+                43 [3272.3] ( 91 ), 45 [3271.2] ( 93 ), 47 [3268.2] ( 95 )
+        
+System load averages (1min, 5min, 15min) : 121.1 %, 107.0 %, 105.1 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/redacted/test.scs' on simhost at 4:55:35 PM, Tue Nov 3, 2026 (process id: 240391).
+Current working directory: /redacted/inputs
+Command line:
+    /redacted/spectre -64  \
+        /redacted/test.scs  \
+        +escchars +log  \
+        /redacted/spectre.out  \
+        -format psfascii -raw  \
+        /redacted/raw  \
+        +preset=cx +mt=1 +lqtimeout 5 -preset_override -maxw 5 -maxn 5  \
+        +logstatus
+
+Licensing Information:
+[16:55:35.341449] Configured Lic search path (21.01-s002): <license-endpoint>
+
+Licensing Information:
+[16:55:35.171504] Periodic Lic check successful
+
+Loading /redacted/libinfineon_sh.so ...
+Loading /redacted/libphilips_o_sh.so ...
+Loading /redacted/libphilips_sh.so ...
+Loading /redacted/libsparam_sh.so ...
+Loading /redacted/libstmodels_sh.so ...
+Reading file:  /redacted/test.scs
+
+Notice from spectre during circuit read-in.
+    Pre_Configuration file used: /redacted/preset_over.precfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+
+Reading file:  /redacted/spectre.cfg
+Reading file:  /redacted/preset_over.precfg
+Reading file:  /redacted/preset_over.cfg
+Time for NDB Parsing: CPU = 173.445 ms, elapsed = 450.985 ms.
+Time accumulated: CPU = 360.247 ms, elapsed = 450.99 ms.
+Peak resident memory used = 63.9 Mbytes.
+
+
+
+Time for Elaboration: CPU = 31.294 ms, elapsed = 33.1891 ms.
+Time accumulated: CPU = 391.774 ms, elapsed = 484.412 ms.
+Peak resident memory used = 69.6 Mbytes.
+
+
+Time for EDB Visiting: CPU = 1.718 ms, elapsed = 1.72377 ms.
+Time accumulated: CPU = 393.704 ms, elapsed = 486.349 ms.
+Peak resident memory used = 70.5 Mbytes.
+
+
+Notice from spectre during initial setup.
+    Multithreading is disabled due to the size of the design being too small.
+
+
+Global user options:
+               temp = 27
+            vabstol = 1e-07
+            iabstol = 1e-12
+               save = selected
+             reltol = 1e-05
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 2
+          capacitor 1     
+           resistor 1     
+            vsource 1     
+
+Analysis and control statement inventory:
+               tran 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+
+Notice from spectre during initial setup.
+    Spectre X preset=cx enabled.
+    Spectre X preset_override enabled.
+
+Time for parsing: CPU = 4.067 ms, elapsed = 4.53401 ms.
+Time accumulated: CPU = 397.931 ms, elapsed = 491.043 ms.
+Peak resident memory used = 71.9 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+   -   (Spectre X) Multi-threading. The recommended number of threads is 1, consider adding +mt=1 on command line.
+~~~~~~~~~~~~~~~~~~~~~~
+
+*****************************************************
+Transient Analysis `tran_live': time = (0 s -> 20 ns)
+*****************************************************
+DC simulation time: CPU = 591 us, elapsed = 592.947 us.
+
+Opening the PSFASCII file /redacted/tran_live.tran.tran ...
+Important parameter values:
+    start = 0 s
+    outputstart = 0 s
+    stop = 20 ns
+    step = 20 ps
+    maxstep = 100 ps
+    ic = all
+    useprevic = no
+    skipdc = no
+    reltol = 1e-06
+    abstol(V) = 100 nV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = conservative_sigglobal
+    method = gear2only
+    lteratio = 10
+    relref = sigglobal
+    cmin = 0 F
+    gmin = 1 pS
+    rabsshort = 1 mOhm
+
+
+Notice from spectre during transient analysis `tran_live'.
+    Multithreading is disabled due to the size of the design being too small.
+
+
+Output and IC/nodeset summary:
+                 save   2       (voltage)
+
+......9......8......7......6......5......4......3......2......1......0
+Number of accepted tran steps =             625
+
+Maximum value achieved for any signal of each quantity: 
+V: V(in) = 1 V
+I: I(VIN:p) = 995 uA
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Post-Transient Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   -   Non-default settings that could significantly slow down simulation
+          errpreset = conservative_sigglobal, default moderate
+          maxstep = 100 ps, default 200 ps (conservative)
+          reltol = 1e-06, default 100e-06 (conservative)
+          abstol(V) = 100 nV, default 1 uV
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+During simulation, the CPU load for active processors is :
+         0 (97.7 %)      1 (88.9 %)      2 (100.0 %)     3 (54.5 %)
+         4 (97.8 %)      5 (90.9 %)      6 (100.0 %)     7 (100.0 %)
+         8 (100.0 %)     9 (95.6 %)     10 (97.7 %)     11 (84.1 %)
+        12 (97.7 %)     13 (97.7 %)     14 (100.0 %)    15 (90.9 %)
+        16 (95.6 %)     17 (75.0 %)     18 (97.8 %)     19 (100.0 %)
+        20 (97.8 %)     21 (100.0 %)    22 (100.0 %)    23 (100.0 %)
+        25 (79.5 %)     26 (97.7 %)     27 (100.0 %)    28 (97.7 %)
+        29 (91.1 %)     30 (100.0 %)    31 (82.2 %)     32 (100.0 %)
+        33 (88.4 %)     34 (97.8 %)     35 (97.8 %)     36 (97.8 %)
+        37 (93.5 %)     38 (97.7 %)     39 (77.3 %)     40 (95.5 %)
+        41 (100.0 %)    42 (100.0 %)    43 (86.7 %)     44 (100.0 %)
+        45 (81.8 %)     46 (100.0 %)    47 (97.8 %)     48 (97.8 %)
+        49 (100.0 %)    50 (100.0 %)    51 (100.0 %)    52 (100.0 %)
+        53 (100.0 %)    54 (100.0 %)    55 (100.0 %)    56 (100.0 %)
+        57 (75.6 %)     58 (97.7 %)     59 (93.3 %)     60 (95.5 %)
+        61 (97.8 %)     62 (100.0 %)    63 (88.9 %)     64 (97.7 %)
+        65 (86.7 %)     66 (97.8 %)     68 (97.8 %)     69 (97.8 %)
+        70 (88.9 %)     71 (100.0 %)    72 (100.0 %)    73 (100.0 %)
+        74 (95.6 %)     75 (88.9 %)     76 (97.8 %)     77 (72.7 %)
+        78 (95.6 %)     79 (81.8 %)     80 (100.0 %)    81 (84.1 %)
+        82 (100.0 %)    83 (75.6 %)     84 (97.8 %)     85 (70.5 %)
+        86 (93.3 %)     87 (95.5 %)     88 (97.7 %)     89 (82.2 %)
+        90 (97.8 %)     91 (100.0 %)    93 (100.0 %)    94 (97.8 %)
+        95 (80.4 %)     
+        Total: 8738.0%
+Initial condition solution time: CPU = 665 us, elapsed = 667.81 us.
+Intrinsic tran analysis time:    CPU = 13.638 ms, elapsed = 13.8819 ms.
+Total time required for tran analysis `tran_live': CPU = 15.732 ms, elapsed = 15.974 ms, util. = 98.5%.
+Time accumulated: CPU = 418.441 ms, elapsed = 513.487 ms.
+Peak resident memory used = 74.1 Mbytes.
+
+Licensing Information:
+Lic Summary:
+[16:55:35.329121] Cdslmd servers:<license-endpoint>
+[16:55:35.329160] Feature usage summary:
+[16:55:35.329161] Virtuoso_Multi_mode_Simulation
+[16:55:35.329162] Spectre_X_MMSIM_Lk
+
+
+Aggregate audit (4:55:35 PM, Tue Nov 3, 2026):
+Time used: CPU = 420 ms, elapsed = 515 ms, util. = 81.5%.
+Time spent in licensing: elapsed = 55.7 ms, percentage of total = 10.8%.
+Peak memory used = 74.4 Mbytes.
+Simulation started at: 4:55:35 PM, Tue Nov 3, 2026, ended at: 4:55:35 PM, Tue Nov 3, 2026, with elapsed time (wall clock): 515 ms.
+spectre completes with 0 errors, 0 warnings, and 9 notices.

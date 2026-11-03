@@ -89,7 +89,7 @@ def inspect(config, parser, pending=False):
                          or c['status'] in ('unavailable', 'unsupported') for c in checks)
         required_unknown = any(c['check'] == 'log_status' and c['status'] != 'not_checked'
                                and c.get('last_status') != 'PASS' for c in checks)
-        incomplete |= any(c['check'] == 'raw' and config.get('expected_stop_s') is not None
+        incomplete |= any(c['check'] == 'raw' and config.get('raw') and config.get('expected_stop_s') is not None
                           and c.get('expected_stop_reached') is None for c in checks)
         if bad_status:
             state = 'failed'

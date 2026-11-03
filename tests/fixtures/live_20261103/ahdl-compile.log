@@ -1,0 +1,98 @@
+
+Spectre (R) Circuit Simulator
+Version 21.1.0.509.isr12 64bit -- 24 Sep 2022
+Copyright (C) 1989-2022 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: <user>   Host: <host>   HostID: <id>   PID: <pid>
+Memory  available: 58.1018 GB  physical: 134.5838 GB
+Linux   : CentOS Linux release 7.9.2009 (Core)
+CPU Type: Intel(R) Xeon(R) Gold 6248R CPU @ 3.00GHz
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3108.8] ( 48 ),  2 [3261.3] ( 50 ),  4 [3253.1] ( 52 )
+                 6 [3262.4] ( 54 ),  8 [3243.3] ( 56 ), 10 [3279.1] ( 58 )
+                12 [3308.0] ( 60 ), 14 [3264.8] ( 62 ), 16 [3262.2] ( 64 )
+                18 [3248.8] ( 66 ), 20 [3265.3] ( 68 ), 22 [3262.0] ( 70 )
+                24 [3168.6] ( 72 ), 26 [3251.4] ( 74 ), 28 [3299.7] ( 76 )
+                30 [3239.1] ( 78 ), 32 [3265.0] ( 80 ), 34 [3297.0] ( 82 )
+                36 [3245.5] ( 84 ), 38 [3253.4] ( 86 ), 40 [3239.3] ( 88 )
+                42 [3259.5] ( 90 ), 44 [3262.6] ( 92 ), 46 [3250.7] ( 94 )
+        1:       1 [3248.7] ( 49 ),  3 [3250.9] ( 51 ),  5 [3197.9] ( 53 )
+                 7 [3254.3] ( 55 ),  9 [3252.1] ( 57 ), 11 [3245.2] ( 59 )
+                13 [3250.1] ( 61 ), 15 [3244.1] ( 63 ), 17 [3253.2] ( 65 )
+                19 [3254.2] ( 67 ), 21 [3170.8] ( 69 ), 23 [3253.4] ( 71 )
+                25 [3244.3] ( 73 ), 27 [3243.2] ( 75 ), 29 [3241.1] ( 77 )
+                31 [3258.0] ( 79 ), 33 [3243.2] ( 81 ), 35 [3256.7] ( 83 )
+                37 [3250.5] ( 85 ), 39 [3243.0] ( 87 ), 41 [3250.7] ( 89 )
+                43 [3243.2] ( 91 ), 45 [3253.4] ( 93 ), 47 [3256.2] ( 95 )
+        
+System load averages (1min, 5min, 15min) : 61.3 %, 88.9 %, 100.7 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/redacted/test.scs' on simhost at 4:51:03 PM, Tue Nov 3, 2026 (process id: 216879).
+Current working directory: /redacted/inputs
+Command line:
+    /redacted/spectre -64  \
+        /redacted/test.scs  \
+        +escchars +log  \
+        /redacted/spectre.out  \
+        -format psfascii -raw  \
+        /redacted/raw  \
+        +preset=cx +mt=1 +lqtimeout 5 -preset_override -maxw 5 -maxn 5  \
+        +logstatus
+
+Licensing Information:
+[16:51:04.341385] Configured Lic search path (21.01-s002): <license-endpoint>
+
+Licensing Information:
+[16:51:04.434203] Periodic Lic check successful
+
+Loading /redacted/libinfineon_sh.so ...
+Loading /redacted/libphilips_o_sh.so ...
+Loading /redacted/libphilips_sh.so ...
+Loading /redacted/libsparam_sh.so ...
+Loading /redacted/libstmodels_sh.so ...
+Reading file:  /redacted/test.scs
+
+Notice from spectre during circuit read-in.
+    Pre_Configuration file used: /redacted/preset_over.precfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+
+Reading file:  /redacted/spectre.cfg
+Reading file:  /redacted/preset_over.precfg
+Reading file:  /redacted/preset_over.cfg
+Reading file:  /redacted/faulty.va
+
+Warning from spectre during AHDL read-in.
+    WARNING (VACOMP-2435): The environment variable CDS_AHDLCMI_ENABLE is no longer supported. Therefore, the simulator will use the default compiled C code flow.
+
+Reading file:  /redacted/disciplines.vams
+
+Error found by spectre during AHDL read-in.
+    ERROR (VACOMP-2212): "analog begin V(out) <+ SIMCHECK_UNDECLARED_SYMBOL;<<--?  end"
+        "/redacted/faulty.va", line 4: Encountered undeclared identifier: SIMCHECK_UNDECLARED_SYMBOL. Declare the identifier before using it.
+    ERROR (VACOMP-1647): "/redacted/faulty.va", line 4:  Encountered an expression on the right of a contribution statement that is not a real or an integer expression. Specify only a real or integer expression on the right of the contribution statement.
+
+Time for NDB Parsing: CPU = 159.246 ms, elapsed = 693.928 ms.
+Time accumulated: CPU = 340.111 ms, elapsed = 693.932 ms.
+Peak resident memory used = 65.4 Mbytes.
+
+Licensing Information:
+Lic Summary:
+[16:51:04.058360] Cdslmd servers:<license-endpoint>
+[16:51:04.058411] Feature usage summary:
+[16:51:04.058416] Virtuoso_Multi_mode_Simulation
+[16:51:04.058417] Spectre_X_MMSIM_Lk
+
+
+Aggregate audit (4:51:04 PM, Tue Nov 3, 2026):
+Time used: CPU = 341 ms, elapsed = 695 ms, util. = 49.1%.
+Time spent in licensing: elapsed = 478 ms, percentage of total = 68.8%.
+Peak memory used = 65.5 Mbytes.
+Simulation started at: 4:51:03 PM, Tue Nov 3, 2026, ended at: 4:51:04 PM, Tue Nov 3, 2026, with elapsed time (wall clock): 695 ms.
+spectre completes with 2 errors, 1 warning, and 3 notices.
+spectre terminated prematurely due to fatal error.

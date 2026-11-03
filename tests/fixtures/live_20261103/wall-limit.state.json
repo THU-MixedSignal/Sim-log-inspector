@@ -1,0 +1,8 @@
+{
+  "status": "limit_exceeded",
+  "exit_code": 0,
+  "reason": "output_size_limit",
+  "elapsed_seconds": 3.0996880531311035,
+  "peak_rss_bytes": 79200256,
+  "output_bytes": 8413126
+}

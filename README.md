@@ -125,3 +125,5 @@ python scripts/benchmark.py
 ```
 
 8 组脱敏真实日志和 6 份真实 logStatus 在 `tests/fixtures`，hash 在 `provenance.json`。详见 [设计](docs/design.md)、[数据契约](docs/schema.md)、[验证记录](docs/validation.md)、[实施记录](plan/log.md)。
+
+2026-11-03新增14组实际Spectre故障注入/ADC短仿语料与必要回归，见[原生仿真验证](docs/live-spectre-validation.md)。其中两项追加覆盖仍排队，未当作通过。

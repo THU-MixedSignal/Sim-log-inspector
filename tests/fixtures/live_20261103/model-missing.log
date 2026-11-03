@@ -1,0 +1,94 @@
+
+Spectre (R) Circuit Simulator
+Version 21.1.0.509.isr12 64bit -- 24 Sep 2022
+Copyright (C) 1989-2022 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: <user>   Host: <host>   HostID: <id>   PID: <pid>
+Memory  available: 57.4541 GB  physical: 134.5838 GB
+Linux   : CentOS Linux release 7.9.2009 (Core)
+CPU Type: Intel(R) Xeon(R) Gold 6248R CPU @ 3.00GHz
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3255.1] ( 48 ),  2 [3252.3] ( 50 ),  4 [3251.0] ( 52 )
+                 6 [3265.1] ( 54 ),  8 [3262.0] ( 56 ), 10 [3284.9] ( 58 )
+                12 [3261.7] ( 60 ), 14 [3267.2] ( 62 ), 16 [3242.1] ( 64 )
+                18 [3251.8] ( 66 ), 20 [3267.5] ( 68 ), 22 [3271.9] ( 70 )
+                24 [3267.9] ( 72 ), 26 [3254.3] ( 74 ), 28 [3252.9] ( 76 )
+                30 [3255.6] ( 78 ), 32 [3263.3] ( 80 ), 34 [3382.0] ( 82 )
+                36 [3253.1] ( 84 ), 38 [3258.9] ( 86 ), 40 [3285.5] ( 88 )
+                42 [3267.9] ( 90 ), 44 [3340.8] ( 92 ), 46 [3253.6] ( 94 )
+        1:       1 [3254.0] ( 49 ),  3 [3236.2] ( 51 ),  5 [3245.7] ( 53 )
+                 7 [3237.7] ( 55 ),  9 [3244.6] ( 57 ), 11 [3261.1] ( 59 )
+                13 [3234.7] ( 61 ), 15 [1827.8] ( 63 ), 17 [3269.0] ( 65 )
+                19 [2949.3] ( 67 ), 21 [3241.1] ( 69 ), 23 [3249.4] ( 71 )
+                25 [3236.4] ( 73 ), 27 [3243.0] ( 75 ), 29 [3243.0] ( 77 )
+                31 [3247.0] ( 79 ), 33 [3237.5] ( 81 ), 35 [3236.6] ( 83 )
+                37 [3246.1] ( 85 ), 39 [3262.9] ( 87 ), 41 [3232.9] ( 89 )
+                43 [3273.6] ( 91 ), 45 [3232.7] ( 93 ), 47 [3237.7] ( 95 )
+        
+System load averages (1min, 5min, 15min) : 61.3 %, 88.9 %, 100.7 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/redacted/test.scs' on simhost at 4:51:04 PM, Tue Nov 3, 2026 (process id: 217285).
+Current working directory: /redacted/inputs
+Command line:
+    /redacted/spectre -64  \
+        /redacted/test.scs  \
+        +escchars +log  \
+        /redacted/spectre.out  \
+        -format psfascii -raw  \
+        /redacted/raw  \
+        +preset=cx +mt=1 +lqtimeout 5 -preset_override -maxw 5 -maxn 5  \
+        +logstatus
+
+Licensing Information:
+[16:51:04.341385] Configured Lic search path (21.01-s002): <license-endpoint>
+
+Licensing Information:
+[16:51:05.028322] Periodic Lic check successful
+
+Loading /redacted/libinfineon_sh.so ...
+Loading /redacted/libphilips_o_sh.so ...
+Loading /redacted/libphilips_sh.so ...
+Loading /redacted/libsparam_sh.so ...
+Loading /redacted/libstmodels_sh.so ...
+Reading file:  /redacted/test.scs
+
+Notice from spectre during circuit read-in.
+    Pre_Configuration file used: /redacted/preset_over.precfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+
+Reading file:  /redacted/spectre.cfg
+Reading file:  /redacted/preset_over.precfg
+Reading file:  /redacted/preset_over.cfg
+Time for NDB Parsing: CPU = 145.605 ms, elapsed = 395.583 ms.
+Time accumulated: CPU = 332.862 ms, elapsed = 395.588 ms.
+Peak resident memory used = 63.9 Mbytes.
+
+
+Error found by spectre during circuit read-in.
+    ERROR (SFE-23): "/redacted/test.scs" 3: The instance `Xmissing' is referencing an undefined model or subcircuit, `simcheck_model_does_not_exist'. Either include the file containing the definition of `simcheck_model_does_not_exist', or define `simcheck_model_does_not_exist' before running the simulation.
+
+Time for Elaboration: CPU = 17.622 ms, elapsed = 17.9741 ms.
+Time accumulated: CPU = 350.644 ms, elapsed = 413.72 ms.
+Peak resident memory used = 69.3 Mbytes.
+
+Licensing Information:
+Lic Summary:
+[16:51:05.114370] Cdslmd servers:<license-endpoint>
+[16:51:05.114403] Feature usage summary:
+[16:51:05.114403] Virtuoso_Multi_mode_Simulation
+[16:51:05.114403] Spectre_X_MMSIM_Lk
+
+
+Aggregate audit (4:51:05 PM, Tue Nov 3, 2026):
+Time used: CPU = 351 ms, elapsed = 414 ms, util. = 84.8%.
+Time spent in licensing: elapsed = 62.2 ms, percentage of total = 15%.
+Peak memory used = 69.5 Mbytes.
+Simulation started at: 4:51:04 PM, Tue Nov 3, 2026, ended at: 4:51:05 PM, Tue Nov 3, 2026, with elapsed time (wall clock): 414 ms.
+spectre completes with 1 error, 0 warnings, and 3 notices.
+spectre terminated prematurely due to fatal error.

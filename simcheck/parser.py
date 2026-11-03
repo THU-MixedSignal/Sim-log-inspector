@@ -26,7 +26,7 @@ SETTING = re.compile(r'\s*(method|reltol|maxstep|step|abstol\(V\)|abstol\(I\)|er
                      r'noisefmax|noisefmin|noiseseed|noisescale|temp)\s*=\s*(.+)')
 SOA = re.compile(r'(\S+):\s+(V\w+)\(=\s*([^)]*)\).*?exceeded\s+(\w+)\(=\s*([^)]*)\)')
 R4MEAS = re.compile(r'^[.\d\s]*R4MEAS,')
-RAW_RECORD = re.compile(r'\s*(?:STATIC\w*|ASSERT\w*|PASS|FAIL)[,:\s]')
+RAW_RECORD = re.compile(r'^[.\d\s]*(?P<name>STATIC\w*|ASSERT\w*|PASS|FAIL)(?=[,:\s])')
 RESOURCE_CODES = ('SPECTRE-555', 'SPECTRE-27', 'SPECTRE-7082')
 
 
@@ -115,7 +115,12 @@ def parse(line, state, line_no):
         state['analysis'] = analysis[1]
     logged = ANY_TIME.search(text)
     if logged:
-        state['last_time_s'] = seconds(logged[1] + logged[2])
+        observed_time = seconds(logged[1] + logged[2])
+        if observed_time is not None:
+            # Diagnostic summaries can say "accumulated from time = 0 s"
+            # after a transient failure. Keep the furthest logged progress.
+            previous = state['last_time_s']
+            state['last_time_s'] = observed_time if previous is None else max(previous, observed_time)
     if 'Transient Analysis' in text:
         start = TRAN_START.match(text)
         stop = seconds(start[3]) if start else None
@@ -197,6 +202,6 @@ def parse(line, state, line_no):
             fields['problem_key'] = 'TB:reported_valid=0'
         emit('testbench', 'record', **fields)
     elif RAW_RECORD.match(text):
-        fields = {'problem_key': 'TB:reported_FAIL'} if re.match(r'\s*FAIL(?:[,:\s]|$)', text) else {}
+        fields = {'problem_key': 'TB:reported_FAIL'} if RAW_RECORD.match(text)['name'] == 'FAIL' else {}
         emit('testbench', 'raw_record', **fields)
     return events

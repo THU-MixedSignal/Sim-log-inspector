@@ -1,0 +1,138 @@
+{
+  "rc-normal": {
+    "source_run": "simcheck-live-rc-normal-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "596d620ae919ca154b5a55e92abbac130391048dc83064755e4f66fffb512886",
+    "log_sha256": "15c60e93d715032deb708c37ffeb63017d78172d4725f8e29682e7c7ba100cb8",
+    "state_sha256": "cedfd71a3e8e57bdaa31fcb865d400c5e46e304fa3952255ffb8be7ab5046424",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "847eb9bfdf8c1ca9e0a70237e4aa001c4f1503bf130bb229e68ad47b5e00f587",
+    "raw_sha256": "0b61774446f7febb4a7a39eee43d0f2974eb876eb13f907e121745c9eb6c5c6f"
+  },
+  "model-missing": {
+    "source_run": "simcheck-live-model-missing-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "ef727e6af0704f8c7b86f86e9a4382037f27f2e4e09bfba3b96314f4fc1d01c0",
+    "log_sha256": "22a6c438e8a1c3210970b34778f7e45737c1a27f6adf1e4cd9d5ae418f1291d8",
+    "state_sha256": "58db602254f13af63f078185655ee1ee82a5bb6f8439eed6827999b8c7148a20",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields"
+  },
+  "param-missing": {
+    "source_run": "simcheck-live-param-missing-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "4baa89971e1f616c918d8722759a80f178e7174aefa877d37f2e42be3cd79a5b",
+    "log_sha256": "bd96a30820e2e1ff7fb8a8e4baf63a9585dd63f2c6907b20568e78da6526f3f6",
+    "state_sha256": "717f51b34ea1b7410c822f5eb9dcca07d01525084dcdfb9bdddabb7231879f9a",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields"
+  },
+  "include-missing": {
+    "source_run": "simcheck-live-include-missing-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "bd675d892c3a231d7b80738b1d9f42ddb04232d4991165aa647aaf5dbd1d631a",
+    "log_sha256": "96250acacaaf366069554f49d6d443804b3fba335171efbc45ff4377f81b2826",
+    "state_sha256": "92315c4d46c24f19da209e645f94817d734c5a0a513adcb0ecb1ead721a2e7c9",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields"
+  },
+  "ahdl-compile": {
+    "source_run": "simcheck-live-ahdl-compile-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "8558a26f88c9c75a9b64de2ea894303ad2a8e8fc7e7c9851533803da8e1d84ee",
+    "log_sha256": "b7edb2fd1e67ef336ce1ce822cd68deb3e4449d0058ab6aa5f194e84376e451f",
+    "state_sha256": "afdf2e73b91c157a25f821ca4098bc59798462c68b79b078f05291952b82e31e",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields"
+  },
+  "topology": {
+    "source_run": "simcheck-live-topology-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "5b9162366adc3d130604df8f31461fcf9333062ee7824a6e201417618c919384",
+    "log_sha256": "2385dedfd26fe308074ec8a56ed8119d05eb8312d65bda9855289af2407e5f18",
+    "state_sha256": "d32ef78d2c2c8fe04d8857bb9b4b5ee9e9856aedcadd10e1bf160b2ce24d3118",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields"
+  },
+  "dc-nonconv": {
+    "source_run": "simcheck-live-dc-nonconv-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "06b484b0fc9c1d0676df6a6deb660fc89fbe7cfe5ea2cbc804615bd3cdcd904a",
+    "log_sha256": "87e0b10c031643cd803b1aa1f278e4b8538137958ef53511cc720c793949c88c",
+    "state_sha256": "3403fb10e6a7424776c2ba57127073f5c7297f318259eaa69fb04d34b69b69da",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "87ee62707600fba5be3f197cd062cbc27dd7de57e5fd9665d308dc8c5bdca701"
+  },
+  "tran-minstep": {
+    "source_run": "simcheck-live-tran-minstep-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "b1cb5bdcc039e99d3e314ed7acc1625bb1256d48b70e38dd44252bb697f38fad",
+    "log_sha256": "2422aadd7560b4ec8559d5d37df6f46e39fdb4e7bcfa3909f2a560d8511af8c3",
+    "state_sha256": "4bb024ccdd1bb6df12706307dec850fce13f95dfa54c09f6ee6432ce211d75b0",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "dc020223dc82f8c6962726e7c327a313dca81fa3a269c592a3492a4a2ed8c1ce"
+  },
+  "tb-records": {
+    "source_run": "simcheck-live-tb-records-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "0c4a7ac6960f5ba623d74552bc03c945e2d6f78d76715f5f3f45c5dc1321a47e",
+    "log_sha256": "e4f2df24f563aba10bcd9c085219ad7317ccaecf16a2ee8e24d102852d4f9604",
+    "state_sha256": "abfbd51c5af4e7c35c1c053df5fa76310f21d2b00b379bb98330a4d409239fdd",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "2534549863eb881b5fb4373ea1db98e893cec4bb9a0a04184b369beef1f40096"
+  },
+  "output-limit": {
+    "source_run": "simcheck-live-output-limit-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "78784350e4de7f0b97c0eb9d79bbbb5029ae5f5800a48ed6f0c39015ea6cb4f6",
+    "log_sha256": "35688a7e6749c4b51e8c5161cc53dc27170fdc118cae5ddee71cdfcb446d424f",
+    "state_sha256": "b8271fa906cf2a7d350e75aec868326829d0556b822c12a9b50be8ad12f5127a",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "f137e3c3f4dcdf49ca60248300bacaf378e982cf0296b80e56bfec3ea07c83f0"
+  },
+  "wall-limit": {
+    "source_run": "simcheck-live-wall-limit-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "b9f6c294445c92e9f9304ec1a7380bdeee031f16dc7f86a31898f64ebca9b59f",
+    "log_sha256": "160be2b14e093f888a4fa4d31d89987577393fa15584479e496c1888ddd4aa64",
+    "state_sha256": "8d7ba1bc6c6feae1c0f47a77ae952bd89a915e0d1f93a4be178fc0c2aebb5f43",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "2f47f4dd4e9655cc2679b3f474878fc6ca3e55d7fb6d7e36554d88b653304c22"
+  },
+  "soa": {
+    "source_run": "simcheck-live-soa-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "46db321d335b07f29449669b30b3560d18b991eca7223d443a2e5ef3d9c0377b",
+    "log_sha256": "6293cf94009d6a5b3bcd2ce495800a07d828d52d10d5fc47988dc229eca1c435",
+    "state_sha256": "709363512fd965a160163598847c4898b1cc0e125ddd0b57194fcbd78e4977cc",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "9230df985fed06155898bc963284b74b143fafadbfe4d424c664a2c151de159d"
+  },
+  "adc-a-tt": {
+    "source_run": "simcheck-live-adc-a-tt-20261103-v1",
+    "analysis": "tran_perf",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "4c753cb7aae32f271164a9e84619a7237e7030ca69a036a37ead11f79f2b688e",
+    "log_sha256": "79641217143e787e3802f2b34edb09871bb88351aa94004f6bbf8019f0930a8b",
+    "state_sha256": "adb90f4b239775b2fe00aebe7182c7ff88553f8773ab88fce3950e4fd4b574b7",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "8b8299a55312c7abbea55fa4651eb15ac127bd80bfec4c8b71e926fbfc3d5722"
+  },
+  "adc-b-tt": {
+    "source_run": "simcheck-live-adc-b-tt-20261103-v1",
+    "analysis": "tran_perf",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "761ed691fb5acf94d88702ddbb6773e69ed7357143e52d38e3057f2d7c4248c8",
+    "log_sha256": "9313c4924952e0e8fabff411bdcbe89ec2df7353756e918a14358885ddd166b7",
+    "state_sha256": "e796f9bc05299e13c6b7bda9782c406cdaeb186436ab5c7c653b965a381d4e8e",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "7954798b4bd36a25763e6cad35386389604439fe8e9808fae6e49503313c1efc"
+  }
+}

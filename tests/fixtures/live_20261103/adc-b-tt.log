@@ -1,0 +1,380 @@
+
+Spectre (R) Circuit Simulator
+Version 21.1.0.509.isr12 64bit -- 24 Sep 2022
+Copyright (C) 1989-2022 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: <user>   Host: <host>   HostID: <id>   PID: <pid>
+Memory  available: 58.4307 GB  physical: 134.5838 GB
+Linux   : CentOS Linux release 7.9.2009 (Core)
+CPU Type: Intel(R) Xeon(R) Gold 6248R CPU @ 3.00GHz
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3265.7] ( 48 ),  2 [3272.8] ( 50 ),  4 [3245.0] ( 52 )
+                 6 [3271.2] ( 54 ),  8 [3265.7] ( 56 ), 10 [3423.0] ( 58 )
+                12 [3265.3] ( 60 ), 14 [3273.2] ( 62 ), 16 [3277.6] ( 64 )
+                18 [3267.3] ( 66 ), 20 [3275.8] ( 68 ), 22 [3248.1] ( 70 )
+                24 [3277.2] ( 72 ), 26 [3264.2] ( 74 ), 28 [3278.7] ( 76 )
+                30 [3273.9] ( 78 ), 32 [3259.5] ( 80 ), 34 [3245.5] ( 82 )
+                36 [3269.0] ( 84 ), 38 [3266.4] ( 86 ), 40 [3275.8] ( 88 )
+                42 [3275.6] ( 90 ), 44 [3275.6] ( 92 ), 46 [3265.7] ( 94 )
+        1:       1 [3270.4] ( 49 ),  3 [3248.1] ( 51 ),  5 [3240.1] ( 53 )
+                 7 [3251.2] ( 55 ),  9 [3245.7] ( 57 ), 11 [3237.9] ( 59 )
+                13 [3225.4] ( 61 ), 15 [3254.5] ( 63 ), 17 [3238.4] ( 65 )
+                19 [3239.5] ( 67 ), 21 [3251.2] ( 69 ), 23 [3245.0] ( 71 )
+                25 [3254.9] ( 73 ), 27 [3254.3] ( 75 ), 29 [3251.4] ( 77 )
+                31 [3250.3] ( 79 ), 33 [3252.9] ( 81 ), 35 [3252.7] ( 83 )
+                37 [3246.8] ( 85 ), 39 [3240.8] ( 87 ), 41 [3247.7] ( 89 )
+                43 [3299.9] ( 91 ), 45 [3248.7] ( 93 ), 47 [3251.4] ( 95 )
+        
+System load averages (1min, 5min, 15min) : 61.3 %, 88.9 %, 100.7 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/redacted/test.scs' on simhost at 4:51:03 PM, Tue Nov 3, 2026 (process id: 216419).
+Current working directory: /redacted/inputs
+Command line:
+    /redacted/spectre -64  \
+        /redacted/test.scs  \
+        +escchars +log  \
+        /redacted/spectre.out  \
+        -format psfascii -raw  \
+        /redacted/raw  \
+        +preset=mx +mt=4 +lqtimeout 5 -preset_override -maxw 5 -maxn 5  \
+        +logstatus
+
+Licensing Information:
+[16:51:03.341377] Configured Lic search path (21.01-s002): <license-endpoint>
+
+Licensing Information:
+[16:51:03.007698] Periodic Lic check successful
+
+Loading /redacted/libinfineon_sh.so ...
+Loading /redacted/libphilips_o_sh.so ...
+Loading /redacted/libphilips_sh.so ...
+Loading /redacted/libsparam_sh.so ...
+Loading /redacted/libstmodels_sh.so ...
+Reading file:  /redacted/test.scs
+
+Notice from spectre during circuit read-in.
+    Pre_Configuration file used: /redacted/preset_over.precfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+
+Reading file:  /redacted/spectre.cfg
+Reading file:  /redacted/preset_over.precfg
+Reading file:  /redacted/preset_over.cfg
+Reading file:  /redacted/crn28ull_1d8_elk_v1d8_2p2_shrink0d9_embedded_usage.scs
+Reading file:  /redacted/cln28ull_1d8_elk_v1d8_3.scs
+Reading file:  /redacted/crn28ull_1d8_elk_v1d8_2p2.scs
+Reading file:  /redacted/res_metal.scs
+Reading file:  /redacted/library_include.scs
+Reading file:  /redacted/tcbn28hpcplusbwp12t30p140_170a.spi
+Reading file:  /redacted/dut.scs
+Reading file:  /redacted/tb.scs
+Reading file:  /redacted/r4_perf_monitor.va
+
+Warning from spectre during AHDL read-in.
+    WARNING (VACOMP-2435): The environment variable CDS_AHDLCMI_ENABLE is no longer supported. Therefore, the simulator will use the default compiled C code flow.
+
+Reading file:  /redacted/constants.vams
+Reading file:  /redacted/disciplines.vams
+Time for NDB Parsing: CPU = 14.4318 s, elapsed = 14.8833 s.
+Time accumulated: CPU = 14.6233 s, elapsed = 14.8833 s.
+Peak resident memory used = 265 Mbytes.
+
+Reading file:  /redacted/libTMImodel.so
+
+Warning from spectre in `sar_adc8_join_r4', during circuit read-in.
+    WARNING (SFE-2453): The global node `VDD!' and sub circuit terminal `VDD!' will be treated as the sub circuit terminal.
+    WARNING (SFE-2453): The global node `0' and sub circuit terminal `0' will be treated as the sub circuit terminal.
+
+Created directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//322a88ef25967a5a101d5f1cf708359f.r4_perf_monitor.ahdlcmi/ (775)
+Reading file:  /redacted/libahdlcmi_r4_perf_monitor.so
+Created directory ./test.ahdlSimDB//322a88ef25967a5a101d5f1cf708359f.r4_perf_monitor.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /redacted/ to directory ./test.ahdlSimDB//322a88ef25967a5a101d5f1cf708359f.r4_perf_monitor.ahdlcmi/Linux-64/
+Finished copying files from /redacted/ to ./test.ahdlSimDB//322a88ef25967a5a101d5f1cf708359f.r4_perf_monitor.ahdlcmi/Linux-64/.
+The simulator has reused the existing Verilog-A libraries for this simulation run. If you do not want to use these libraries, set the 'CDS_AHDL_REUSE_LIB' environment variable to 'NO' and rerun the simulation.
+Existing shared object for module r4_perf_monitor is up to date.
+Installed compiled interface for r4_perf_monitor.
+Reading link:  /redacted/discipline.h
+Reading link:  /redacted/constants.h
+
+Warning from spectre during hierarchy flattening.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `272' has also been specified at line `1582' in file `/redacted/crn28ull_1d8_elk_v1d8_2p2_shrink0d9_embedded_usage.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1582' has also been specified at line `1816' in file `/redacted/crn28ull_1d8_elk_v1d8_2p2_shrink0d9_embedded_usage.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1816' has also been specified at line `1929' in file `/redacted/crn28ull_1d8_elk_v1d8_2p2_shrink0d9_embedded_usage.scs'. As a result, the last specified value will be used for simulation.
+    WARNING (SFE-1131): Scope option `scalefactor' specified with scope `TopCircuit' at line `1929' has also been specified at line `1970' in file `/redacted/crn28ull_1d8_elk_v1d8_2p2_shrink0d9_embedded_usage.scs'. As a result, the last specified value will be used for simulation.
+
+Reading file:  /redacted/cln28ull_1d8_elk_v1d8_3_dir
+
+
+Opening directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//bsource_c73fd1.va.bsource_c73fd1.ahdlcmi/ (775)
+Reading file:  /redacted/libahdlcmi_bsource_c73fd1.so
+Created directory ./test.ahdlSimDB//bsource_c73fd1.va.bsource_c73fd1.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /redacted/ to directory ./test.ahdlSimDB//bsource_c73fd1.va.bsource_c73fd1.ahdlcmi/Linux-64/
+Finished copying files from /redacted/ to ./test.ahdlSimDB//bsource_c73fd1.va.bsource_c73fd1.ahdlcmi/Linux-64/.
+Existing shared object for module bsource_c73fd1 is up to date.
+Installed compiled interface for bsource_c73fd1.
+Opening directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/ (775)
+Reading file:  /redacted/libahdlcmi_bsource_rupoly_89fec3.so
+Created directory ./test.ahdlSimDB//bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /redacted/ to directory ./test.ahdlSimDB//bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/
+Finished copying files from /redacted/ to ./test.ahdlSimDB//bsource_rupoly_89fec3.va.bsource_rupoly_89fec3.ahdlcmi/Linux-64/.
+Existing shared object for module bsource_rupoly_89fec3 is up to date.
+Installed compiled interface for bsource_rupoly_89fec3.
+Opening directory ./test.ahdlSimDB/ (775)
+Created directory ./test.ahdlSimDB//bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/ (775)
+Reading file:  /redacted/libahdlcmi_bsource_0ac3b1.so
+Created directory ./test.ahdlSimDB//bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /redacted/ to directory ./test.ahdlSimDB//bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/
+Finished copying files from /redacted/ to ./test.ahdlSimDB//bsource_0ac3b1.va.bsource_0ac3b1.ahdlcmi/Linux-64/.
+Existing shared object for module bsource_0ac3b1 is up to date.
+Installed compiled interface for bsource_0ac3b1.
+Time for Elaboration: CPU = 850.934 ms, elapsed = 1.05375 s.
+Time accumulated: CPU = 15.4744 s, elapsed = 15.9372 s.
+Peak resident memory used = 311 Mbytes.
+
+
+Notice from spectre during hierarchy flattening.
+    The value 'psf' specified for the 'checklimitdest' option will no longer be supported in future releases. Use 'spectre -h' to see other recommended values for the 'checklimitdest' option.
+
+
+Time for EDB Visiting: CPU = 214.106 ms, elapsed = 241.033 ms.
+Time accumulated: CPU = 15.6886 s, elapsed = 16.1784 s.
+Peak resident memory used = 318 Mbytes.
+
+  *********************************************************
+  ** TMI Share Library                   Version is V102031.180001 (Jan 30 2019 14:22:45)
+  ** Built OS                            Version is Red Hat Enterprise Linux AS release 4 (Nahant Update 6)
+  ** Built compiler                      Version is gcc version 4.1.2 20070626 (Red Hat 4.1.2-14)
+  *********************************************************
+
+Global user options:
+         psfversion = 1.4.0
+             method = gear2only
+            vabstol = 1e-08
+            iabstol = 1e-13
+               temp = 27
+               gmin = 1e-12
+             rforce = 1
+           maxnotes = 5
+           maxwarns = 5
+             digits = 5
+               cols = 80
+             pivrel = 0.001
+     checklimitdest = psf
+               save = selected
+          tmioutput = /redacted/test
+            degfile = /redacted/test
+        scalefactor = 0.9
+             reltol = 1e-06
+               tnom = 27
+             scalem = 1
+              scale = 1
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 1753
+     bsource_0ac3b1 85    
+     bsource_c73fd1 380   
+bsource_rupoly_89fec3 380   
+          capacitor 475   
+    r4_perf_monitor 1     
+           resistor 4     
+            vsource 6     
+        tmibsimbulk 1977  
+
+Analysis and control statement inventory:
+               tran 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+
+Notice from spectre during initial setup.
+    Spectre X preset=mx enabled.
+    Spectre X preset_override enabled.
+
+Licensing Information:
+[16:51:19.024920] Periodic Lic check successful
+
+
+Notice from spectre.
+    Multithreading enabled: 4 threads in the system with 96 available processors.
+
+Time for parsing: CPU = 173.802 ms, elapsed = 176.928 ms.
+Time accumulated: CPU = 15.8626 s, elapsed = 16.3555 s.
+Peak resident memory used = 337 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+   -   (Spectre X) Multi-threading. The recommended number of threads is [2, 4], consider adding +mt=2 or +mt=4 on command line.
+~~~~~~~~~~~~~~~~~~~~~~
+
+******************************************************
+Transient Analysis `tran_perf': time = (0 s -> 359 ns)
+******************************************************
+Trying Fast DC 0 for initial conditions.
+
+Notice from spectre during IC analysis, during transient analysis `tran_perf'.
+    GminDC = 1 pS is large enough to noticeably affect the DC solution.
+        dV(XDUT.TOPP) = -75.7458 mV
+        Use the `gmin_check' option to eliminate or expand this report.
+    Bad pivoting is found during DC analysis. Option dc_pivot_check=yes is recommended for possible improvement of convergence.
+
+DC simulation time: CPU = 2.34912 s, elapsed = 925.544 ms.
+
+Opening the PSFASCII file /redacted/tran_perf.tran.tran ...
+Important parameter values:
+    start = 0 s
+    outputstart = 0 s
+    stop = 359 ns
+    step = 359 ps
+    maxstep = 10 ps
+    ic = all
+    useprevic = no
+    skipdc = no
+    reltol = 1e-06
+    abstol(V) = 10 nV
+    abstol(I) = 100 fA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = moderate
+    method = trap
+    lteratio = 10
+    relref = allglobal
+    cmin = 0 F
+    gmin = 1 pS
+    rabsshort = 1 mOhm
+
+
+Output and IC/nodeset summary:
+                 save   4       (current)
+                 save   12      (voltage)
+
+......9.....
+
+Warning from spectre at time = 60.0959 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vbd(=-991.266 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MM4: Vbd(=-991.266 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=991.266 mV) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.096 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vbd(=-993.551 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MM4: Vbd(=-993.551 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=993.551 mV) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0961 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgd(=-991.57 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2755): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vbd(=-995.716 mV) has exceeded vbd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vgd(=-991.57 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=995.716 mV) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0962 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgd(=-993.896 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MSLTn1: Vgd(=-993.896 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=998.101 mV) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0963 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2754): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgd(=-996.437 mV) has exceeded vgd_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+    WARNING (CMI-2753): XDUT.XCTRL.XSEQ.XF7.XFF.MM76: Vgb(=1.0007 V) has exceeded vgb_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+Warning from spectre at time = 60.0971 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-993.191 mV) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0972 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-998.122 mV) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0974 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-1.00338 V) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0975 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-1.00807 V) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.0977 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2752): XDUT.XCTRL.XSEQ.XF7.XFF.MM3: Vgs(=-1.01296 V) has exceeded vgs_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+Warning from spectre at time = 60.1032 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2751): XDUT.XREF.XREQUEST.X001.XLIB.MM4: Vds(=990.076 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.1033 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2751): XDUT.XCTRL.XTIM.XCLOCK.X001.XLIB.MM4: Vds(=990.584 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2751): XDUT.XREF.XREQUEST.X001.XLIB.MM4: Vds(=990.737 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+Warning from spectre at time = 60.1035 ns during transient analysis `tran_perf'.
+    WARNING (CMI-2751): XDUT.XCTRL.XTIM.XCLOCK.X001.XLIB.MM4: Vds(=991.131 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+    WARNING (CMI-2751): XDUT.XREF.XREQUEST.X001.XLIB.MM4: Vds(=991.286 mV) has exceeded vds_max(=990 mV). Check and update the settings of the SOA-related model parameters and terminal bias of the instance
+        Further occurrences of this warning will be suppressed.
+
+......9......8......7......6...R4MEAS,0,231,8,8,8,16,231,1,3.19120318715e-06,1.00084436778403e-07,0.736075034906,0.72771919183,0.727719575669,2.91813002462e-08
+......9......8......7......6......5......4......3.R4MEAS,1,44,8,8,8,16,44,1,3.19120075953e-06,2.00084437319003e-07,-0.602201539556,-0.589033525056,-0.589033865698,2.92542761613e-08
+......9......8......7......6......5......4......3......2......1......0R4MEAS,2,183,8,8,8,16,183,1,3.19119795833e-06,3.00084437067691e-07,0.409836224149,0.393108994512,0.393108679011,2.9354528904e-08
+Number of accepted tran steps =             169164
+
+Maximum value achieved for any signal of each quantity: 
+V: V(XDUT.XBOOTP.BTOP) = 1.73 V
+I: I(VVDD:p) = 3.589 mA
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Post-Transient Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   -   Non-default settings that could significantly slow down simulation
+          maxstep = 10 ps, default 7.18 ns
+          reltol = 1e-06, default 1e-03
+          abstol(V) = 10 nV, default 1 uV
+          abstol(I) = 100 fA, default 1 pA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+During simulation, the CPU load for active processors is :
+         0 (93.0 %)      1 (94.4 %)      2 (95.4 %)      3 (87.1 %)
+         4 (87.9 %)      5 (96.3 %)      6 (92.5 %)      7 (90.2 %)
+         8 (91.4 %)      9 (84.6 %)     10 (83.2 %)     11 (93.0 %)
+        12 (94.2 %)     13 (78.7 %)     14 (93.9 %)     15 (91.6 %)
+        16 (92.0 %)     17 (90.4 %)     18 (94.2 %)     19 (92.0 %)
+        20 (95.2 %)     21 (91.8 %)     22 (95.6 %)     23 (90.4 %)
+        24 (92.2 %)     25 (92.3 %)     26 (95.7 %)     27 (92.2 %)
+        28 (74.3 %)     29 (83.4 %)     30 (91.5 %)     31 (74.9 %)
+        32 (93.8 %)     33 (93.5 %)     34 (90.7 %)     35 (94.0 %)
+        36 (92.8 %)     37 (94.6 %)     38 (91.3 %)     39 (87.4 %)
+        40 (90.9 %)     41 (91.3 %)     42 (91.1 %)     43 (93.2 %)
+        44 (93.2 %)     45 (90.7 %)     46 (89.5 %)     47 (92.0 %)
+        48 (92.6 %)     49 (94.6 %)     50 (93.5 %)     51 (88.3 %)
+        52 (85.1 %)     53 (55.3 %)     54 (95.7 %)     55 (91.7 %)
+        56 (94.7 %)     57 (89.3 %)     58 (94.0 %)     59 (86.1 %)
+        60 (94.7 %)     61 (84.5 %)     62 (93.1 %)     63 (89.8 %)
+        64 (93.9 %)     65 (91.7 %)     66 (92.3 %)     67 (88.9 %)
+        68 (93.4 %)     69 (92.8 %)     70 (93.4 %)     71 (90.6 %)
+        72 (93.5 %)     73 (92.7 %)     74 (97.6 %)     75 (88.4 %)
+        76 (81.4 %)     77 (85.9 %)     78 (89.5 %)     79 (93.8 %)
+        80 (92.9 %)     81 (59.9 %)     82 (94.2 %)     83 (87.6 %)
+        84 (91.4 %)     85 (80.6 %)     86 (91.2 %)     87 (79.3 %)
+        88 (88.2 %)     89 (91.6 %)     90 (91.6 %)     91 (91.3 %)
+        92 (91.7 %)     93 (84.4 %)     94 (93.8 %)     95 (93.9 %)
+        Total: 8641.7%
+Initial condition solution time: CPU = 2.34925 s, elapsed = 925.651 ms.
+Intrinsic tran analysis time:    CPU = 643.941 s, elapsed = 180.219 s.
+Total time required for tran analysis `tran_perf': CPU = 646.298 s (10m  46.3s), elapsed = 181.151 s (3m  1.2s), util. = 357%.
+Time accumulated: CPU = 662.231 s (11m  2.2s), elapsed = 197.525 s (3m  17.5s).
+Peak resident memory used = 369 Mbytes.
+
+
+Notice from spectre.
+    65793 warnings suppressed.
+
+Licensing Information:
+Lic Summary:
+[16:54:20.196481] Cdslmd servers:<license-endpoint>
+[16:54:20.196545] Feature usage summary:
+[16:54:20.196546] Virtuoso_Multi_mode_Simulation
+[16:54:20.196547] Spectre_X_MMSIM_Lk
+
+
+Aggregate audit (4:54:20 PM, Tue Nov 3, 2026):
+Time used: CPU = 662 s (11m  2.2s), elapsed = 198 s (3m  17.5s), util. = 335%.
+Time spent in licensing: elapsed = 79.4 ms.
+Peak memory used = 370 Mbytes.
+Simulation started at: 4:51:03 PM, Tue Nov 3, 2026, ended at: 4:54:20 PM, Tue Nov 3, 2026, with elapsed time (wall clock): 198 s (3m  17.5s).
+spectre completes with 0 errors, 32 warnings, and 12 notices.

@@ -1,5 +1,42 @@
 # Implementation log
 
+## 2026-11-03 — User-authorized native Spectre campaign
+
+Prepared16 isolated managed cases under the ADC project's separate scoped plan;
+14 have executed and been hash-checked/collected, syntax and no-output wall-time
+case remain CPU-queued. Input/numerical faults are deliberate. Original circuits,
+PDK/OA/history unchanged. A/B three-frame TT decks preserve frozen DUT/TB/library/
+observer hashes; codes231/44/183, reported_valid1 each. B retains five CMI groups.
+No ADC performance/electrical qualification is inferred.
+
+New real evidence exposed5 defects: no-log queued/rejected state discarded;
+expected_stop metadata wrongly required unconfigured raw; failure diagnostic
+statistics rewound progress to0; progress-prefixed FAIL/PASS dropped; rule summary
+skipped the first untimed IC warning. Fixed in existing parser/integrity/store,
+kept unknown time/partial evidence conservative.14 sanitized native fixtures,
+5 focused campaign regression methods plus boundary cases. Full suite85 passed;
+CLI/API and actual Edge UI lazy evidence/measurement operations passed.
+
+RC54,470B raw inspected and its truncated copy/wrong analysis correctly fail
+completeness. Output cap tests show native failure despite process exit0. Initial
+wall timeout attempt hit file cap first and is recorded as coverage miss, not
+wall proof. License/swap/system OOM were not deliberately induced. Native SOA
+stream replay wait: partial line did not wake, complete line->wait0.224s, offline
+collector->exit4. This is local replay latency, not a remote simulator latency.
+
+User authorized one1-thread CPU exception, applied only to queued rc-normal;
+other completed cases naturally passed original gates. One other queued worker
+temporarily identity-paused (no simulation child), then resumed. Exact original
+policy SHA256 restored2b600b9ce3eebaa611e924c8d7cc5cc4e11a0c211d20302b91f4e6307eb2ddfb.
+No local management sources/policy changed. Tool remains read-only; the explicit
+user simulation authorization is scoped to this test campaign only.
+
+Report docs/live-spectre-validation.md. Private work.runtime/live-spectre-20261103
+contains receipts, source bindings and current campaign-status.json. Test viewer
+127.0.0.1:50147 uses validated.sqlite; finite mirror/collection checkpoint helpers
+retain queued results without resubmission, no recurring automation. Existing
+unrelated UI/export/docs changes preserved, not claimed as this task. No commit/push.
+
 ## 2026-11-03 — Close and save sidebar runs
 
 User requested closing sidebar history entries and saving them; explicitly chose

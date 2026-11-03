@@ -138,6 +138,47 @@ class Boundaries(unittest.TestCase):
         self.assertEqual(a['normalized'], b['normalized'])
         self.assertNotEqual(a['default_text'], b['default_text'])
 
+    def test_state_before_log_exists(self):
+        self.log.unlink()
+        state = self.p / 'state.json'
+        self.c['state'] = str(state)
+        for reported in ('queued', 'submitted', 'waiting', 'starting'):
+            state.write_text(json.dumps({'status': reported}), encoding='utf-8')
+            result = scan(self.db, self.c)
+            self.assertEqual(result['integrity']['status'], reported)
+            self.assertIsNone(result['error'])
+        state.write_text('{"status":"rejected","reason":"queue_timeout"}', encoding='utf-8')
+        self.assertEqual(scan(self.db, self.c)['integrity']['status'], 'failed')
+        state.write_text('{"status":"complete","exit_code":0}', encoding='utf-8')
+        self.assertEqual(scan(self.db, self.c)['integrity']['status'], 'incomplete')
+        del self.c['state']
+        self.assertEqual(scan(self.db, self.c)['integrity']['status'], 'unknown')
+
+    def test_stop_metadata_without_raw_is_not_a_missing_raw_file(self):
+        self.write(FOOT)
+        self.c['expected_stop_s'] = 20e-9
+        self.assertEqual(scan(self.db, self.c)['integrity']['status'], 'complete')
+        self.c['raw'] = str(self.p / 'not-created.tran')
+        self.assertEqual(scan(self.db, self.c)['integrity']['status'], 'incomplete')
+
+    def test_failure_summary_does_not_rewind_logged_progress(self):
+        s = initial()
+        parse("Transient Analysis `tran_live': time = (0 s -> 20 ns)", s, 1)
+        parse("Error found by spectre at time = 5.00081 ns during transient analysis `tran_live'.", s, 2)
+        parse(' Top 2 Solution Convergence failure counts accumulated from time = 0 s to time = 5.00081 ns of analysis:', s, 3)
+        self.assertAlmostEqual(s['last_time_s'], 5.00081e-9)
+        parse("Transient Analysis `another': time = (0 s -> 10 ns)", s, 4)
+        self.assertIsNone(s['last_time_s'])
+
+    def test_progress_prefix_before_explicit_tb_fail(self):
+        s = initial()
+        fail = parse('......9......8......7......6...FAIL,intentional_testbench_report', s, 1)
+        self.assertEqual(fail[0]['problem_key'], 'TB:reported_FAIL')
+        self.assertEqual(fail[0]['severity'], 'INFO')
+        passed = parse('......9......8...PASS,intentional_testbench_report', s, 2)
+        self.assertNotIn('problem_key', passed[0])
+        self.assertEqual(parse('ordinary sentence FAIL,not a TB record', s, 3), [])
+
     def test_bytewise_and_unicode(self):
         text = ("Warning from spectre at time = 2 ns during transient analysis `tran'.\n"
                 ' WARNING (NEW-99): 这是 µV\n' + FOOT)

@@ -275,8 +275,16 @@ def scan(db, config, final=False):
                    'backlog': backlog, 'integrity': integrity, 'observed_epoch': now, 'error': None}
     except OSError as e:
         cur = cur or _empty_cursor(source)
-        summary = {'source_path': str(source), 'integrity': {'status': 'unknown', 'checks': []},
-                   'backlog': False, 'observed_epoch': now, 'error': str(e)}
+        # Managed queued/rejected jobs may never create a Spectre log. The
+        # explicitly bound state remains evidence even when that file is absent.
+        integrity = inspect(config, cur['parser'])
+        if integrity['status'] == 'complete':
+            integrity['status'] = 'incomplete'
+        not_started = (isinstance(e, FileNotFoundError) and cur['offset'] == 0
+                       and integrity['native_status'] == 'unknown'
+                       and integrity['execution_status'] in ('queued', 'submitted', 'waiting', 'starting'))
+        summary = {'source_path': str(source), 'integrity': integrity,
+                   'backlog': False, 'observed_epoch': now, 'error': None if not_started else str(e)}
     db.execute('INSERT OR REPLACE INTO runs(id,config,cursor,summary,updated) VALUES(?,?,?,?,?)',
                (config['id'], json.dumps(config, ensure_ascii=False), json.dumps(cur, ensure_ascii=False),
                 json.dumps(summary, ensure_ascii=False), now))
@@ -589,13 +597,12 @@ def _rules(hits):
     out = {}
     for h in hits:
         r = out.setdefault(h['rule'], {'rule': h['rule'], 'keys': [], 'n': 0, 'e': h['first_evidence_id'],
-                                       't': None, 'pct': None})
+                                       't': h['first_sim_time_s'], 'pct': pct(h['first_fraction'])})
         r['n'] += 1
         if len(r['keys']) < 5:
             r['keys'].append(h['problem_key'])
-        t = h['first_sim_time_s']
-        if t is not None and (r['t'] is None or t < r['t']):
-            r.update(e=h['first_evidence_id'], t=t, pct=pct(h['first_fraction']))
+        if h['first_evidence_id'] < r['e']:
+            r.update(e=h['first_evidence_id'], t=h['first_sim_time_s'], pct=pct(h['first_fraction']))
     for r in out.values():
         r['t'] = sig(r['t'])
     for r in out.values():
