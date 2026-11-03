@@ -6,11 +6,15 @@ build-backend = "setuptools.build_meta"
 name = "spectre-log-inspector"
 version = "0.4.0"
 description = "Read-only, incremental Spectre evidence monitor for catching problems early"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 
 [project.scripts]
 simcheck = "simcheck.cli:main"
+
+[tool.setuptools]
+packages = ["simcheck"]
 
 [tool.setuptools.package-data]
 simcheck = ["web/*.html", "web/*.js", "web/*.css"]

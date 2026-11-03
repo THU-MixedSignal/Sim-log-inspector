@@ -1,0 +1,14 @@
+# Example only. Reuse an existing authorized alias where possible.
+# Keep the real configuration and private keys in the connecting user's .ssh/.
+Host spectre-box
+    HostName sim-server.example.org
+    User sim_reader
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_sim
+    IdentitiesOnly yes
+    BatchMode yes
+    ConnectTimeout 10
+    StrictHostKeyChecking yes
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+    # ProxyJump company-bastion

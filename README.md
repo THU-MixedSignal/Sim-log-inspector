@@ -4,6 +4,25 @@
 
 **Python 3.10+，零第三方依赖。** 已用 Spectre 21.1.0.509.isr12 的真实日志验证；Windows、Python 3.13。
 
+**仓库链接是默认交付入口。** 陌生机器上的 Agent 先读 [AGENTS.md](AGENTS.md) 和 [从仓库开始](docs/agent-quickstart.md)，克隆后即可用源码运行；pip 安装为可选项。远端访问见 [SSH 配置与部署](docs/ssh.md)。当前提供 CLI/JSON 和只读 HTTP，没有 MCP 服务，也未发布到公共包索引。
+
+GitHub 仓库：[chenzc24/spectre-log-inspector](https://github.com/chenzc24/spectre-log-inspector)。私有仓库需要接收方先获得 GitHub 读取权限。可直接转交的提示见 [Agent 上手提示](docs/agent-prompt.md)。
+
+离线环境也可用 `python scripts/package_handoff.py` 生成 ZIP（wheel、合成样例和说明），见 [离线安装](docs/handoff.md)。
+
+## 从仓库开始
+
+Windows 使用 `python` 或 `py -3`，Linux/macOS 通常使用 `python3`；需要 Python 3.10+。若使用镜像仓库，替换下面的 URL。
+
+```sh
+git clone https://github.com/chenzc24/spectre-log-inspector.git spectre-log-inspector
+cd spectre-log-inspector
+python -m simcheck --version
+python -m simcheck --db .runtime/onboarding.sqlite scan examples/real-fixtures.json --json
+```
+
+这条路径不需要 pip、第三方包、Spectre 安装或许可证。示例扫描后退出，不启动仿真。要查看真实运行，还需提供本机可读的日志清单；远端则需提供已授权的 SSH 主机别名和服务器上的日志/工作目录。URL 本身不包含这些私有配置。Agent 的输出和等待循环见 [使用契约](docs/agent-handoff.md)。
+
 ## 快速开始
 
 ```powershell
@@ -11,6 +30,8 @@ python -m simcheck --db .runtime/demo.sqlite run examples/real-fixtures.json --o
 ```
 
 一个前台进程同时采集和提供页面（默认 <http://127.0.0.1:8765>），Ctrl-C 停止。端口被占用时在采集前报错；`--port 0` 自动选端口。也可双击 `Start-Viewer.cmd`。
+
+想先看小样例：用 `examples/synthetic-cases.json` 替换上面的清单，并使用新库 `.runtime/synthetic-demo.sqlite`。这份清单有 6 个手写合成案例，覆盖正常结束、运行中告警、FATAL 与 exit 0 冲突、缺少结尾、raw 不完整和分析名不匹配；详见 [样例与提取结果](docs/examples.md)。
 
 ## 给 Agent
 
@@ -44,7 +65,7 @@ HTTP 给出同样的 JSON（只读，只绑定 127.0.0.1，只接受本机 Host 
 
 ## 页面
 
-左侧运行列表按需要关注排序：失败和命中规则是红色竖条，日志超时、采集出错是琥珀色，正常结束的不着色。右侧只有状态和命中的规则、问题计数、仿真进度、仿真时间轴（标出各组问题首次出现的位置）、问题列表（一组一行，点开看原文）、测量（最新 50 条）、详情（完整性检查和设置对照）。开启“提醒”后，新问题、失败、规则命中、日志超时、采集器离线会发浏览器通知。
+页面使用英文界面和固定浅色主题，主体为白色。采集状态只显示一处；Failed、Unknown、Incomplete evidence 保持明显。左侧运行列表按需要关注排序：失败和命中规则是红色竖条，日志超时、采集出错是琥珀色，正常结束的不着色；窄屏改为运行下拉选择器。右侧把仿真进度集中在时间轴附近，问题正文优先占宽，次数、首次时间与匹配标记放在下方灰色小字行；规则名、参考运行、来源路径和原文按需展开。标签页为 Problems、Measurements（最新 50 条，View 展开原文）、Details（完整性检查和设置对照）。开启 Notifications 后，新问题、失败、规则命中、日志超时、采集器离线会发浏览器通知。Pause updates 只暂停页面自动刷新。
 
 ## 清单（manifest）
 
