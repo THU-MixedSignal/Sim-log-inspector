@@ -545,8 +545,8 @@
     if (has(g.t)) meta.append(el('span', 'g-when', `First ${fmtTime(g.t)}`));
     const flags = el('span', 'g-flags');
     if ((g.sev !== 'NOTICE' || g.rules) && !seen.has(gkey(g))) flags.append(chip('New', 'new'));
-    if (g.rules) flags.append(chip('Rule hit', '', g.rules.join(', ')));
-    if (g.base_new) flags.append(chip('Not in baseline', '', `Absent from baseline run ${show.baseline}`));
+    if (g.rules) flags.append(chip('Rule', 'critical', g.rules.join(', ')));
+    if (g.base_new) flags.append(chip('Not in baseline', 'warning', `Absent from baseline run ${show.baseline}`));
     const msg = el('span', 'g-msg', g.msg);
     msg.title = g.msg;
     main.append(el('span', 'g-key', uncoded(g) ? sevOf(g.sev).name : g.key), msg);

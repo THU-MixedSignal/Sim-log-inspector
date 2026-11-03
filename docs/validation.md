@@ -1,6 +1,6 @@
 # 验证记录
 
-## GitHub 发布前检查 — 2026-11-03
+## GitHub 发布与冷克隆验证 — 2026-11-03
 
 用户明确授权整理提交并发布 GitHub；已创建私有仓库
 https://github.com/chenzc24/spectre-log-inspector，origin 使用 HTTPS。只纳入应用、
@@ -13,7 +13,14 @@ https://github.com/chenzc24/spectre-log-inspector，origin 使用 HTTPS。只纳
 离线 pip wheel 构建及包资源/入口/零第三方运行依赖核查通过；node --check、
 git diff --check 通过。浏览器核对当前界面和展开原文的级别、规则、抑制范围、路径
 行号，控制台无错误。该检查不增加真实 SSH 或运行中 Spectre 的验证范围。
-输出记录在 `.runtime/github-publish-0ktlyzy2/`；推送后仍需从 GitHub 冷克隆验收。
+输出记录在 `.runtime/github-publish-0ktlyzy2/`。
+
+**已推送并冷克隆**：main 的应用提交 `6c04eac254fcaaf96cc82d6c06916f32df97cbac`
+从 GitHub HTTPS 克隆到仓库外的空格路径。清除源路径环境变量，使用 Python -S，
+核对 import 来自新 checkout；14 组样例状态正确，68 项测试全部通过，无需 pip
+安装或当前机器的原源码目录。GitHub 元数据确认仓库 PRIVATE、默认分支 main。
+随后并行界面任务完成 Rule/参考标记的边框恢复，本次复核显示/原生证据/控制台，
+连同收尾记录一起提交；这项调整不改变采集、解析、CLI 或 API。
 
 ## 正文优先与界面删重 — 2026-11-03
 

@@ -81,10 +81,10 @@ button { font: inherit; color: inherit; }
 .run-state.is-failed { background: var(--critical-bg); color: var(--critical); }
 .run-state.is-uncertain { background: var(--caution-bg); color: var(--caution-ink); }
 .chips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
-.chip { display: inline-flex; align-items: baseline; gap: 4px; font-size: 12px; color: var(--muted); }
-.chip.critical { color: var(--critical); }
-.chip.warning { color: var(--caution-ink); }
-.chip.new { color: #285f9f; }
+.chip { display: inline-flex; align-items: baseline; gap: 4px; padding: 0 5px; border: 1px solid var(--hairline); border-radius: 3px; font-size: 12px; line-height: 1.4; color: var(--muted); }
+.chip.critical { border-color: var(--critical); color: var(--critical); }
+.chip.warning { border-color: var(--warning); color: var(--caution-ink); }
+.chip.new { border-color: var(--trace); color: #285f9f; }
 #ack { margin-left: auto; align-self: center; }
 .run-meta { margin: 5px 0 0; font-size: 12px; color: var(--muted); }
 .run-meta:empty { display: none; }

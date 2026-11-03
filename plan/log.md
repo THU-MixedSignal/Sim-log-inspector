@@ -1,6 +1,20 @@
 # Implementation log
 
-## 2026-11-03 — Authorized GitHub publication (in progress)
+## 2026-11-03 — Restore outlined status tags
+
+User asked to restore the colored tag outlines, especially the red Rule tag.
+Read README.md and plan/v1.md first. Restore compact outlined chips (red Rule,
+amber baseline/difference/warning, blue New) while retaining the problem-first
+layout, small metadata, English and white theme. No header rule lists or other
+duplicate information restored. Collection, evidence and CLI/API unchanged.
+
+Validated: 68 unittest tests, node --check, CLI/HTTP smoke and git diff --check
+pass. Inspected desktop/narrow page: Rule has a red outline, Not in baseline
+an amber outline, both remain 12px below 15px problem prose; no horizontal
+overflow at 375px. Existing local viewer refreshed; preview saved under
+.runtime/ui-tags-20261103/. No simulation changes or commit/push by this task.
+
+## 2026-11-03 — Authorized GitHub publication
 
 User explicitly asked to organize and commit all current changes, publish the
 repository to GitHub and provide an Agent link/SSH onboarding prompt. This
@@ -21,7 +35,15 @@ suppression/source evidence; no console errors. Reviewed 103 historical blobs
 and current candidate files for credential patterns without printing contents;
 no hits or private/runtime payload files. Audit .runtime/github-publish-0ktlyzy2/.
 
-Push and external GitHub-clone verification remain pending at this commit.
+Pushed main and verified PRIVATE visibility/default branch main. Third grouped
+commit 6c04eac contains the dashboard and validation records. Cloned that exact
+revision from GitHub HTTPS into a clean external path with spaces, removed
+source-path environment overrides and used Python -S (no pip/site-packages):
+import came from the new checkout, 14 example states matched, and all 68 tests
+passed. Result: github-clone.json and github-clone-unittest.txt in the audit dir.
+The parallel UI task then completed outlined Rule/baseline tag styling; reviewed
+and included it in a final follow-up with this publication record. Node syntax,
+desktop display, original severity/evidence and console checks remain clean.
 Private repository access must be authorized on the receiving Agent's machine.
 No simulator or real SSH task is part of this publication.
 
