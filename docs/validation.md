@@ -1,5 +1,17 @@
 # 验证记录
 
+## v0.4 执行 Agent 为主要读者 — 2026-11-02
+
+**测试**：`python -m unittest discover -s tests -v` 57 项通过。新增覆盖：status 对 8 组示例日志小于 5 KB 且没有 null、false 或空集合；运行排序（失败、命中规则在前，正常结束且无关注的在最后）；失败运行按日志顺序给出首个错误（minstep 为 SPECTRE-16927 @1.14929ns，output_limit 为 SPECTRE-27 与 SPECTRE-7082）；show 默认隐藏未命中规则的 NOTICE 组并给出数量；新问题组命中规则时只产生一条变化；wait 结果不附带运行摘要并给出下一条命令；文本中的句柄与 path:line；`SIMCHECK_DB`；`--json`、`--db` 写在子命令前后都有效；格式不对的句柄被拒绝。
+
+**体积**（8 组示例日志，同一数据库）：status 文本 2368 B、JSON 3690 B（v0.3 JSON 约 17.9 KB）；show minstep 1036 B，show noise 2475 B（12 行）；evidence 454 B；details 661 B；measurements（20 条）475 B；一次 wait 结果 209 B（v0.3 附带完整运行摘要）。
+
+**端到端**：`watch`（间隔 1 秒）、`status`、`wait --cursor`：日志追加一条 CMI-2753 后 1.26 秒返回一行 `new WARNING … rule=SOA` 和下一条 wait 命令；再次 wait 无新内容，超时退出 3。
+
+**页面**：去掉说明文字、图例、规则和参考对比区块、时间戳、页脚；标签页为问题、测量、详情；问题一组一行，`×5+` 表示之后被抑制。1100×820 浅色和深色、375×812 窄屏无横向溢出，无控制台错误。
+
+**未覆盖**：真实浏览器通知权限弹窗仍需人工开启；PSF raw 头尾检查仍只有合成样本。
+
 ## v0.3 早发现 — 2026-11-02
 
 **测试**：`python -m unittest discover -s tests -v` 52 项通过（真实日志 8 个子案例）。新增覆盖：头行限定时间（含真实 SPECTRE-555 无时间头行）、notice 捕获与不升级、notices/warnings suppressed 汇总、逐码抑制挂在最后一条已打印消息上、瞬态结束时间与首次出现、示例规则与参考对比、日志超时只在未结束时提醒、心跳、坏 sidecar 隔离、单个运行异常不阻塞其他运行、`wait` 唤醒/超时/无采集器、token 不随观测时间变化、UTF-8 输出（µ、✓）、JSON 错误、读命令不建库、端口占用在采集前失败、旧 schema 拒绝且文件不变、Host 校验、CSP 无 inline。真实日志新增交叉校验：6 份带 footer 的日志中，带标签的 WARNING 条数与 ERROR/FATAL 条数分别等于 footer 的 warnings/errors（不依赖本解析器）。

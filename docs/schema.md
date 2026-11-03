@@ -1,57 +1,82 @@
-# 数据契约 v3
+# 数据契约（API 4）
 
-所有 JSON 带 `schema_version: 3`。CLI 输出 UTF-8；错误为 `{"schema_version":3,"error":{"type","message"}}`（CLI 退出码 1）或 `{"error":{"status","message"}}`（HTTP 400/403/404/503）。`null` 不能当 0，`unknown` 不能当通过。
+CLI 默认输出文本；`--json` 和 HTTP 输出同样内容的 JSON，都带 `v: 4`。
 
-## 摘要：status / scan / GET /api/runs
+- 缺省的键表示 false、无或 0：不输出 null、false 和空集合（`collector.live` 总是给出）。
+- 时间单位是秒，保留 6 位有效数字；`pct` 是百分比，不是比例。
+- 证据句柄 `e` 是全库递增的整数，文本里写作 `eNNN`；CLI 和 HTTP 都接受 `eNNN` 或纯数字。
+- 每个输出都有上限，保证不会塞满 Agent 的上下文（见各节）。
 
-顶层：`version`（工具版本）、`generated_epoch`、`collector`、`last_event_id`（全库最大证据 ID）、`token`、`runs[]`。
+## status（GET /api/status，`?run=` 只看一个）
 
-- `collector`：`alive`、`heartbeat_age_s`、`pid`、`version`、`interval_s`、`port`、`started_epoch`、`last_error`。`alive` 指有 `run`/`watch` 进程在 3 个间隔（至少 10 秒）内写过心跳；一次性 `scan` 不算在线采集器。
-- `token`：只在状态层面变化时改变（各运行的状态、代次、是否结束、关注标志、规则命中，以及采集器是否在线）。新问题记录用 `last_event_id` 追踪；观测时间变化不会改变 token。
+顶层：`v`、`version`、`cursor`、`collector`（`live`、`hb` 距上次心跳秒数、`pid`、`version`、`error`）、`runs`。`runs` 的顺序：失败或命中规则，其他关注原因，无关注；同一级里未结束的在前。
 
-每个运行：
+| 键 | 含义 |
+|---|---|
+| `run` | 运行 ID |
+| `state` | complete、failed、incomplete、unknown、running、indexing 等 |
+| `ended` | 已结束：终态，或日志已有原生结尾行 |
+| `flags` | 关注原因：failed、rule、quiet（未结束且日志超过阈值未修改）、collector_error、source_error |
+| `analysis`、`stop` | 当前分析名，日志给出的瞬态结束时间 |
+| `t`、`pct` | 日志最近给出的仿真时间及其占结束时间的百分比（下限）；正常结束的运行不给 |
+| `n` | 问题组数：`E` 错误/致命，`W` 警告，`T` 测试台，`N` 提示 |
+| `errors` | 最多 2 个错误/致命组，按日志顺序（组摘要） |
+| `rules` | 每条规则一项：`rule`、`keys`（前 5 个）、`n`（总组数，多于 5 时）、最早一次的 `e`、`t`、`pct` |
+| `base` | 参考运行中没有的非 NOTICE 键：`ref`、`new`（前 5 个）、`n`（总数，多于 5 时） |
+| `frames` | 测试台记录数 `n`，最新的 `frame`、`code` |
+| `log_age` | 未结束的运行：日志距上次修改的秒数 |
+| `error` | 采集或读日志的错误 |
+| `gen` | 代次，大于 1 时给出 |
+| `last_problem` | 最新问题记录的证据 ID，页面据此决定是否重新取问题组 |
 
-- `state`：`status`、`ended`（状态为 complete/failed/incomplete 或日志已出现原生结尾）、`analysis`、`last_logged_time_s`（日志最近给出的仿真时间）、`stop_time_s`（日志给出的瞬态结束时间）、`progress_at_least`（两者之比，是下限）、`observed_epoch`（采集检查时刻）、`source_mtime_epoch`（源日志修改时间）、`quiet_for_s`、`quiet_after_s`、`backlog`、`index_complete`、`error`、`collector_error`、`collector_error_epoch`。
-- `attention`：事实型关注原因列表，取值 `failed`、`rule_hit`、`log_quiet`（未结束且日志超过阈值未修改）、`collector_error`、`source_error`。
-- `problems`：`printed_count`、`group_count`、`by_severity`、`last_problem_id`、`top`（最多 5 组：级别 → 命中规则 → 参考运行中没有 → 分析中先于读入 → 日志顺序）、`more_groups`。
-- `rule_hits[]`：`rule`、`problem_key`、`severity`、`printed_count`、`first_evidence_id`、`first_sim_time_s`、`first_fraction`。
-- `baseline`：`run_id`、`status`、`keys_not_in_baseline[]`（`problem_key`、`severity`），未配置为 `null`。
-- `measurements`：`records`、`latest`。
-- `coverage`：`suppression_seen`、`suppressed_totals`（如 `{"warning": 21700496}`、`{"notice": 195}`，原生全局汇总）、`limitations`。
-- `last_event_id`、`token`、`qualification: "not_inferred"`。
+组摘要：`e`（首条证据）、`sev`（原生级别，测试台为 INFO）、`key`（原生编号；无编号消息为“级别:数字掩码后的正文”；工具记录为 premature_termination、line_size_limit；测试台为 TB:…）、`n`（已打印次数）、`sup`（之后被逐码抑制）、`t`、`pct`（首条消息头行给出的仿真时间）、`msg`（摘要，status 里最长 120 字，show 里 160 字）。
 
-## 问题组：problems / GET /api/problems?run=ID
+`cursor` 形如 `3795.654c760c1427`：最新证据 ID 加状态摘要。把它传给 `wait`，两次调用之间的变化不会丢。
 
-按 `problem_key` 与原生 `severity` 分组，只计已打印的主消息。`problem_key` 为原生编号；无编号消息为“级别:正文（数字掩码为 #）”；工具自身记录为 `premature_termination`、`line_size_limit`；测试台为 `TB:reported_valid=0`、`TB:unparsed_record`、`TB:reported_FAIL`。
+## show（GET /api/show?run=ID&full=1）
 
-每组：`printed_count`、`first_evidence_id`、`last_evidence_id`、`first_observed_epoch`/`last_observed_epoch`（首次/最近一次被采集的墙钟时间）、`code`、`category`（五类之一）、`phase`（分析名，读入阶段为 `setup`）、`first_sim_time_s`（首条消息头行给出的仿真时间，没有为 `null`）、`analysis_stop_s`、`first_fraction`、`suppressed_after`（该键之后出现过逐码抑制）、`severity_source`（`tag` 来自 `WARNING (...)` 标签，`header` 来自头行）、`summary`、`message`。排序：级别，然后首次出现顺序。参数：`generation`（默认当前代）、`after`（只统计该证据 ID 之后的记录）、`limit`（默认 50，上限 500）。
+运行头（`state`、`flags`、`analysis`、`stop`、`t`、`pct`、`log_age`、`log` 日志路径、`baseline`）加 `groups`。每组是组摘要加：`last`（末条证据，多于一条时）、`phase`（分析名，读入阶段为 setup）、`rules`（命中的规则名）、`base_new`（参考运行中没有）。
 
-## 测量：measurements / GET /api/measurements?run=ID
+排序：错误、警告、测试台、提示；同一级里分析阶段先于读入阶段，再按日志顺序。默认不列未命中规则的 NOTICE 组（`hidden_notices` 给数量），最多 30 组（`more` 给剩余数）；`--all` 或 `full=1` 全列。
 
-测试台记录（含异常记录），按日志顺序返回 `record_type`、`frame`、`code_value`、`reported_valid`、`parse_issue`（若有）、`evidence_id`、`kind`、`observed_epoch`。`tail=N` 返回最新 N 条；`before=ID` 返回该 ID 之前的 `limit` 条；`after=ID` 向后翻。上限 500。
+## evidence（GET /api/evidence?id=eNNN）
 
-## 原文：evidence ID / GET /api/evidence?id=ID
+`e`、`run`、`gen`、`path`、`line`、`off`（字节偏移）、`sev`、`key`、`t`、`pct`、测试台字段（`frame`、`code`、`valid`、`issue`）、`limitation`、`group`（`n`、`sup`、`first`、`last`）、`seen`（首次被采集的时刻）、`header`（头行 `line`、`raw`）、`raw`、`cont`（续行，最多 20 行；`cont_more` 表示还有）、`suppression`（紧随其后的逐码抑制行）。原文是入库时保存的那一份，不会因源日志轮换变成另一代。
 
-`source_path`、`line`、`byte_offset`、`observed_epoch`、`header`（头行 `line`/`raw`，没有为 `null`）、`raw`、`continuation`（最多 20 行）、`continuation_limited`、`suppression`（紧随其后的逐码抑制行）、`observed`（`severity`、`severity_source`、`code`、`problem_key`、`instance`、`terminal`、`measured`、`limit`、`analysis`、`sim_time_s`、`analysis_stop_s`、`limitation` 中存在的项）。原文是入库时保存的那一份，不会因源日志轮换读到另一代。
+## wait
 
-## 详情：details --run ID / GET /api/run-details?run=ID
+`wait [--cursor C] [--run ID]... [--timeout 3600] [--interval 2] [--notices] [--repeats]`
 
-`source_path`、`indexed_bytes`、`source_bytes`、`source_mtime_epoch`、`version`、`footer`、`analyses`（分析名 → `stop_time_s`）、`suppressed_totals`、`settings[]`（`name`、`requested`、`requested_default`、`effective[]`（`analysis`、`value`、`default`）、`differs`）、`integrity`、`watch`、`baseline`、`quiet_after_s`。
+返回 `changed`、`changes`（最多 20 条，`more` 给剩余数）、`cursor`；没有变化时 `reason` 为 timeout 或 collector_offline。变化类型：
 
-## 等待：wait
+- `new`：新问题组（组摘要；命中规则时带 `rules`）
+- `rule`：已有组新命中规则（`rule`、`key`、`e`、`t`、`pct`）
+- `status`（`from`、`to`），`restart`（`gen`），`quiet`（`log_age`），`collector_error`、`source_error`（`error`），`run_added`，`collector_offline`（`hb`）
+- `more`：已知组又出现（仅 `--repeats`）
+- `state_changed`：cursor 之后状态层面有变化，细节看 status
 
-`wait [--after ID] [--since TOKEN] [--run ID]... [--timeout S] [--interval S] [--notices] [--repeats]`
+退出码：0 有变化，3 超时，4 没有在线采集器。
 
-返回 `changed`、`changes[]`、`last_event_id`、`token`、`collector`、`runs[]`（受影响运行的摘要）。变化类型：`new_problem_group`（默认不含 NOTICE）、`more_occurrences`（需 `--repeats`）、`status`、`generation`、`rule_hit`、`log_quiet`、`collector_error`、`source_error`、`run_added`、`collector_offline`、`state_changed_since_token`（调用间隙内状态层面已变化）。退出码：0 有变化，3 超时，4 没有在线采集器。
+## measurements（GET /api/measurements?run=ID）
 
-## 健康：GET /api/health
+`total`、`rows`（`e`、`frame`、`code`、`valid`，或 `issue`、`raw`）、`older`、`newer`（继续翻页还有记录）。默认最新 20 条；`--tail N`、`--before eNNN`、`--after eNNN`，每页最多 500 条。
 
-`status`（`ok`/`degraded`）、`mode: read_only`、`version`、`pid`、`started_epoch`、`database`、`collector`。数据库不可用或 schema 不符时 `status=degraded` 并给出 `database_error`。
+## details（GET /api/details?run=ID）
+
+`status`、`log`、`indexed`、`size`（字节）、`spectre`（版本）、`stops`（分析名到结束时间）、`footer`（errors、warnings、notices）、`suppressed`（原生汇总，不能分摊到编号）、`coverage`、`pending_line`、`checks`（state、log_status、raw 的观察结果）、`settings`（`name`、`req`、`eff`、`def`、`diff`）。
+
+## health（GET /api/health）
+
+`status`（ok 或 degraded）、`version`、`pid`、`started`、`db`、`collector`；数据库不可用时给 `error`。
+
+## 错误
+
+CLI 文本为 `error: 类型: 信息`，`--json` 为 `{"v":4,"error":{"type":…,"message":…}}`，退出码 1；格式不对的句柄由参数解析拒绝，退出码 2。HTTP 为 `{"v":4,"error":{"status":…,"message":…}}`，状态码 400、403、404、503。
 
 ## 存储
 
-一个 SQLite 库（`PRAGMA user_version = 3`）：`runs`（配置、游标与解析上下文、采集摘要）、`events`（每条证据一行，列 `observed`、`stream`、`problem_key`、`sim_time` 带索引，原始负载在 `payload`）、`collectors`（心跳）。`stream`：`problem`、`measurement`、`continuation`、`suppression`、`state`，仅作内部索引。旧 schema 的库会被拒绝且不被修改。
+一个 SQLite 库（`PRAGMA user_version = 3`）：`runs`（配置、游标与解析上下文、采集摘要）、`events`（每条证据一行，`observed`、`stream`、`problem_key`、`sim_time` 带索引，原始负载在 `payload`）、`collectors`（心跳）。旧 schema 的库被拒绝且不被修改。
 
 ## 原始事件（调试/导出）
 
-`events` 命令返回入库负载：`event_id`、`observed_epoch`、`run_id`、`generation`、`category`、`kind`、`severity`、`code`、`problem_key`、`analysis`、`sim_time_s`、`source_path`、`line`、`byte_offset`、`raw`，以及消息、设置、抑制、测试台记录各自的字段。日常取证应使用上面的按需接口。
+`events` 命令输出入库负载（JSON），日常取证用上面的接口。

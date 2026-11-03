@@ -2,7 +2,9 @@
 
 The database is a derived index of the source logs. The collector is its only
 writer and works in bounded transactional ticks; every reader opens it
-read-only. Summaries report observations and user-defined rule matches only.
+read-only. The output builders (status, show, evidence, wait, ...) return
+compact dicts for agents: an absent key means false, none or zero, and
+evidence IDs are the handles for drilling down. Nothing here judges circuits.
 """
 import fnmatch
 import hashlib
@@ -18,13 +20,19 @@ from . import __version__, parser
 from .integrity import inspect
 
 SCHEMA = 3
+API = 4
 MAX_LINE = 65536
 TICK_BYTES = 2 * 1024 * 1024
 QUIET_AFTER_S = 1800
+MAX_CHANGES = 20
 ENDED = {'complete', 'failed', 'incomplete'}
 RULE_FIELDS = {'name', 'code', 'key', 'severity', 'text', 'min_count'}
 SEVERITY_SQL = ("CASE severity WHEN 'FATAL' THEN 0 WHEN 'ERROR' THEN 1 "
                 "WHEN 'WARNING' THEN 2 WHEN 'NOTICE' THEN 3 ELSE 4 END")
+SEV_LETTER = {'FATAL': 'E', 'ERROR': 'E', 'WARNING': 'W', 'NOTICE': 'N'}  # testbench groups: 'T'
+SEV_ORDER = {'FATAL': 0, 'ERROR': 0, 'WARNING': 1, 'INFO': 2, 'NOTICE': 3}
+CHECK_FIELDS = ('check', 'status', 'reported_status', 'exit_code', 'reason', 'analysis', 'last_status',
+                'end_marker', 'last_saved_time_s', 'expected_stop_reached', 'size_bytes', 'detail', 'format')
 DDL = (
     'CREATE TABLE runs(id TEXT PRIMARY KEY, config TEXT NOT NULL, cursor TEXT NOT NULL,'
     ' summary TEXT NOT NULL, updated REAL NOT NULL)',
@@ -331,6 +339,10 @@ def current_generation(db, run):
     return json.loads(row[0])['generation'] if row else 0
 
 
+def _row(db, run):
+    return db.execute('SELECT id, config, cursor, summary FROM runs WHERE id=?', (run,)).fetchone()
+
+
 def collector_status(db, now=None):
     now = time.time() if now is None else now
     row = db.execute('SELECT * FROM collectors ORDER BY heartbeat DESC LIMIT 1').fetchone()
@@ -392,12 +404,6 @@ def problem_groups(db, run, generation=None, after=0, limit=50):
     return groups
 
 
-def compact_group(group):
-    return {k: group[k] for k in ('problem_key', 'severity', 'printed_count', 'first_evidence_id',
-                                  'last_evidence_id', 'category', 'phase', 'first_sim_time_s',
-                                  'first_fraction', 'suppressed_after')}
-
-
 def _rule_matches(rule, group):
     if 'code' in rule and not fnmatch.fnmatchcase(group.get('code') or '', rule['code']):
         return False
@@ -424,7 +430,12 @@ def _digest(*parts):
     return hashlib.sha1(json.dumps(parts, sort_keys=True, default=str).encode()).hexdigest()[:12]
 
 
-def _run_summary(db, row, now):
+def _keys(groups):
+    return {(g['problem_key'], g['severity']) for g in groups}
+
+
+def _run_state(db, row, now):
+    """Everything known about one run; the compact outputs below are derived from it."""
     config = json.loads(row['config'])
     cur = json.loads(row['cursor'])
     stored = json.loads(row['summary'])
@@ -456,9 +467,9 @@ def _run_summary(db, row, now):
     if status == 'failed':
         attention.append('failed')
     if hits:
-        attention.append('rule_hit')
+        attention.append('rule')
     if not ended and quiet_for is not None and quiet_after and quiet_for > quiet_after:
-        attention.append('log_quiet')
+        attention.append('quiet')
     if stored.get('collector_error'):
         attention.append('collector_error')
     if stored.get('error'):
@@ -472,8 +483,8 @@ def _run_summary(db, row, now):
         limitations.append(integrity['coverage_limited'])
     if integrity.get('pending_partial_line'):
         limitations.append('pending_partial_line')
-    summary = {
-        'run_id': row['id'], 'generation': gen,
+    run = {
+        'run_id': row['id'], 'generation': gen, 'log': config['log'], 'baseline_ref': config.get('baseline'),
         'state': {'status': status, 'ended': ended, 'analysis': analysis,
                   'last_logged_time_s': last_time, 'stop_time_s': stop,
                   'progress_at_least': last_time / stop if last_time is not None and stop else None,
@@ -486,61 +497,215 @@ def _run_summary(db, row, now):
                   'collector_error_epoch': stored.get('collector_error_epoch')},
         'attention': attention,
         'problems': {'printed_count': printed, 'group_count': group_count, 'by_severity': by_severity,
-                     'last_problem_id': last_problem, 'top': [], 'more_groups': group_count > 5},
+                     'last_problem_id': last_problem},
+        'groups': groups,
         'rule_hits': hits,
         'baseline': None,
         'measurements': {'records': records, 'latest': latest[0] if latest else None},
         'coverage': {'suppression_seen': p.get('suppression_seen', False),
                      'suppressed_totals': p.get('suppressed_totals', {}), 'limitations': limitations},
-        'last_event_id': last_event,
-        'qualification': 'not_inferred'}
-    summary['token'] = _digest(gen, status, ended, attention, sorted((h['rule'], h['problem_key']) for h in hits))
-    return summary, groups, config.get('baseline')
+        'last_event_id': last_event}
+    run['token'] = _digest(gen, status, ended, attention, sorted((h['rule'], h['problem_key']) for h in hits))
+    return run
 
 
-def _top(groups, hits, missing, count=5):
-    """Most attention-worthy groups first: severity, rule hit, absent from the reference run,
-    seen during an analysis rather than setup, then log order."""
-    hit = {(h['problem_key'], h['severity']) for h in hits}
-    order = {'FATAL': 0, 'ERROR': 1, 'WARNING': 2, 'NOTICE': 3}
-    return sorted(groups, key=lambda g: (order.get(g['severity'], 4),
-                                         (g['problem_key'], g['severity']) not in hit,
-                                         (g['problem_key'], g['severity']) not in missing,
-                                         g['phase'] == 'setup', g['first_evidence_id']))[:count]
-
-
-def summaries(db, now=None):
+def snapshot(db, now=None):
+    """Internal view of every run, with baseline differences; status and wait derive from it."""
     now = time.time() if now is None else now
-    runs, groups, baselines = [], {}, {}
-    for row in db.execute('SELECT id, config, cursor, summary FROM runs ORDER BY id').fetchall():
-        summary, run_groups, baseline = _run_summary(db, row, now)
-        runs.append(summary)
-        groups[summary['run_id']] = run_groups
-        baselines[summary['run_id']] = baseline
+    runs = [_run_state(db, row, now)
+            for row in db.execute('SELECT id, config, cursor, summary FROM runs ORDER BY id').fetchall()]
     by_id = {r['run_id']: r for r in runs}
-    keys = {rid: {(g['problem_key'], g['severity']) for g in gs} for rid, gs in groups.items()}
     for run in runs:
-        reference = baselines[run['run_id']]
-        missing = set()
-        if reference in by_id:
-            missing = keys[run['run_id']] - keys[reference]
-            run['baseline'] = {'run_id': reference, 'status': by_id[reference]['state']['status'],
+        ref = by_id.get(run['baseline_ref'])
+        if ref:
+            missing = _keys(run['groups']) - _keys(ref['groups'])
+            run['baseline'] = {'run_id': ref['run_id'], 'status': ref['state']['status'],
                                'keys_not_in_baseline': [{'problem_key': k, 'severity': s}
                                                         for k, s in sorted(missing)]}
-        run['problems']['top'] = [compact_group(g) for g in _top(groups[run['run_id']],
-                                                                 run['rule_hits'], missing)]
     collector = collector_status(db, now)
     last_event = db.execute('SELECT max(id) FROM events').fetchone()[0] or 0
-    return {'schema_version': SCHEMA, 'version': __version__, 'generated_epoch': now,
-            'collector': collector, 'last_event_id': last_event,
-            'token': _digest([r['token'] for r in runs], collector['alive']), 'runs': runs}
+    return {'version': __version__, 'generated_epoch': now, 'collector': collector,
+            'last_event_id': last_event, 'token': _digest([r['token'] for r in runs], collector['alive']),
+            'runs': runs}
+
+
+# ---------------------------------------------------------------- compact output (API 4)
+
+def _compact(d):
+    return {k: v for k, v in d.items()
+            if not (v is None or v is False or (isinstance(v, (str, list, dict)) and not v))}
+
+
+def pct(fraction):
+    return None if fraction is None else round(100 * fraction, 4)
+
+
+def sig(seconds):
+    """Times to the six significant digits Spectre prints, without float noise."""
+    return None if seconds is None else float(f'{seconds:.6g}')
+
+
+def cursor_of(snap):
+    return f"{snap['last_event_id']}.{snap['token']}"
+
+
+def parse_cursor(text):
+    head, _, token = (text or '').partition('.')
+    if not head.isdigit():
+        raise ValueError(f'cursor must look like 3762.2330795c9a33 (from status or wait): {text}')
+    return int(head), token or None
+
+
+def evidence_id(text):
+    """Evidence handles are written e123; a bare 123 is accepted too."""
+    value = str(text).strip()
+    digits = value[1:] if value[:1] in ('e', 'E') else value
+    if not digits.isdigit():
+        raise ValueError(f'evidence id must look like e123: {text}')
+    return int(digits)
+
+
+def brief(group, width=160):
+    return _compact({'e': group['first_evidence_id'], 'sev': group['severity'], 'key': group['problem_key'],
+                     'n': group['printed_count'], 'sup': group['suppressed_after'],
+                     't': sig(group['first_sim_time_s']), 'pct': pct(group['first_fraction']),
+                     'msg': short(group['summary'], width)})
+
+
+def collector_brief(c):
+    return {'live': c['alive'], **_compact({'hb': c['heartbeat_age_s'], 'pid': c['pid'],
+                                            'version': c['version'], 'error': c['last_error']})}
+
+
+def _progress(state):
+    # How far the simulation got matters until it finished normally; then the footer says enough.
+    if state['status'] == 'complete' or state['last_logged_time_s'] is None:
+        return {}
+    return {'t': sig(state['last_logged_time_s']), 'pct': pct(state['progress_at_least'])}
+
+
+def _rules(hits):
+    """One entry per rule: first five keys and the earliest hit."""
+    out = {}
+    for h in hits:
+        r = out.setdefault(h['rule'], {'rule': h['rule'], 'keys': [], 'n': 0, 'e': h['first_evidence_id'],
+                                       't': None, 'pct': None})
+        r['n'] += 1
+        if len(r['keys']) < 5:
+            r['keys'].append(h['problem_key'])
+        t = h['first_sim_time_s']
+        if t is not None and (r['t'] is None or t < r['t']):
+            r.update(e=h['first_evidence_id'], t=t, pct=pct(h['first_fraction']))
+    for r in out.values():
+        r['t'] = sig(r['t'])
+    for r in out.values():
+        if r['n'] == len(r['keys']):
+            r['n'] = None
+    return [_compact(r) for r in out.values()]
+
+
+def _counts(groups):
+    counts = {}
+    for g in groups:
+        letter = SEV_LETTER.get(g['severity'], 'T')
+        counts[letter] = counts.get(letter, 0) + 1
+    return counts
+
+
+def _digest_run(run):
+    st = run['state']
+    errors = sorted((g for g in run['groups'] if g['severity'] in ('FATAL', 'ERROR')),
+                    key=lambda g: g['first_evidence_id'])
+    frames = None
+    if run['measurements']['records']:
+        latest = run['measurements']['latest'] or {}
+        frames = _compact({'n': run['measurements']['records'], 'frame': latest.get('frame'),
+                           'code': latest.get('code')})
+    base = None
+    if run['baseline']:
+        new = [k['problem_key'] for k in run['baseline']['keys_not_in_baseline'] if k['severity'] != 'NOTICE']
+        if new:
+            base = _compact({'ref': run['baseline']['run_id'], 'new': new[:5],
+                             'n': len(new) if len(new) > 5 else None})
+    return _compact({
+        'run': run['run_id'], 'state': st['status'], 'ended': st['ended'], 'flags': run['attention'],
+        'analysis': st['analysis'], 'stop': sig(st['stop_time_s']), **_progress(st),
+        'n': _counts(run['groups']), 'errors': [brief(g, 120) for g in errors[:2]],
+        'rules': _rules(run['rule_hits']), 'base': base, 'frames': frames,
+        'log_age': None if st['ended'] or st['quiet_for_s'] is None else round(st['quiet_for_s']),
+        'error': st['collector_error'] or st['error'],
+        'gen': run['generation'] if run['generation'] > 1 else None,
+        'last_problem': run['problems']['last_problem_id'] or None})
+
+
+def _urgency(run):
+    flags = run['attention']
+    rank = 0 if 'failed' in flags or 'rule' in flags else 1 if flags else 2
+    # Running runs before ended ones: stopping those is what saves simulation time.
+    return rank, run['state']['ended'], 'failed' not in flags, run['run_id']
+
+
+def digest(snap, run_ids=None):
+    runs = sorted((r for r in snap['runs'] if not run_ids or r['run_id'] in run_ids), key=_urgency)
+    return {'v': API, 'version': snap['version'], 'cursor': cursor_of(snap),
+            'collector': collector_brief(snap['collector']), 'runs': [_digest_run(r) for r in runs]}
+
+
+def status(db, run_ids=None):
+    snap = snapshot(db)
+    unknown = set(run_ids or ()) - {r['run_id'] for r in snap['runs']}
+    if unknown:
+        raise LookupError('unknown run: ' + ', '.join(sorted(unknown)))
+    return digest(snap, run_ids)
+
+
+def _key_set(db, run):
+    gen = current_generation(db, run)
+    return {(r[0], r[1]) for r in db.execute(
+        "SELECT DISTINCT problem_key, severity FROM events WHERE run_id=? AND generation=? AND stream='problem'",
+        (run, gen))}
+
+
+def show(db, run, full=False, limit=30, now=None):
+    """One run's problem groups, most severe first. NOTICE groups appear when a rule names them
+    or with full; full also lifts the line limit."""
+    row = _row(db, run)
+    if row is None:
+        return None
+    r = _run_state(db, row, time.time() if now is None else now)
+    ref = r['baseline_ref']
+    ref_keys = _key_set(db, ref) if ref and _row(db, ref) else None
+    rules = {}
+    for h in r['rule_hits']:
+        rules.setdefault((h['problem_key'], h['severity']), []).append(h['rule'])
+    ordered = sorted(r['groups'], key=lambda g: (SEV_ORDER.get(g['severity'], 2), g['phase'] == 'setup',
+                                                 g['first_evidence_id']))
+    groups, hidden = [], 0
+    for g in ordered:
+        key = (g['problem_key'], g['severity'])
+        if not full and g['severity'] == 'NOTICE' and key not in rules:
+            hidden += 1
+            continue
+        groups.append({**brief(g, 160), **_compact({
+            'last': g['last_evidence_id'] if g['last_evidence_id'] != g['first_evidence_id'] else None,
+            'phase': g['phase'], 'rules': rules.get(key),
+            'base_new': ref_keys is not None and g['severity'] != 'NOTICE' and key not in ref_keys})})
+    st = r['state']
+    more = 0 if full else max(0, len(groups) - int(limit))
+    out = _compact({'v': API, 'run': run, 'state': st['status'], 'ended': st['ended'], 'flags': r['attention'],
+                    'analysis': st['analysis'], 'stop': sig(st['stop_time_s']), **_progress(st),
+                    'log_age': None if st['ended'] or st['quiet_for_s'] is None else round(st['quiet_for_s']),
+                    'log': r['log'], 'baseline': ref if ref_keys is not None else None,
+                    'hidden_notices': hidden or None, 'more': more or None})
+    out['groups'] = groups if full else groups[:int(limit)]
+    return out
 
 
 def measurements(db, run, after=0, limit=50, generation=None, before=None, tail=None):
     """Testbench records in log order; tail/before page backwards from the newest."""
     generation = current_generation(db, run) if generation is None else int(generation)
     limit = min(max(int(tail or limit), 1), 500)
-    base = ("SELECT id, observed, payload FROM events WHERE run_id=? AND generation=?"
+    base = ("SELECT id, payload FROM events WHERE run_id=? AND generation=?"
             " AND category='testbench'")
     if tail:
         rows = db.execute(base + ' ORDER BY id DESC LIMIT ?', (run, generation, limit)).fetchall()[::-1]
@@ -553,38 +718,68 @@ def measurements(db, run, after=0, limit=50, generation=None, before=None, tail=
     out = []
     for row in rows:
         event = json.loads(row['payload'])
-        item = {k: event[k] for k in ('record_type', 'frame', 'code_value', 'reported_valid', 'parse_issue')
-                if k in event}
-        item.update(evidence_id=row['id'], kind=event['kind'], observed_epoch=row['observed'])
-        out.append(item)
+        out.append(_compact({'e': row['id'], 'frame': event.get('frame'), 'code': event.get('code_value'),
+                             'valid': event.get('reported_valid'), 'issue': event.get('parse_issue'),
+                             'raw': None if 'frame' in event else short(event['raw'], 120)}))
+    return out
+
+
+def measurement_page(db, run, after=0, limit=20, before=None, tail=None):
+    """Newest records by default; older/newer say whether paging further finds more."""
+    if _row(db, run) is None:
+        return None
+    gen = current_generation(db, run)
+    if before is None and not after and not tail:
+        tail = limit
+    rows = measurements(db, run, after or 0, limit, gen, before, tail)
+    probe = "SELECT 1 FROM events WHERE run_id=? AND generation=? AND category='testbench' AND id{}? LIMIT 1"
+    older = bool(rows) and db.execute(probe.format('<'), (run, gen, rows[0]['e'])).fetchone() is not None
+    newer = bool(rows) and db.execute(probe.format('>'), (run, gen, rows[-1]['e'])).fetchone() is not None
+    total = db.execute("SELECT count(*) FROM events WHERE run_id=? AND generation=? AND category='testbench'",
+                       (run, gen)).fetchone()[0]
+    out = _compact({'v': API, 'run': run, 'total': total, 'older': older, 'newer': newer})
+    out['rows'] = rows
     return out
 
 
 def evidence(db, event_id):
-    row = db.execute('SELECT id, observed, payload FROM events WHERE id=?', (int(event_id),)).fetchone()
+    """One evidence record with its header, continuation and suppression lines and its group."""
+    row = db.execute('SELECT id, observed, stream, problem_key, severity, payload FROM events WHERE id=?',
+                     (int(event_id),)).fetchone()
     if not row:
         return None
     event = json.loads(row['payload'])
+    run, gen = event['run_id'], event['generation']
     # Continuation and suppression lines directly follow their message in the same block.
-    scope = (event['run_id'], event['generation'], row['id'], row['id'] + 200)
+    scope = (run, gen, row['id'], row['id'] + 200)
     related = ("SELECT line, payload FROM events WHERE run_id=? AND generation=? AND id>? AND id<=?"
                " AND stream=? AND json_extract(payload, '$.related_message_line')=? ORDER BY id LIMIT ?")
-    lines = [{'line': r['line'], 'raw': json.loads(r['payload'])['raw']}
-             for r in db.execute(related, scope + ('continuation', event['line'], 21))]
+    cont = [{'line': r['line'], 'raw': json.loads(r['payload'])['raw']}
+            for r in db.execute(related, scope + ('continuation', event['line'], 21))]
     suppression = db.execute(related, scope + ('suppression', event['line'], 1)).fetchone()
-    header = ({'line': event['header_line'], 'raw': event['header_raw']}
-              if event.get('header_line') else None)
-    return {'evidence_id': row['id'], 'run_id': event['run_id'], 'generation': event['generation'],
-            'source_path': event['source_path'], 'line': event['line'],
-            'byte_offset': event['byte_offset'], 'observed_epoch': row['observed'],
-            'header': header, 'raw': event['raw'], 'continuation': lines[:20],
-            'continuation_limited': len(lines) > 20,
-            'suppression': ({'line': suppression['line'], 'raw': json.loads(suppression['payload'])['raw']}
-                            if suppression else None),
-            'observed': {k: event[k] for k in ('severity', 'severity_source', 'code', 'problem_key',
-                                               'instance', 'terminal', 'measured', 'limit', 'analysis',
-                                               'sim_time_s', 'analysis_stop_s', 'limitation')
-                         if k in event}}
+    group = None
+    if row['stream'] == 'problem':
+        g = db.execute("SELECT count(*) AS n, min(id) AS first, max(id) AS last FROM events WHERE run_id=?"
+                       " AND generation=? AND stream='problem' AND problem_key=? AND severity=?",
+                       (run, gen, row['problem_key'], row['severity'])).fetchone()
+        later = db.execute("SELECT 1 FROM events WHERE run_id=? AND generation=? AND stream='suppression'"
+                           ' AND problem_key=? LIMIT 1', (run, gen, row['problem_key'])).fetchone()
+        group = _compact({'n': g['n'], 'sup': later is not None, 'first': g['first'], 'last': g['last']})
+    t, stop = event.get('sim_time_s'), event.get('analysis_stop_s')
+    out = _compact({
+        'v': API, 'e': row['id'], 'run': run, 'gen': gen if gen > 1 else None,
+        'path': event['source_path'], 'line': event['line'], 'off': event['byte_offset'],
+        'sev': row['severity'] if row['stream'] == 'problem' else None, 'key': row['problem_key'],
+        't': sig(t), 'pct': pct(t / stop) if t is not None and stop else None,
+        'frame': event.get('frame'), 'code': event.get('code_value'), 'valid': event.get('reported_valid'),
+        'issue': event.get('parse_issue'), 'limitation': event.get('limitation'), 'group': group,
+        'seen': round(row['observed'], 1),
+        'header': {'line': event['header_line'], 'raw': event['header_raw']} if event.get('header_line') else None})
+    out['raw'] = event['raw']
+    out.update(_compact({'cont': cont[:20], 'cont_more': len(cont) > 20,
+                         'suppression': {'line': suppression['line'],
+                                         'raw': json.loads(suppression['payload'])['raw']} if suppression else None}))
+    return out
 
 
 def _number(text):
@@ -621,21 +816,35 @@ def settings_table(settings):
     return list(rows.values())
 
 
-def run_details(db, run):
-    row = db.execute('SELECT config, cursor, summary FROM runs WHERE id=?', (run,)).fetchone()
+def _settings(settings):
+    out = []
+    for row in settings_table(settings):
+        effective = row['effective']
+        eff = '; '.join(f"{e['analysis']}={e['value']}" if len(effective) > 1 and e['analysis'] else e['value']
+                        for e in effective)
+        defaults = [d for d in [row['requested_default']] + [e['default'] for e in effective] if d]
+        out.append(_compact({'name': row['name'], 'req': row['requested'], 'eff': eff,
+                             'def': defaults[0] if defaults else None, 'diff': row['differs']}))
+    return out
+
+
+def details(db, run):
+    """Completion checks and requested vs effective settings of one run."""
+    row = db.execute('SELECT cursor, summary FROM runs WHERE id=?', (run,)).fetchone()
     if not row:
         return None
-    config = json.loads(row['config'])
     stored = json.loads(row['summary'])
     p = json.loads(row['cursor'])['parser']
-    return {'run_id': run, 'source_path': stored.get('source_path'),
-            'indexed_bytes': stored.get('indexed_bytes'), 'source_bytes': stored.get('source_bytes'),
-            'source_mtime_epoch': stored.get('source_mtime_epoch'), 'version': p.get('version'),
-            'footer': p.get('footer'), 'analyses': p.get('analyses', {}),
-            'suppressed_totals': p.get('suppressed_totals', {}),
-            'settings': settings_table(p.get('settings', {})), 'integrity': stored.get('integrity'),
-            'watch': config.get('watch', []), 'baseline': config.get('baseline'),
-            'quiet_after_s': config.get('quiet_after_s', QUIET_AFTER_S)}
+    integrity = stored.get('integrity') or {}
+    checks = [{k: c[k] for k in CHECK_FIELDS if c.get(k) is not None} for c in integrity.get('checks', [])]
+    return _compact({
+        'v': API, 'run': run, 'status': integrity.get('status'), 'log': stored.get('source_path'),
+        'indexed': stored.get('indexed_bytes'), 'size': stored.get('source_bytes'),
+        'spectre': p.get('version'),
+        'stops': {name: sig(a.get('stop_time_s')) for name, a in p.get('analyses', {}).items()},
+        'footer': p.get('footer'), 'suppressed': p.get('suppressed_totals'),
+        'coverage': integrity.get('coverage_limited'), 'pending_line': integrity.get('pending_partial_line'),
+        'checks': checks, 'settings': _settings(p.get('settings', {}))})
 
 
 def events(db, run=None, after=0, limit=100, category=None, severity=None, generation=None):
@@ -655,8 +864,8 @@ def events(db, run=None, after=0, limit=100, category=None, severity=None, gener
 # ---------------------------------------------------------------- waiting
 
 def detect_changes(db, base, after, run_ids=None, notices=False, repeats=False):
-    """Typed differences between a baseline summary and now, plus problems after an event ID."""
-    current = summaries(db)
+    """Typed differences between an earlier snapshot and now, plus problems after an evidence ID."""
+    current = snapshot(db)
     old_runs = {r['run_id']: r for r in base['runs']}
     changes = []
     for run in current['runs']:
@@ -665,72 +874,74 @@ def detect_changes(db, base, after, run_ids=None, notices=False, repeats=False):
             continue
         old = old_runs.get(rid)
         if old is None:
-            changes.append({'type': 'run_added', 'run_id': rid})
+            changes.append({'type': 'run_added', 'run': rid})
         else:
             if old['generation'] != run['generation']:
-                changes.append({'type': 'generation', 'run_id': rid,
-                                'from': old['generation'], 'to': run['generation']})
+                changes.append({'type': 'restart', 'run': rid, 'gen': run['generation']})
             if old['state']['status'] != run['state']['status']:
-                changes.append({'type': 'status', 'run_id': rid,
-                                'from': old['state']['status'], 'to': run['state']['status']})
-            known = {(h['rule'], h['problem_key']) for h in old['rule_hits']}
-            changes += [dict(h, type='rule_hit', run_id=rid) for h in run['rule_hits']
-                        if (h['rule'], h['problem_key']) not in known]
-            for flag in ('log_quiet', 'collector_error', 'source_error'):
+                changes.append({'type': 'status', 'run': rid, 'from': old['state']['status'],
+                                'to': run['state']['status']})
+            if 'quiet' in run['attention'] and 'quiet' not in old['attention']:
+                changes.append({'type': 'quiet', 'run': rid, 'log_age': round(run['state']['quiet_for_s'] or 0)})
+            for flag, field in (('collector_error', 'collector_error'), ('source_error', 'error')):
                 if flag in run['attention'] and flag not in old['attention']:
-                    changes.append({'type': flag, 'run_id': rid,
-                                    'quiet_for_s': run['state']['quiet_for_s'],
-                                    'error': run['state']['collector_error'] or run['state']['error']})
+                    changes.append({'type': flag, 'run': rid, 'error': run['state'][field]})
         seen = {r[0] for r in db.execute(
             "SELECT DISTINCT problem_key FROM events WHERE run_id=? AND generation=? AND stream='problem'"
             ' AND id<=?', (rid, run['generation'], int(after)))}
+        ruled = {h['problem_key'] for h in run['rule_hits']}
+        new = {}
         for group in problem_groups(db, rid, run['generation'], after=after, limit=500):
             if group['problem_key'] not in seen:
-                if notices or group['severity'] != 'NOTICE':
-                    changes.append(dict(compact_group(group), type='new_problem_group', run_id=rid,
-                                        summary=group['summary']))
+                if notices or group['severity'] != 'NOTICE' or group['problem_key'] in ruled:
+                    new[group['problem_key']] = {'type': 'new', 'run': rid, **brief(group)}
             elif repeats:
-                changes.append({'type': 'more_occurrences', 'run_id': rid,
-                                'problem_key': group['problem_key'], 'severity': group['severity'],
-                                'printed_since': group['printed_count'],
-                                'last_evidence_id': group['last_evidence_id']})
+                changes.append({'type': 'more', 'run': rid, 'key': group['problem_key'],
+                                'sev': group['severity'], 'n': group['printed_count'],
+                                'last': group['last_evidence_id']})
+        if old is not None:
+            known = {(h['rule'], h['problem_key']) for h in old['rule_hits']}
+            for h in run['rule_hits']:
+                if (h['rule'], h['problem_key']) in known:
+                    continue
+                if h['problem_key'] in new:  # a new group that hits a rule: one line, not two
+                    new[h['problem_key']].setdefault('rules', []).append(h['rule'])
+                else:
+                    changes.append(_compact({'type': 'rule', 'run': rid, 'rule': h['rule'],
+                                             'key': h['problem_key'], 'e': h['first_evidence_id'],
+                                             't': sig(h['first_sim_time_s']), 'pct': pct(h['first_fraction'])}))
+        changes.extend(new.values())
     if base['collector']['alive'] and not current['collector']['alive']:
-        changes.append({'type': 'collector_offline',
-                        'heartbeat_age_s': current['collector']['heartbeat_age_s']})
+        changes.append(_compact({'type': 'collector_offline', 'hb': current['collector']['heartbeat_age_s']}))
     return current, changes
 
 
-def wait_for_change(path, after=None, since=None, run_ids=None, timeout=3600.0, interval=2.0,
+def wait_for_change(path, cursor=None, run_ids=None, timeout=3600.0, interval=2.0,
                     notices=False, repeats=False, clock=time.monotonic, sleep=time.sleep):
     """Block until something needs attention. Returns (result, exit_code): 0 change, 3 timeout,
-    4 no live collector."""
+    4 no live collector. Pass the returned cursor to the next call so nothing is missed between calls."""
     deadline = clock() + max(0.0, timeout)
+    after, token = parse_cursor(cursor) if cursor else (None, None)
     with open_readonly(path) as db:
-        base = summaries(db)
+        base = snapshot(db)
     if after is None:
         after = base['last_event_id']
     if not base['collector']['alive']:
-        return ({'schema_version': SCHEMA, 'changed': False, 'reason': 'collector_offline',
-                 'collector': base['collector'], 'last_event_id': base['last_event_id'],
-                 'token': base['token']}, 4)
+        return ({'v': API, 'changed': False, 'reason': 'collector_offline',
+                 'collector': collector_brief(base['collector']), 'cursor': cursor_of(base)}, 4)
     first = True
     while True:
         with open_readonly(path) as db:
             current, changes = detect_changes(db, base, after, run_ids, notices, repeats)
-        if first and since and since != base['token']:
-            # Something changed between the caller's previous answer and this call.
-            changes.insert(0, {'type': 'state_changed_since_token', 'since': since,
-                               'token': base['token']})
+        if first and token and token != base['token']:
+            # Status-level state moved between the caller's cursor and this call.
+            changes.insert(0, {'type': 'state_changed'})
         first = False
         if changes:
-            affected = {c.get('run_id') for c in changes}
-            everything = any(c['type'] in ('state_changed_since_token', 'collector_offline') for c in changes)
-            return ({'schema_version': SCHEMA, 'changed': True, 'changes': changes,
-                     'last_event_id': current['last_event_id'], 'token': current['token'],
-                     'collector': current['collector'],
-                     'runs': [r for r in current['runs'] if everything or r['run_id'] in affected]}, 0)
+            out = {'v': API, 'changed': True, 'changes': changes[:MAX_CHANGES], 'cursor': cursor_of(current)}
+            if len(changes) > MAX_CHANGES:
+                out['more'] = len(changes) - MAX_CHANGES
+            return out, 0
         if clock() >= deadline:
-            return ({'schema_version': SCHEMA, 'changed': False, 'reason': 'timeout',
-                     'last_event_id': current['last_event_id'], 'token': current['token'],
-                     'collector': current['collector']}, 3)
+            return {'v': API, 'changed': False, 'reason': 'timeout', 'cursor': cursor_of(current)}, 3
         sleep(interval)

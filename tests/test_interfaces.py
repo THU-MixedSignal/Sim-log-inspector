@@ -1,4 +1,5 @@
-"""CLI and HTTP contracts: UTF-8 JSON, JSON errors, read-only access, loopback-only hosts."""
+"""CLI and HTTP contracts: compact UTF-8 text/JSON, errors in the same form, read-only access,
+loopback-only hosts."""
 import json
 import os
 import socket
@@ -22,9 +23,9 @@ LOG = ("Warning from spectre at time = 2 ns during transient analysis `tran'.\n"
        'R4MEAS,0,23,8,8,8,16,23,1\nR4MEAS,1,24,8,8,8,16,24,1\nR4MEAS,2,25,8,8,8,16,25,1\n')
 
 
-def cli(*args, timeout=60):
-    env = {k: v for k, v in os.environ.items() if k not in ('PYTHONIOENCODING', 'PYTHONUTF8')}
-    done = subprocess.run([sys.executable, '-m', 'simcheck', *args], cwd=ROOT, env=env,
+def cli(*args, env=None, timeout=60):
+    clean = {k: v for k, v in os.environ.items() if k not in ('PYTHONIOENCODING', 'PYTHONUTF8', 'SIMCHECK_DB')}
+    done = subprocess.run([sys.executable, '-m', 'simcheck', *args], cwd=ROOT, env=dict(clean, **(env or {})),
                           capture_output=True, timeout=timeout)
     return done.returncode, done.stdout.decode('utf-8')  # strict: must be UTF-8
 
@@ -40,43 +41,56 @@ class Cli(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def test_utf8_json_even_for_text_outside_the_console_code_page(self):
+    def test_text_by_default_json_on_request_utf8_either_way(self):
         code, out = cli('--db', self.db, 'scan', str(self.p / 'm.json'))
         self.assertEqual(code, 0)
-        self.assertEqual(json.loads(out)['runs'][0]['state']['status'], 'complete')
-        code, out = cli('--db', self.db, 'problems', '--run', 't')
-        group = json.loads(out)['problems'][0]
-        self.assertIn('µV', group['message'])
-        code, out = cli('--db', self.db, 'evidence', str(group['first_evidence_id']))
+        self.assertIn('cursor ', out.splitlines()[0])
+        self.assertIn('\nt: complete | tran | W1 | frames 3', out)
+        code, out = cli('--db', self.db, 'show', 't', '--json')
+        group = json.loads(out)['groups'][0]
+        self.assertIn('µV', group['msg'])
+        code, out = cli('--db', self.db, 'evidence', f"e{group['e']}")
         self.assertEqual(code, 0)
-        item = json.loads(out)['evidence']
-        self.assertIn('✓', item['raw'])
-        self.assertIn('at time = 2 ns', item['header']['raw'])
-        code, out = cli('--db', self.db, 'measurements', '--run', 't', '--tail', '2')
-        self.assertEqual([m['frame'] for m in json.loads(out)['measurements']], [1, 2])
-        code, out = cli('--db', self.db, 'report')
+        lines = out.splitlines()
+        self.assertTrue(lines[1].endswith('spectre.out:2'))
+        self.assertIn('at time = 2 ns', lines[2])
+        self.assertIn('✓', lines[3])
+        code, out = cli('--json', '--db', self.db, 'evidence', str(group['e']))  # global flags, bare ID
+        self.assertIn('✓', json.loads(out)['raw'])
+        code, out = cli('--db', self.db, 'measurements', 't', '--tail', '2', '--json')
+        rows = json.loads(out)['rows']
+        self.assertEqual([m['frame'] for m in rows], [1, 2])
+        code, out = cli('--db', self.db, 'measurements', 't', '--tail', '2')
+        self.assertEqual(out.splitlines()[1:3], ['frame code valid evidence', f"1 24 1 e{rows[0]['e']}"])
+        code, out = cli('status', env={'SIMCHECK_DB': self.db})
         self.assertEqual(code, 0)
-        self.assertIn('# Spectre 证据报告', out)
+        self.assertIn('t: complete', out)
 
-    def test_errors_are_json_and_reads_never_create_a_database(self):
+    def test_errors_and_reads_never_create_a_database(self):
         missing = str(self.p / 'missing.sqlite')
-        code, out = cli('--db', missing, 'status')
+        code, out = cli('--db', missing, 'status', '--json')
         self.assertEqual((code, json.loads(out)['error']['type']), (1, 'FileNotFoundError'))
+        code, out = cli('--db', missing, 'status')
+        self.assertTrue(out.startswith('error: FileNotFoundError:'))
         self.assertFalse(Path(missing).exists())
         cli('--db', self.db, 'scan', str(self.p / 'm.json'))
-        code, out = cli('--db', self.db, 'evidence', '999999')
+        code, out = cli('--db', self.db, 'evidence', 'e999999', '--json')
         self.assertEqual((code, json.loads(out)['error']['type']), (1, 'LookupError'))
+        self.assertEqual(cli('--db', self.db, 'evidence', 'x1')[0], 2)  # argparse rejects a malformed handle
         old = self.p / 'old.sqlite'
         with sqlite3.connect(old) as raw:
             raw.execute('CREATE TABLE runs(id TEXT)')
         raw.close()
-        code, out = cli('--db', str(old), 'status')
+        code, out = cli('--db', str(old), 'status', '--json')
         self.assertEqual((code, json.loads(out)['error']['type']), (1, 'SchemaError'))
 
     def test_wait_without_a_live_collector(self):
         cli('--db', self.db, 'scan', str(self.p / 'm.json'))
-        code, out = cli('--db', self.db, 'wait', '--timeout', '1')
+        code, out = cli('--db', self.db, 'wait', '--timeout', '1', '--json')
         self.assertEqual((code, json.loads(out)['reason']), (4, 'collector_offline'))
+        code, out = cli('--db', self.db, 'wait', '--timeout', '1')
+        self.assertEqual(code, 4)
+        self.assertIn('no collector running', out)
 
     def test_run_fails_fast_on_a_busy_port_without_touching_the_database(self):
         blocker = socket.socket()
@@ -90,7 +104,7 @@ class Cli(unittest.TestCase):
         finally:
             blocker.close()
         self.assertEqual(code, 1)
-        self.assertIn('已被占用', json.loads(out)['error']['message'])
+        self.assertIn('已被占用', out)
         self.assertFalse(Path(self.db).exists())
 
 
@@ -134,17 +148,17 @@ class Http(unittest.TestCase):
         return status, json.loads(body)
 
     def test_api_and_assets(self):
-        status, runs = self.json('/api/runs')
-        self.assertEqual((status, runs['schema_version']), (200, 3))
-        self.assertEqual(runs['runs'][0]['state']['status'], 'complete')
-        group = self.json('/api/problems?run=t')[1]['problems'][0]
-        item = self.json(f"/api/evidence?id={group['first_evidence_id']}")[1]['evidence']
+        status, runs = self.json('/api/status')
+        self.assertEqual((status, runs['v']), (200, 4))
+        self.assertEqual(runs['runs'][0]['state'], 'complete')
+        group = self.json('/api/show?run=t')[1]['groups'][0]
+        item = self.json(f"/api/evidence?id=e{group['e']}")[1]
         self.assertIn('<script>', item['raw'])
-        self.assertEqual(len(self.json('/api/measurements?run=t&tail=2')[1]['measurements']), 2)
-        self.assertEqual(self.json('/api/run-details?run=t')[1]['details']['run_id'], 't')
+        self.assertEqual(len(self.json('/api/measurements?run=t&tail=2')[1]['rows']), 2)
+        self.assertEqual(self.json('/api/details?run=t')[1]['run'], 't')
         health = self.json('/api/health')[1]
         self.assertEqual((health['status'], health['pid']), ('ok', os.getpid()))
-        self.assertFalse(health['collector']['alive'])
+        self.assertFalse(health['collector']['live'])
         self.assertNotIn('unsafe-inline', CSP)
         for path in ('/', '/app.js', '/style.css'):
             status, headers, body = self.get(path)
@@ -158,16 +172,17 @@ class Http(unittest.TestCase):
         self.assertNotIn('<script>', page.split('</head>')[1])  # no inline script in the body
 
     def test_errors_are_json(self):
-        for path, expected in (('/api/evidence?id=abc', 400), ('/api/evidence?id=999999', 404),
-                               ('/api/problems', 400), ('/api/run-details?run=none', 404), ('/nope', 404)):
+        for path, expected in (('/api/evidence?id=abc', 400), ('/api/evidence?id=e999999', 404),
+                               ('/api/show', 400), ('/api/details?run=none', 404),
+                               ('/api/status?run=none', 404), ('/nope', 404)):
             status, body = self.json(path)
             self.assertEqual((status, body['error']['status']), (expected, expected), path)
-        self.assertEqual(self.get('/api/runs', data=b'{}')[0], 501)
+        self.assertEqual(self.get('/api/status', data=b'{}')[0], 501)
 
     def test_foreign_host_is_rejected(self):
-        status, body = self.json('/api/runs', host=f'attacker.example:{self.port}')
+        status, body = self.json('/api/status', host=f'attacker.example:{self.port}')
         self.assertEqual((status, body['error']['status']), (403, 403))
-        self.assertEqual(self.json('/api/runs', host=f'localhost:{self.port}')[0], 200)
+        self.assertEqual(self.json('/api/status', host=f'localhost:{self.port}')[0], 200)
 
     def test_old_database_is_reported_not_served(self):
         self.stop()
@@ -176,7 +191,7 @@ class Http(unittest.TestCase):
             raw.execute('CREATE TABLE runs(id TEXT)')
         raw.close()
         self.start(old)
-        status, body = self.json('/api/runs')
+        status, body = self.json('/api/status')
         self.assertEqual(status, 503)
         self.assertIn('schema', body['error']['message'])
         self.assertEqual(self.json('/api/health')[1]['status'], 'degraded')

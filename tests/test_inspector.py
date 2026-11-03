@@ -8,7 +8,7 @@ from pathlib import Path
 
 from simcheck.parser import initial, parse, quantity
 from simcheck.store import (SchemaError, connect, events, evidence, manifest, measurements,
-                            open_readonly, problem_groups, scan, summaries)
+                            open_readonly, problem_groups, scan, snapshot)
 
 FIX = Path(__file__).parent / 'fixtures'
 FOOT = 'spectre completes with 0 errors, 0 warnings, and 0 notices.\n'
@@ -25,7 +25,7 @@ def all_events(db, run=None):
 
 
 def brief(db, run):
-    return next(r for r in summaries(db)['runs'] if r['run_id'] == run)
+    return next(r for r in snapshot(db)['runs'] if r['run_id'] == run)
 
 
 class RealLogs(unittest.TestCase):
@@ -97,7 +97,7 @@ class RealLogs(unittest.TestCase):
                     for g in groups:
                         e = evidence(db, g['first_evidence_id'])
                         self.assertIn(e['raw'], text)
-                        if e['header']:
+                        if 'header' in e:
                             self.assertIn(e['header']['raw'], text)
 
     def test_voltage_time_and_location(self):
@@ -295,7 +295,7 @@ class Boundaries(unittest.TestCase):
         self.assertEqual([m['frame'] for m in measurements(self.db, 'test', tail=3) if 'frame' in m], [1])
         group = next(g for g in problem_groups(self.db, 'test') if g['problem_key'] == 'X-1')
         self.assertEqual(group['printed_count'], 2)
-        self.assertEqual(evidence(self.db, group['first_evidence_id'])['continuation'][0]['raw'], '    extra context')
+        self.assertEqual(evidence(self.db, group['first_evidence_id'])['cont'][0]['raw'], '    extra context')
         self.assertNotIn('fields_raw', json.dumps(events(self.db)))
         self.write(FOOT)
         scan(self.db, self.c)
@@ -307,7 +307,7 @@ class Boundaries(unittest.TestCase):
         scan(self.db, self.c)
         tail = measurements(self.db, 'test', tail=3)
         self.assertEqual([m['frame'] for m in tail], [7, 8, 9])
-        earlier = measurements(self.db, 'test', before=tail[0]['evidence_id'], limit=3)
+        earlier = measurements(self.db, 'test', before=tail[0]['e'], limit=3)
         self.assertEqual([m['frame'] for m in earlier], [4, 5, 6])
         self.assertEqual([m['frame'] for m in measurements(self.db, 'test', limit=2)], [0, 1])
 

@@ -1,4 +1,5 @@
-"""Early-detection behaviour: what becomes visible, when, and who is told."""
+"""Early-detection behaviour: what becomes visible, when, who is told, and how compactly."""
+import json
 import os
 import tempfile
 import time
@@ -6,16 +7,17 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from simcheck import store
+from simcheck import render, store
 from simcheck.parser import initial, parse
 from simcheck.store import (collect, collector_status, connect, detect_changes, evidence, heartbeat,
-                            manifest, problem_groups, retire, scan, summaries, wait_for_change)
+                            manifest, problem_groups, retire, scan, show, snapshot, status, wait_for_change)
 
 ROOT = Path(__file__).resolve().parents[1]
 FIX = ROOT / 'tests' / 'fixtures'
 FOOT = 'spectre completes with 0 errors, 0 warnings, and 0 notices.\n'
 NEWTON = 'NOTICE:Newton iteration fails to converge at time = # ps step = # s.'
 FLOATING = 'NOTICE:Only one connection to the following # nodes:'
+SOA = ['CMI-2751', 'CMI-2752', 'CMI-2753', 'CMI-2754', 'CMI-2755']
 
 
 def parse_lines(lines):
@@ -24,7 +26,23 @@ def parse_lines(lines):
 
 
 def brief(db, run):
-    return next(r for r in summaries(db)['runs'] if r['run_id'] == run)
+    return next(r for r in snapshot(db)['runs'] if r['run_id'] == run)
+
+
+def empty_values(value, path='$'):
+    """Paths of null/false/empty values; the agent contract omits those keys instead."""
+    found = []
+    if isinstance(value, dict):
+        for k, v in value.items():
+            if k == 'live':
+                continue  # collector liveness is reported either way
+            if v is None or v is False or (isinstance(v, (str, list, dict)) and not v):
+                found.append(f'{path}.{k}')
+            found += empty_values(v, f'{path}.{k}')
+    elif isinstance(value, list):
+        for i, v in enumerate(value):
+            found += empty_values(v, f'{path}[{i}]')
+    return found
 
 
 class Fixture(unittest.TestCase):
@@ -64,11 +82,11 @@ class HeaderScopedTime(Fixture):
     def test_real_untimed_header(self):
         swap = self.group('noise', 'SPECTRE-555')
         e = evidence(self.db, swap['first_evidence_id'])
-        self.assertIsNone(e['observed']['sim_time_s'])
+        self.assertNotIn('t', e)
         self.assertEqual(e['header']['raw'], "Warning from spectre during transient analysis `tran_perf'.")
         self.assertIsNone(swap['first_sim_time_s'])
         cmi = self.group('noise', 'CMI-2754')
-        self.assertAlmostEqual(evidence(self.db, cmi['first_evidence_id'])['observed']['sim_time_s'], 60.0961e-9)
+        self.assertAlmostEqual(evidence(self.db, cmi['first_evidence_id'])['t'], 60.0961e-9)
 
 
 class Notices(Fixture):
@@ -83,7 +101,7 @@ class Notices(Fixture):
         self.assertTrue(newton['suppressed_after'])
         self.assertEqual(newton['severity_source'], 'header')
         floating = evidence(self.db, self.group('minstep', FLOATING)['first_evidence_id'])
-        self.assertEqual([c['raw'].strip() for c in floating['continuation']], ['DO_7', 'DO_6', 'DO_5', 'DO_4', 'DO_3'])
+        self.assertEqual([c['raw'].strip() for c in floating['cont']], ['DO_7', 'DO_6', 'DO_5', 'DO_4', 'DO_3'])
         self.assertIn('Further occurrences of this notice will be suppressed', floating['suppression']['raw'])
         run = brief(self.db, 'minstep')
         self.assertEqual(run['coverage']['suppressed_totals'], {'notice': 195})
@@ -118,7 +136,10 @@ class Suppression(Fixture):
     def test_per_code_suppression_is_attached_to_the_last_printed_message(self):
         cmi = self.group('noise', 'CMI-2754')
         self.assertTrue(cmi['suppressed_after'])
-        self.assertIsNone(evidence(self.db, cmi['first_evidence_id'])['suppression'])
+        first = evidence(self.db, cmi['first_evidence_id'])
+        self.assertNotIn('suppression', first)
+        self.assertEqual(first['group'], {'n': 5, 'sup': True, 'first': cmi['first_evidence_id'],
+                                          'last': cmi['last_evidence_id']})
         last = evidence(self.db, cmi['last_evidence_id'])
         self.assertIn('Further occurrences of this warning will be suppressed', last['suppression']['raw'])
         self.assertFalse(self.group('noise', 'SFE-1131')['suppressed_after'])
@@ -140,26 +161,31 @@ class FirstAppearance(Fixture):
         self.assertIsNone(setup['first_sim_time_s'])
 
 
-class RulesAndBaseline(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-        self.db = connect(Path(self.tmp.name) / 'db.sqlite')
-        collect(self.db, manifest(ROOT / 'examples' / 'real-fixtures.json')['runs'])
-        self.runs = {r['run_id']: r for r in summaries(self.db)['runs']}
+class Examples(unittest.TestCase):
+    """The 8 real logs through the example manifest, as an agent would see them."""
 
-    def tearDown(self):
-        self.db.close()
-        self.tmp.cleanup()
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.db = connect(Path(cls.tmp.name) / 'db.sqlite')
+        collect(cls.db, manifest(ROOT / 'examples' / 'real-fixtures.json')['runs'])
+        cls.snap = snapshot(cls.db)
+        cls.runs = {r['run_id']: r for r in cls.snap['runs']}
+        cls.digest = status(cls.db)
+        cls.by_id = {r['run']: r for r in cls.digest['runs']}
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.db.close()
+        cls.tmp.cleanup()
 
     def test_example_rules(self):
         noise = self.runs['noise']
-        soa = sorted(h['problem_key'] for h in noise['rule_hits'] if h['rule'].startswith('SOA'))
-        self.assertEqual(soa, ['CMI-2751', 'CMI-2752', 'CMI-2753', 'CMI-2754', 'CMI-2755'])
-        self.assertIn('rule_hit', noise['attention'])
+        self.assertEqual(sorted(h['problem_key'] for h in noise['rule_hits'] if h['rule'].startswith('SOA')), SOA)
+        self.assertIn('rule', noise['attention'])
         self.assertEqual(self.runs['a_fft']['rule_hits'], [])  # same testbench, no SOA messages
         self.assertEqual(self.runs['a_fft']['attention'], [])
         self.assertEqual([h['problem_key'] for h in self.runs['minstep']['rule_hits']], [NEWTON])
-        self.assertTrue(all(g['problem_key'].startswith('CMI-') for g in noise['problems']['top']))
 
     def test_baseline_lists_only_keys_missing_from_the_reference(self):
         missing = {k['problem_key'] for k in self.runs['noise']['baseline']['keys_not_in_baseline']}
@@ -175,6 +201,55 @@ class RulesAndBaseline(unittest.TestCase):
         self.assertEqual(store.rule_hits([{'name': 'r', 'code': 'X-*', 'min_count': 2}], groups), [])
         self.assertEqual(store.rule_hits([{'name': 'r', 'code': 'X-*', 'severity': 'ERROR'}], groups), [])
         self.assertEqual(store.rule_hits([{'name': 'r', 'text': 'SLOW'}], groups)[0]['problem_key'], 'X-1')
+
+    def test_status_is_small_and_omits_empty_fields(self):
+        size = len(json.dumps(self.digest, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
+        self.assertLess(size, 5000)  # 8 runs; v0.3 sent about 18 KB for the same logs
+        self.assertEqual(empty_values(self.digest), [])
+        self.assertLess(len(render.status(self.digest).encode('utf-8')), 3500)
+        self.assertNotIn('t', self.by_id['noise'])  # progress is not repeated once a run completed normally
+
+    def test_attention_first_and_failed_runs_lead_with_their_first_errors(self):
+        order = [r['run'] for r in self.digest['runs']]
+        self.assertEqual(order, ['compile', 'license', 'minstep', 'output_limit', 'b_fft', 'noise', 'static', 'a_fft'])
+        self.assertNotIn('flags', self.by_id['a_fft'])
+        minstep = self.by_id['minstep']
+        self.assertEqual([g['key'] for g in minstep['errors']], ['SPECTRE-16927', 'premature_termination'])
+        self.assertEqual((minstep['errors'][0]['t'], minstep['errors'][0]['pct']), (1.14929e-09, 0.1402))
+        self.assertEqual(minstep['rules'][0]['keys'], [NEWTON])
+        output = self.by_id['output_limit']
+        self.assertEqual([g['key'] for g in output['errors']], ['SPECTRE-27', 'SPECTRE-7082'])  # log order
+        self.assertEqual(output['n']['E'], 4)
+        noise = self.by_id['noise']
+        self.assertEqual(sorted(noise['rules'][0]['keys']), SOA)
+        self.assertAlmostEqual(noise['rules'][0]['t'], 60.096e-9)
+        self.assertEqual(noise['base'], {'ref': 'a_fft', 'new': SOA, 'n': 6})
+
+    def test_show_lists_notices_only_when_a_rule_names_them(self):
+        brief_view = show(self.db, 'minstep')
+        keys = [g['key'] for g in brief_view['groups']]
+        self.assertIn(NEWTON, keys)
+        self.assertNotIn(FLOATING, keys)
+        self.assertGreater(brief_view['hidden_notices'], 0)
+        self.assertEqual(empty_values(brief_view), [])
+        self.assertIn(FLOATING, [g['key'] for g in show(self.db, 'minstep', full=True)['groups']])
+        noise = {g['key']: g for g in show(self.db, 'noise')['groups']}
+        self.assertTrue(noise['CMI-2751']['base_new'])
+        self.assertNotIn('base_new', noise['SFE-1131'])
+        self.assertEqual(noise['CMI-2754']['rules'], ['SOA 越限（示例规则）'])
+
+    def test_text_points_to_handles_and_locations(self):
+        minstep = self.by_id['minstep']
+        first = minstep['errors'][0]['e']
+        text = render.status(self.digest)
+        self.assertIn(f"cursor {self.digest['cursor']}", text.splitlines()[0])
+        self.assertIn(f'e{first} ERROR SPECTRE-16927 x1 @1.14929ns (0.140%):', text)
+        self.assertIn(f'e{first} SPECTRE-16927 x1 @1.14929ns (0.140%):', render.show(show(self.db, 'minstep')))
+        cmi = next(g for g in show(self.db, 'noise')['groups'] if g['key'] == 'CMI-2754')
+        lines = render.evidence(evidence(self.db, cmi['e'])).splitlines()
+        self.assertTrue(lines[1].endswith('noise.log:276'))
+        self.assertTrue(lines[2].startswith('  275 Warning from spectre at time = 60.0961 ns'))
+        self.assertTrue(lines[3].startswith('> 276     WARNING (CMI-2754):'))
 
 
 class Liveness(unittest.TestCase):
@@ -198,22 +273,24 @@ class Liveness(unittest.TestCase):
         self.age(7200)
         scan(self.db, self.c)
         run = brief(self.db, 'live')
-        self.assertIn('log_quiet', run['attention'])
+        self.assertIn('quiet', run['attention'])
         self.assertGreater(run['state']['quiet_for_s'], 7000)
+        self.assertGreater(status(self.db)['runs'][0]['log_age'], 7000)
         with self.log.open('a') as f:
             f.write(FOOT)
         self.age(7200)
         scan(self.db, self.c)
         run = brief(self.db, 'live')
         self.assertTrue(run['state']['ended'])
-        self.assertNotIn('log_quiet', run['attention'])
+        self.assertNotIn('quiet', run['attention'])
+        self.assertNotIn('log_age', status(self.db)['runs'][0])
 
     def test_collector_heartbeat(self):
         self.assertFalse(collector_status(self.db)['alive'])
         heartbeat(self.db, time.time(), 2, port=8765)
-        status = collector_status(self.db)
-        self.assertTrue(status['alive'])
-        self.assertEqual((status['pid'], status['port']), (os.getpid(), 8765))
+        state = collector_status(self.db)
+        self.assertTrue(state['alive'])
+        self.assertEqual((state['pid'], state['port']), (os.getpid(), 8765))
         self.db.execute('UPDATE collectors SET heartbeat=heartbeat-100')
         self.db.commit()
         self.assertFalse(collector_status(self.db)['alive'])
@@ -243,11 +320,14 @@ class Liveness(unittest.TestCase):
         with mock.patch.object(store, 'inspect', flaky):
             results = collect(self.db, configs)
         self.assertIn('boom', results['live']['collector_error'])
-        runs = {r['run_id']: r for r in summaries(self.db)['runs']}
+        runs = {r['run_id']: r for r in snapshot(self.db)['runs']}
         self.assertEqual(runs['other']['state']['status'], 'complete')
         self.assertIn('collector_error', runs['live']['attention'])
+        self.assertIn('boom', status(self.db, ['live'])['runs'][0]['error'])
         collect(self.db, configs)
         self.assertNotIn('collector_error', brief(self.db, 'live')['attention'])
+        with self.assertRaises(LookupError):
+            status(self.db, ['missing'])
 
 
 class Waiting(unittest.TestCase):
@@ -259,7 +339,7 @@ class Waiting(unittest.TestCase):
         self.log.write_text("Warning from spectre at time = 1 ns during transient analysis `tran'.\n"
                             '    WARNING (X-1): first\n')
         self.db = connect(self.path)
-        self.c = {'id': 'live', 'log': str(self.log)}
+        self.c = {'id': 'live', 'log': str(self.log), 'watch': [{'name': 'Z rule', 'code': 'Z-*'}]}
         scan(self.db, self.c)
         heartbeat(self.db, time.time(), 2)
 
@@ -273,28 +353,36 @@ class Waiting(unittest.TestCase):
         scan(self.db, self.c)
 
     def test_new_groups_wake_known_repeats_do_not(self):
-        base = summaries(self.db)
+        base = snapshot(self.db)
         after = base['last_event_id']
         self.append("Warning from spectre at time = 9 ns during transient analysis `tran'.\n"
                     '    WARNING (X-1): again\n')
         self.assertEqual(detect_changes(self.db, base, after)[1], [])
         repeats = detect_changes(self.db, base, after, repeats=True)[1]
-        self.assertEqual([c['type'] for c in repeats], ['more_occurrences'])
+        self.assertEqual([c['type'] for c in repeats], ['more'])
         self.append('    WARNING (Y-2): new kind\n')
         changes = detect_changes(self.db, base, after)[1]
-        self.assertEqual([(c['type'], c['problem_key']) for c in changes], [('new_problem_group', 'Y-2')])
-        self.assertAlmostEqual(changes[0]['first_sim_time_s'], 9e-9)
+        self.assertEqual([(c['type'], c['key']) for c in changes], [('new', 'Y-2')])
+        self.assertAlmostEqual(changes[0]['t'], 9e-9)
+        self.assertEqual(empty_values(changes), [])
         self.append('Notice from spectre during transient analysis `tran\'.\n    Something informational.\n')
         self.assertEqual(len(detect_changes(self.db, base, after)[1]), 1)
         self.assertEqual(len(detect_changes(self.db, base, after, notices=True)[1]), 2)
 
+    def test_a_new_group_that_hits_a_rule_is_one_change(self):
+        base = snapshot(self.db)
+        self.append('    WARNING (Z-9): watched\n')
+        changes = detect_changes(self.db, base, base['last_event_id'])[1]
+        self.assertEqual([(c['type'], c['key'], c.get('rules')) for c in changes], [('new', 'Z-9', ['Z rule'])])
+        self.assertIn('rule=Z rule', render.change_line(changes[0]))
+
     def test_status_change_and_stable_token(self):
-        base = summaries(self.db)
+        base = snapshot(self.db)
         scan(self.db, self.c)
-        self.assertEqual(summaries(self.db)['token'], base['token'])  # observation time alone is not a change
+        self.assertEqual(snapshot(self.db)['token'], base['token'])  # observation time alone is not a change
         self.append(FOOT)
         current, changes = detect_changes(self.db, base, base['last_event_id'])
-        self.assertIn({'type': 'status', 'run_id': 'live', 'from': 'unknown', 'to': 'complete'}, changes)
+        self.assertIn({'type': 'status', 'run': 'live', 'from': 'unknown', 'to': 'complete'}, changes)
         self.assertNotEqual(current['token'], base['token'])
 
     def test_wait_wakes_times_out_and_needs_a_collector(self):
@@ -303,22 +391,28 @@ class Waiting(unittest.TestCase):
         def sleep(seconds):
             clock[0] += seconds
             if clock[0] >= 4:
-                self.append('    ERROR (Z-3): stopped\n')
+                self.append('    ERROR (E-3): stopped\n')
 
-        result, code = wait_for_change(self.path, timeout=60, interval=2,
-                                       clock=lambda: clock[0], sleep=sleep)
+        result, code = wait_for_change(self.path, timeout=60, interval=2, clock=lambda: clock[0], sleep=sleep)
         self.assertEqual(code, 0)
-        self.assertEqual([c['type'] for c in result['changes']], ['status', 'new_problem_group'])
-        self.assertEqual(result['runs'][0]['state']['status'], 'failed')
-        quiet, code = wait_for_change(self.path, after=result['last_event_id'], since=result['token'],
-                                      timeout=5, interval=2, clock=lambda: clock[0], sleep=sleep)
-        self.assertEqual((code, quiet['reason']), (3, 'timeout'))
-        stale, code = wait_for_change(self.path, since='0' * 12, timeout=5, interval=2,
+        self.assertEqual([c['type'] for c in result['changes']], ['status', 'new'])
+        self.assertEqual(result['changes'][0]['to'], 'failed')
+        self.assertEqual(set(result), {'v', 'changed', 'changes', 'cursor'})  # no run summaries attached
+        text = render.wait(result)
+        self.assertIn(f"next: simcheck wait --cursor {result['cursor']}", text)
+        quiet, code = wait_for_change(self.path, cursor=result['cursor'], timeout=5, interval=2,
                                       clock=lambda: clock[0], sleep=sleep)
-        self.assertEqual((code, stale['changes'][0]['type']), (0, 'state_changed_since_token'))
+        self.assertEqual((code, quiet['reason']), (3, 'timeout'))
+        stale = result['cursor'].split('.')[0] + '.000000000000'
+        moved, code = wait_for_change(self.path, cursor=stale, timeout=5, interval=2,
+                                      clock=lambda: clock[0], sleep=sleep)
+        self.assertEqual((code, moved['changes'][0]['type']), (0, 'state_changed'))
+        with self.assertRaises(ValueError):
+            wait_for_change(self.path, cursor='later', timeout=1)
         retire(self.db)
         offline, code = wait_for_change(self.path, timeout=5)
         self.assertEqual((code, offline['reason']), (4, 'collector_offline'))
+        self.assertIn('no collector running', render.wait(offline))
 
 
 if __name__ == '__main__':

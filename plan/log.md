@@ -85,3 +85,28 @@ remote, not pushed). .gitattributes marks tests/fixtures as -text -whitespace:
 with core.autocrlf=true a checkout would otherwise rewrite the sanitized logs to
 CRLF and break their provenance hashes. The provenance test now rejects any
 port@host left in a fixture instead of naming the redacted host.
+
+## 2026-11-02 — v0.4 agent-first output
+
+User: the page still carried redundant text; keep key facts only. More important
+is what the executing agent reads: it must not flood the agent's context, and it
+must be easy to fetch and locate.
+
+Output builders moved into store (shared by CLI and HTTP), contract API 4: absent
+keys mean false/none/zero, times to 6 significant digits, eNNN evidence handles,
+one cursor (last evidence ID + state token) for wait. CLI prints compact text by
+default (new simcheck/render.py) and the same content with --json; SIMCHECK_DB
+replaces repeated --db. Commands: status, wait, show, evidence, measurements,
+details; report and problems removed. status lists runs needing attention first
+with their first errors in log order, rule hits merged per rule and keys missing
+from the baseline; show hides NOTICE groups no rule names; wait returns change
+lines and the next command only, a new group that hits a rule as one line.
+Every list is bounded. Page rebuilt around key facts only: no captions, legend,
+rule/baseline blocks, timestamps or footer; one row per problem group; tabs
+problems/measurements/details. Collection, parsing and schema 3 unchanged.
+
+57 tests pass. 8 example logs: status 2368 B text / 3690 B JSON (v0.3 ~17.9 KB),
+show noise 2475 B, evidence 454 B, one wait result 209 B. End to end, wait woke
+1.26 s after a CMI-2753 line was appended. Details in docs/validation.md. Preview
+viewer restarted on the new code (.runtime/preview.sqlite). Committed at the
+user's request on branch v0.4-agent-output; main not moved, nothing pushed.

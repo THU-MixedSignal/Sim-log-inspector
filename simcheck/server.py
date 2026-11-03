@@ -1,4 +1,8 @@
-"""Localhost-only, read-only HTTP interface. No filesystem, process or write endpoints."""
+"""Localhost-only, read-only HTTP interface. No filesystem, process or write endpoints.
+
+The JSON is the same compact contract as `simcheck --json`: /api/status, /api/show,
+/api/evidence, /api/measurements, /api/details, /api/health.
+"""
 import json
 import os
 import socket
@@ -10,8 +14,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from . import __version__
-from .store import (SCHEMA, SchemaError, collector_status, evidence, measurements, open_readonly,
-                    problem_groups, run_details, summaries)
+from .store import (API, SchemaError, collector_brief, collector_status, details, evidence, evidence_id,
+                    measurement_page, open_readonly, show, status)
 
 WEB = Path(__file__).parent / 'web'
 ASSETS = {'/': ('index.html', 'text/html; charset=utf-8'),
@@ -39,13 +43,13 @@ class ApiError(Exception):
         self.status = status
 
 
-def _int(q, key, default=None):
+def _int(q, key, default=None, parse=int):
     if q.get(key) in (None, ''):
         return default
     try:
-        return int(q[key])
+        return parse(q[key])
     except ValueError:
-        raise ApiError(400, key + ' must be an integer') from None
+        raise ApiError(400, f'{key} must be an integer' + (' or e123' if parse is evidence_id else '')) from None
 
 
 def _run(q):
@@ -70,10 +74,12 @@ def handler(database, started=None):
                     name, kind = ASSETS[url.path]
                     self._send(200, (WEB / name).read_bytes(), kind)
                 else:
-                    body = json.dumps(self._api(url.path, q), ensure_ascii=False).encode('utf-8')
-                    self._send(200, body, 'application/json; charset=utf-8')
+                    body = json.dumps(self._api(url.path, q), ensure_ascii=False, separators=(',', ':'))
+                    self._send(200, body.encode('utf-8'), 'application/json; charset=utf-8')
             except ApiError as e:
                 self._error(e.status, str(e))
+            except LookupError as e:
+                self._error(404, str(e))
             except (SchemaError, FileNotFoundError) as e:
                 self._error(503, str(e))
             except sqlite3.Error as e:
@@ -88,44 +94,34 @@ def handler(database, started=None):
 
         def _api(self, path, q):
             if path == '/api/health':
-                info = {'schema_version': SCHEMA, 'status': 'ok', 'mode': 'read_only',
-                        'version': __version__, 'pid': os.getpid(), 'started_epoch': started,
-                        'database': database}
+                info = {'v': API, 'status': 'ok', 'version': __version__, 'pid': os.getpid(),
+                        'started': round(started), 'db': database}
                 try:
                     with open_readonly(database) as db:
-                        info['collector'] = collector_status(db)
+                        info['collector'] = collector_brief(collector_status(db))
                 except (SchemaError, FileNotFoundError, sqlite3.Error) as e:
-                    info.update(status='degraded', database_error=str(e))
+                    info.update(status='degraded', error=str(e))
                 return info
-            if path not in ('/api/runs', '/api/problems', '/api/measurements', '/api/evidence',
-                            '/api/run-details'):
+            if path not in ('/api/status', '/api/show', '/api/evidence', '/api/measurements', '/api/details'):
                 raise ApiError(404, 'not found')
             with open_readonly(database) as db:
-                if path == '/api/runs':
-                    return summaries(db)
-                if path == '/api/problems':
-                    run = _run(q)
-                    return {'schema_version': SCHEMA, 'run_id': run,
-                            'problems': problem_groups(db, run, _int(q, 'generation'),
-                                                       _int(q, 'after', 0), _int(q, 'limit', 50))}
-                if path == '/api/measurements':
-                    run = _run(q)
-                    return {'schema_version': SCHEMA, 'run_id': run,
-                            'measurements': measurements(db, run, _int(q, 'after', 0), _int(q, 'limit', 50),
-                                                         _int(q, 'generation'), _int(q, 'before'),
-                                                         _int(q, 'tail'))}
-                if path == '/api/evidence':
-                    result = evidence(db, _int(q, 'id', -1))
-                    if result is None:
-                        raise ApiError(404, 'evidence not found')
-                    return {'schema_version': SCHEMA, 'evidence': result}
-                result = run_details(db, _run(q))
+                if path == '/api/status':
+                    return status(db, [q['run']] if q.get('run') else None)
+                if path == '/api/show':
+                    result = show(db, _run(q), full=q.get('full') in ('1', 'true'), limit=_int(q, 'limit', 30))
+                elif path == '/api/evidence':
+                    result = evidence(db, _int(q, 'id', -1, evidence_id))
+                elif path == '/api/measurements':
+                    result = measurement_page(db, _run(q), _int(q, 'after', 0, evidence_id), _int(q, 'limit', 20),
+                                              _int(q, 'before', None, evidence_id), _int(q, 'tail'))
+                else:
+                    result = details(db, _run(q))
                 if result is None:
-                    raise ApiError(404, 'run not found')
-                return {'schema_version': SCHEMA, 'details': result}
+                    raise ApiError(404, 'not found')
+                return result
 
-        def _send(self, status, body, kind):
-            self.send_response(status)
+        def _send(self, status_code, body, kind):
+            self.send_response(status_code)
             self.send_header('Content-Type', kind)
             self.send_header('Content-Length', str(len(body)))
             self.send_header('Cache-Control', 'no-store')
@@ -136,10 +132,10 @@ def handler(database, started=None):
             self.end_headers()
             self.wfile.write(body)
 
-        def _error(self, status, message):
-            body = json.dumps({'schema_version': SCHEMA, 'error': {'status': status, 'message': message}},
+        def _error(self, status_code, message):
+            body = json.dumps({'v': API, 'error': {'status': status_code, 'message': message}},
                               ensure_ascii=False).encode('utf-8')
-            self._send(status, body, 'application/json; charset=utf-8')
+            self._send(status_code, body, 'application/json; charset=utf-8')
 
         def log_message(self, *args):
             pass
