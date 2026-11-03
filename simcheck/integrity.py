@@ -1,6 +1,7 @@
 """Bounded sidecar inspection. Does not validate full waveforms."""
 import json
 import math
+import os
 import re
 from pathlib import Path
 
@@ -11,9 +12,11 @@ ACTIVE_STATES = {'running', 'starting', 'submitted', 'queued', 'waiting'}
 
 def small(path):
     p = Path(path)
-    if p.stat().st_size > LIMIT:
+    with p.open('rb') as f:
+        data = f.read(LIMIT + 1)
+    if len(data) > LIMIT:
         raise ValueError('sidecar exceeds 1 MiB bound')
-    return p.read_text(encoding='utf-8', errors='replace')
+    return data.decode('utf-8', errors='replace')
 
 
 def check_state(path):
@@ -41,8 +44,9 @@ def check_log_status(path, target):
 def check_raw(path, expected):
     p = Path(path)
     with p.open('rb') as f:
+        size = os.fstat(f.fileno()).st_size
         head = f.read(4096)
-        f.seek(max(0, p.stat().st_size - 65536))
+        f.seek(max(0, size - 65536))
         tail = f.read(65536)
     if not head.startswith(b'HEADER'):
         return {'check': 'raw', 'status': 'unsupported', 'format': 'not_PSF_ASCII'}
@@ -53,11 +57,19 @@ def check_raw(path, expected):
     if expected is not None and last is not None:
         reached = math.isfinite(last) and last >= expected - max(1e-15, abs(expected) * 1e-9)
     return {'check': 'raw', 'status': 'observed', 'end_marker': ended, 'last_saved_time_s': last,
-            'expected_stop_reached': reached, 'size_bytes': p.stat().st_size,
+            'expected_stop_reached': reached, 'size_bytes': size,
             'coverage': 'header_and_64KiB_tail_only_not_full_waveform'}
 
 
-def inspect(config, parser, pending=False):
+def fingerprint(path):
+    try:
+        st = os.stat(path)
+        return st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns
+    except OSError as exc:
+        return ('unavailable', exc.errno)
+
+
+def inspect(config, parser, pending=False, cache=None):
     checks = []
     native = 'unknown'
     if parser['fatal_seen'] or parser['native_errors'] or (parser['footer'] or {}).get('errors', 0):
@@ -70,15 +82,20 @@ def inspect(config, parser, pending=False):
             checks.append({'check': key, 'status': 'not_checked'})
             continue
         try:
-            if key == 'state':
+            stamp = (config[key], config.get('analysis'), config.get('expected_stop_s'),
+                     fingerprint(config[key])) if cache is not None else None
+            if cache is not None and key in cache and cache[key][0] == stamp:
+                check = cache[key][1]
+            elif key == 'state':
                 check = check_state(config[key])
-                execution = check['reported_status']
-                if check['exit_code'] not in (None, 0):
-                    execution = 'failed'
             elif key == 'log_status':
                 check = check_log_status(config[key], config.get('analysis'))
             else:
                 check = check_raw(config[key], config.get('expected_stop_s'))
+            if cache is not None:
+                cache[key] = (stamp, check)
+            if key == 'state':
+                execution = check['reported_status'] if check['exit_code'] in (None, 0) else 'failed'
         except (OSError, ValueError, TypeError) as e:
             check = {'check': key, 'status': 'unavailable', 'detail': str(e)}
         checks.append(check)

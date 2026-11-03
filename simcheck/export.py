@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from html import escape
 
 from . import __version__, render
-from .store import API, details, digest, evidence, show, snapshot
+from .store import API, EVENT_SELECT, unpack, details, digest, evidence, show, snapshot
 
 REPORT_CSP = ("default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; "
               "form-action 'none'; frame-ancestors 'none'")
@@ -38,10 +38,10 @@ def _json(value):
 
 
 def _events(db, run, generation):
-    rows = db.execute('SELECT id, observed, payload FROM events WHERE run_id=? AND generation=? ORDER BY id',
+    rows = db.execute(EVENT_SELECT + ' WHERE run_id=? AND generation=? ORDER BY id',
                       (run, generation))
     for row in rows:
-        yield dict(json.loads(row['payload']), event_id=row['id'], observed_epoch=row['observed'])
+        yield dict(unpack(row), event_id=row['id'], observed_epoch=row['observed'])
 
 
 def _json_chunks(db, data):

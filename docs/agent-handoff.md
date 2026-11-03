@@ -1,4 +1,4 @@
-# Agent contract: Spectre Log Inspector 0.4.0 / API 4 / DB schema 3
+# Agent contract: Spectre Log Inspector 0.4.0 / API 4 / DB schema 4
 
 This is a read-only simulation evidence tool. Never start, stop, pause, modify
 or resubmit simulations through this handoff. Never edit source logs, PDKs or ADC

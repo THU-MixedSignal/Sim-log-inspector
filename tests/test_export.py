@@ -40,11 +40,12 @@ class Export(unittest.TestCase):
         self.assertFalse(saved['scope']['source_files_embedded'])
         self.assertEqual(saved['scope']['events'], len(saved['events']))
         with open_readonly(self.path) as db:
-            expected = [json.loads(r[0]) for r in db.execute(
-                'SELECT payload FROM events WHERE run_id=? AND generation=1 ORDER BY id', ('demo-warning',))]
-            self.assertEqual(saved['events'], [dict(event, event_id=saved['events'][i]['event_id'],
-                                                   observed_epoch=saved['events'][i]['observed_epoch'])
-                                               for i, event in enumerate(expected)])
+            for event in saved['events']:
+                source = Path(event['source_path']).read_bytes()
+                raw = source[event['byte_offset']:].splitlines()[0].decode()
+                self.assertEqual(event['raw'], raw)
+                self.assertEqual(event['run_id'], 'demo-warning')
+                self.assertEqual(event['generation'], 1)
             self.assertEqual(db.total_changes, 0)
         self.assertTrue(any('Further occurrences' in e['raw'] for e in saved['events']))
         self.assertTrue(any(e.get('reported_valid') == 0 for e in saved['events']))

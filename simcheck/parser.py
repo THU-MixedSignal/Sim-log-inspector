@@ -100,6 +100,14 @@ def read_meter(text, state):
         state['meter'] = max(state['meter'], meter_cells(text))
 
 
+def remember(state, table, key, value):
+    # Each record is still emitted. Bound the summary retained between lines.
+    if key in state[table] or len(state[table]) < 128:
+        state[table][key] = value
+    else:
+        state['context_limited'] = True
+
+
 def parse(line, state, line_no):
     """Mutate the persisted context and return zero or more structured events."""
     text = line.rstrip('\r\n')
@@ -153,7 +161,7 @@ def parse(line, state, line_no):
     if banner:
         start = TRAN_START.match(text)
         stop = seconds(start[3]) if start else None
-        state['analyses'][banner[2]] = {'kind': banner[1], 'stop_time_s': stop, 'line': line_no}
+        remember(state, 'analyses', banner[2], {'kind': banner[1], 'stop_time_s': stop, 'line': line_no})
         state['scope'] = 'effective'
         state['last_time_s'] = None
         state['meter'] = 0
@@ -167,7 +175,7 @@ def parse(line, state, line_no):
         value, sep, default = raw.partition(', default ')
         item = {'name': key, 'scope': state['scope'], 'value': value.strip(),
                 'normalized': quantity(value), 'default_text': default if sep else None}
-        state['settings'][str(state['analysis']) + ':' + state['scope'] + ':' + key] = item
+        remember(state, 'settings', str(state['analysis']) + ':' + state['scope'] + ':' + key, item)
         emit('settings_progress', 'setting', **item)
 
     indented = text[:1] in (' ', '\t') and bool(text.strip())

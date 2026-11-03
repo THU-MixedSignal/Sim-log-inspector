@@ -2,6 +2,7 @@
 content as JSON. Every handle printed (eNNN, a cursor) can be passed straight back in."""
 import argparse
 import errno
+import heapq
 import json
 import os
 import sqlite3
@@ -10,9 +11,10 @@ import threading
 import time
 
 from . import __version__, render
+from .integrity import fingerprint
 from .server import make_server, serve
 from .store import (API, collect, connect, details, digest, events, evidence, evidence_id, heartbeat,
-                    manifest, measurement_page, open_readonly, retire, show, snapshot, status,
+                    manifest, scan, record_error, measurement_page, open_readonly, retire, show, snapshot, status,
                     wait_for_change)
 
 DEFAULT_DB = '.runtime/simcheck.sqlite'
@@ -31,29 +33,94 @@ def emit(args, data, text):
         print(text(data), flush=True)
 
 
-def collector_loop(db_path, configs, interval, stop, port=None, final=False):
-    """Collect until stopped. Writes a heartbeat so readers can tell when data goes stale."""
+def collector_loop(db_path, configs, interval, stop, port=None, final=False, manifest_path=None):
+    """Schedule each run independently. Only this loop owns the writer and active caches."""
     started = time.time()
+    interval = max(0.2, interval)
+    runs = {cfg['id']: cfg for cfg in configs}
+    # IDs sort deterministically when deadlines coincide.
+    due = [(0.0, rid) for rid in runs]
+    heapq.heapify(due)
+    cache, root_cache, sidecars, errors = {}, {}, {}, {}
+    next_discovery = time.monotonic() + 30
+    next_heartbeat = 0
     with connect(db_path) as db:
         try:
             while not stop.is_set():
+                now = time.monotonic()
+                if manifest_path and now >= next_discovery:
+                    try:
+                        fresh = {c['id']: c for c in manifest(manifest_path, root_cache)['runs']}
+                        for rid in runs.keys() - fresh.keys():
+                            record_error(db, runs[rid], ValueError('run no longer listed by discovery'))
+                            cache.pop(rid, None)
+                            sidecars.pop(rid, None)
+                            errors.pop(rid, None)
+                        due = [(t, r) for t, r in due if r in fresh and runs[r] == fresh[r]]
+                        for rid, cfg in fresh.items():
+                            if cfg != runs.get(rid):
+                                due.append((now, rid))
+                                cache.pop(rid, None)
+                                sidecars.pop(rid, None)
+                        heapq.heapify(due)
+                        runs = fresh
+                        errors.pop(None, None)
+                    except (OSError, ValueError, sqlite3.Error) as exc:
+                        db.rollback()
+                        errors[None] = 'discovery: ' + str(exc)
+                    next_discovery = now + 30
+                if now >= next_heartbeat:
+                    try:
+                        heartbeat(db, started, interval, port, '; '.join(errors.values())[:500] or None)
+                    except sqlite3.Error as exc:
+                        db.rollback()
+                        print('Collector heartbeat: ' + str(exc), file=sys.stderr, flush=True)
+                    next_heartbeat = now + interval
+                wake = min(next_heartbeat, next_discovery if manifest_path else float('inf'))
+                if not due or due[0][0] > now:
+                    stop.wait(max(0, min(wake, due[0][0] if due else wake) - now))
+                    continue
+                _, rid = heapq.heappop(due)
+                cfg = runs[rid]
+                delay = interval
                 try:
-                    results = collect(db, configs, final)
-                    errors = '; '.join(f"{rid}: {r['collector_error']}"
-                                       for rid, r in results.items() if r.get('collector_error'))
-                    heartbeat(db, started, interval, port, errors[:500] or None)
-                    if any(r.get('backlog') for r in results.values()):
-                        continue  # keep indexing; bounded ticks, no idle wait while behind
-                except sqlite3.Error as exc:
+                    stamp = tuple(fingerprint(cfg[k]) for k in ('log', 'state', 'log_status', 'raw') if cfg.get(k))
+                    prior = cache.get(rid)
+                    if prior and stamp == prior[0] and now < prior[1]:
+                        delay = min(60, prior[2] * 2) if prior[3] else interval
+                        cache[rid] = (*prior[:2], delay, prior[3])
+                    else:
+                        if prior and now >= prior[1]:
+                            sidecars.pop(rid, None)
+                        result = scan(db, cfg, final, sidecars.setdefault(rid, {}))
+                        errors.pop(rid, None)
+                        if result['backlog']:
+                            delay = 0
+                            cache.pop(rid, None)
+                        elif result.get('error') or result['retry_nul']:
+                            cache.pop(rid, None)
+                        else:
+                            state = result['integrity']['status']
+                            quiet = time.time() - result.get('source_mtime_epoch', time.time())
+                            backoff = state in ('complete', 'failed', 'incomplete') or quiet > cfg.get('quiet_after_s', 1800) > 0
+                            cache[rid] = (stamp, now + 300, delay, backoff)
+                except Exception as exc:
                     db.rollback()
-                    print('Collector error: ' + str(exc), file=sys.stderr, flush=True)
-                stop.wait(max(0.2, interval))
+                    cache.pop(rid, None)
+                    try:
+                        errors[rid] = record_error(db, cfg, exc)
+                    except sqlite3.Error as write_error:
+                        db.rollback()
+                        errors[rid] = str(write_error)[:500]
+                        print(f'Collector error for {rid}: {write_error}', file=sys.stderr, flush=True)
+                heapq.heappush(due, (time.monotonic() + delay, rid))
         finally:
             retire(db)
 
 
 def cmd_run(args):
-    configs = manifest(args.manifest)['runs']
+    data = manifest(args.manifest)
+    configs = data['runs']
     try:
         server = make_server(args.db, args.port)
     except OSError as exc:
@@ -66,7 +133,8 @@ def cmd_run(args):
             pass  # schema check before the collector thread starts
         stop = threading.Event()
         worker = threading.Thread(target=collector_loop, daemon=True,
-                                  args=(args.db, configs, args.interval, stop, server.server_port))
+                                  args=(args.db, configs, args.interval, stop, server.server_port),
+                                  kwargs={'manifest_path': args.manifest if data.get('roots') else None})
         worker.start()
         try:
             serve(server, args.open)
@@ -78,10 +146,12 @@ def cmd_run(args):
 
 
 def cmd_watch(args):
-    configs = manifest(args.manifest)['runs']
+    data = manifest(args.manifest)
+    configs = data['runs']
     stop = threading.Event()
     try:
-        collector_loop(args.db, configs, args.interval, stop, final=args.final)
+        collector_loop(args.db, configs, args.interval, stop, final=args.final,
+                       manifest_path=args.manifest if data.get('roots') else None)
     except KeyboardInterrupt:
         stop.set()
 
@@ -94,8 +164,9 @@ def cmd_serve(args):
 def cmd_scan(args):
     configs = manifest(args.manifest)['runs']
     with connect(args.db) as db:
-        while any(r.get('backlog') for r in collect(db, configs, args.final).values()):
-            pass
+        while configs:
+            results = collect(db, configs, args.final)
+            configs = [c for c in configs if results[c['id']].get('backlog')]
         emit(args, digest(snapshot(db)), render.status)
 
 

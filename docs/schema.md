@@ -95,7 +95,7 @@ CLI 文本为 `error: 类型: 信息`，`--json` 为 `{"v":4,"error":{"type":…
 
 ## 存储
 
-一个 SQLite 库（`PRAGMA user_version = 3`）：`runs`（配置、游标与解析上下文、采集摘要）、`events`（每条证据一行，`observed`、`stream`、`problem_key`、`sim_time` 带索引，原始负载在 `payload`）、`collectors`（心跳）。旧 schema 的库被拒绝且不被修改。
+SQLite 的 `PRAGMA user_version` 为 4。一次写事务提交事件、运行游标、问题组计数与首末证据 ID、抑制标记、来源路径和变更序号。路径按运行和代次保存，导出时还原为原始事件契约。查询当前问题组读取 `groups`。等待无变化时检查变更序号、心跳和静默期限。带 `--repeats` 的历史游标需要统计游标之后的新增事件。升级请用新库重采，证据句柄和等待游标仅在原库有效。
 
 ## 原始事件（调试/导出）
 

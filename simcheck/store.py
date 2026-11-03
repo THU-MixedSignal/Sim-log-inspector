@@ -1,4 +1,4 @@
-"""Incremental reader and SQLite evidence store (schema 3).
+"""Incremental reader and SQLite evidence store (schema 4).
 
 The database is a derived index of the source logs. The collector is its only
 writer and works in bounded transactional ticks; every reader opens it
@@ -17,9 +17,9 @@ import time
 from pathlib import Path
 
 from . import __version__, parser
-from .integrity import inspect
+from .integrity import fingerprint, inspect
 
-SCHEMA = 3
+SCHEMA = 4
 API = 4
 MAX_LINE = 65536
 TICK_BYTES = 2 * 1024 * 1024
@@ -35,13 +35,21 @@ CHECK_FIELDS = ('check', 'status', 'reported_status', 'exit_code', 'reason', 'an
                 'end_marker', 'last_saved_time_s', 'expected_stop_reached', 'size_bytes', 'detail', 'format')
 DDL = (
     'CREATE TABLE runs(id TEXT PRIMARY KEY, config TEXT NOT NULL, cursor TEXT NOT NULL,'
-    ' summary TEXT NOT NULL, updated REAL NOT NULL)',
+    ' summary TEXT NOT NULL, updated REAL NOT NULL, rev INTEGER NOT NULL DEFAULT 0, input_stamp TEXT)',
     'CREATE TABLE events(id INTEGER PRIMARY KEY, run_id TEXT NOT NULL, generation INTEGER NOT NULL,'
     ' line INTEGER, byte_offset INTEGER, observed REAL NOT NULL, category TEXT, severity TEXT,'
     ' kind TEXT, code TEXT, stream TEXT NOT NULL, problem_key TEXT, sim_time REAL, payload TEXT NOT NULL)',
     'CREATE INDEX events_run ON events(run_id, generation, id)',
-    'CREATE INDEX events_stream ON events(run_id, generation, stream, problem_key, severity, id)',
-    'CREATE INDEX events_category ON events(run_id, generation, category, id)',
+    "CREATE INDEX events_tb ON events(run_id, generation, id) WHERE category='testbench'",
+    'CREATE TABLE groups(run_id TEXT, generation INTEGER, problem_key TEXT, severity TEXT,'
+    ' printed_count INTEGER, first_evidence_id INTEGER, last_evidence_id INTEGER,'
+    ' first_observed_epoch REAL, last_observed_epoch REAL,'
+    ' PRIMARY KEY(run_id,generation,problem_key,severity)) WITHOUT ROWID',
+    'CREATE TABLE sources(run_id TEXT,generation INTEGER,path TEXT,PRIMARY KEY(run_id,generation)) WITHOUT ROWID',
+    'CREATE TABLE suppressed(run_id TEXT,generation INTEGER,problem_key TEXT,'
+    ' PRIMARY KEY(run_id,generation,problem_key)) WITHOUT ROWID',
+    'CREATE TABLE revision(seq INTEGER NOT NULL)',
+    'INSERT INTO revision VALUES(0)',
     'CREATE TABLE collectors(pid INTEGER PRIMARY KEY, started REAL, heartbeat REAL, version TEXT,'
     ' interval REAL, port INTEGER, last_error TEXT)',
 )
@@ -71,23 +79,71 @@ def validate_rules(rules):
                              + json.dumps(rule, ensure_ascii=False))
 
 
-def manifest(path):
+def discover(root, base, cache):
+    """One directory level. Periodically relist even if attributes look unchanged."""
+    path = (base / root['root']).resolve()
+    alias = root['alias']
+    if not isinstance(alias, str) or not alias or '/' in alias or chr(92) in alias:
+        raise ValueError('root alias must be a single nonempty name')
+    templates = {k: root[k] for k in ('log', 'state', 'log_status', 'raw') if k in root}
+    if 'log' not in templates or not all(isinstance(v, str) and v and not Path(v).anchor
+                                          and '..' not in Path(v).parts for v in templates.values()):
+        raise ValueError('root needs relative file paths within each run directory')
+    stamp = path.stat().st_mtime_ns
+    previous = cache.get(alias)
+    now = time.monotonic()
+    if previous and previous[:2] == (path, stamp) and now - previous[2] < 300:
+        names = previous[3]
+    else:
+        with os.scandir(path) as entries:
+            names = sorted(e.name for e in entries if e.is_dir(follow_symlinks=False))
+        cache[alias] = (path, stamp, now, names)
+    for name in names:
+        if any(fnmatch.fnmatchcase(name, pattern) for pattern in root.get('exclude', [])):
+            continue
+        config = {k: v for k, v in root.items() if k not in ('root', 'alias', 'exclude')}
+        config.update({k: str(path / name / v) for k, v in templates.items()})
+        yield dict(config, id=alias + '/' + name)
+
+
+def manifest(path, cache=None):
     p = Path(path).resolve()
     data = json.loads(p.read_text(encoding='utf-8-sig'))
-    if not isinstance(data, dict) or not isinstance(data.get('runs'), list):
-        raise ValueError('manifest must be an object with a "runs" list')
+    if not isinstance(data, dict) or not ('runs' in data or 'roots' in data):
+        raise ValueError('manifest needs runs or roots')
+    explicit, roots = data.get('runs', []), data.get('roots', [])
+    if not isinstance(explicit, list) or not isinstance(roots, list):
+        raise ValueError('runs and roots must be lists')
+    if cache is None:
+        cache = {}
+    runs_in = list(explicit)
+    aliases = set()
+    for root in roots:
+        if not isinstance(root, dict) or not all(root.get(k) for k in ('alias', 'root', 'log')):
+            raise ValueError('each root needs alias, root and log')
+        if not all(isinstance(root[k], str) for k in ('alias', 'root', 'log')):
+            raise ValueError('alias, root and log must be strings')
+        if root['alias'] in aliases:
+            raise ValueError('duplicate root alias')
+        if not isinstance(root.get('exclude', []), list) or not all(isinstance(v, str) for v in root.get('exclude', [])):
+            raise ValueError('exclude must be a list of name patterns')
+        aliases.add(root['alias'])
+        runs_in.extend(discover(root, p.parent, cache))
+    for key in set(cache) - aliases:
+        del cache[key]
     shared_rules = data.get('watch', [])
     validate_rules(shared_rules)
     ids = set()
     runs = []
-    for run in data['runs']:
+    for index, run in enumerate(runs_in):
         if not isinstance(run, dict) or not isinstance(run.get('id'), str) or not run['id'] or run['id'] in ids:
             raise ValueError('Run IDs must be nonempty unique strings')
         ids.add(run['id'])
         config = dict(run)
         for key in ('log', 'state', 'log_status', 'raw'):
             if config.get(key):
-                config[key] = str((p.parent / config[key]).resolve())
+                config[key] = (str((p.parent / config[key]).resolve()) if index < len(explicit)
+                               else config[key])
         if not config.get('log'):
             raise ValueError('log path is required: ' + run['id'])
         validate_rules(run.get('watch', []))
@@ -117,8 +173,29 @@ def _schema_error(path, version):
                        '数据库只是源日志的派生索引：请换一个新的 --db 路径重新采集，旧库保持不动。')
 
 
+def network_fs(path):
+    """Recognize Windows remote drives and known Linux network mount types."""
+    if os.name == 'nt':
+        import ctypes
+        return ctypes.windll.kernel32.GetDriveTypeW(str(path.anchor)) == 4
+    try:
+        lines = Path('/proc/self/mountinfo').read_text(errors='replace').splitlines()
+    except OSError:
+        return False
+    longest = -1
+    kind = None
+    for line in lines:
+        left, _, right = line.partition(' - ')
+        mount = re.sub(r'\\([0-7]{3})', lambda m: chr(int(m[1], 8)), left.split()[4])
+        if len(mount) >= longest and path.is_relative_to(mount):
+            longest, kind = len(mount), right.split()[0]
+    return kind in {'nfs', 'nfs4', 'cifs', 'smb3', 'gpfs', 'lustre', 'ceph', 'fuse.sshfs'}
+
+
 def connect(path):
-    """Writer connection for collectors; creates schema 3 in a new database."""
+    """Writer connection for collectors; creates schema 4 in a new database."""
+    if network_fs(Path(path).resolve().parent):
+        raise ValueError('SQLite WAL requires a database on a local filesystem: ' + str(path))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     db = sqlite3.connect(path, timeout=10, factory=Connection)
     db.row_factory = sqlite3.Row
@@ -189,36 +266,82 @@ def _replaced(cur, source, st, f):
     return False
 
 
-def _new_generation(cur, source, st, f):
-    f.seek(0)
-    prefix = f.read(min(st.st_size, 4096))
+def _new_generation(cur, source, st):
     fresh = _empty_cursor(source)
     generation = cur['generation'] + 1 if cur else 1
     fresh.update(inode=st.st_ino, generation=generation, file_generation=generation,
-                 prefix_len=len(prefix), prefix_hash=hashlib.sha256(prefix).hexdigest(),
+                 prefix_hash=hashlib.sha256(b'').hexdigest(),
                  anchor_hash=hashlib.sha256(b'').hexdigest())
     return fresh
 
 
-def _insert(db, event, config, cur, start, now):
-    event.update(source_path=config['log'], line=cur['line'], byte_offset=start,
-                 run_id=config['id'], generation=cur['generation'])
-    db.execute('INSERT INTO events(run_id,generation,line,byte_offset,observed,category,severity,'
-               'kind,code,stream,problem_key,sim_time,payload) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
-               (config['id'], cur['generation'], cur['line'], start, now, event['category'],
-                event['severity'], event['kind'], event.get('code'), stream_of(event),
-                event.get('problem_key'), event.get('sim_time_s'), json.dumps(event, ensure_ascii=False)))
+def _write_batch(db, batch, config, now):
+    """Assign IDs under the writer lock and merge repeated groups once per batch."""
+    first = db.execute('SELECT coalesce(max(id),0)+1 FROM events').fetchone()[0]
+    groups = {}
+    suppressed = set()
+    sources = set()
+    def rows():
+        for eid, (gen, line, offset, event) in enumerate(batch, first):
+            stream = stream_of(event)
+            key = event.pop('problem_key', None)
+            severity = event.pop('severity')
+            kind = event.pop('kind')
+            code = event.pop('code', None)
+            event.pop('schema_version', None)
+            body = event.get('message')
+            if body and event['raw'].endswith(body):
+                event['body_at'] = len(event['raw']) - len(event.pop('message'))
+            group = (config['id'], gen, key, severity)
+            if stream == 'problem':
+                stats = groups.setdefault(group, [0, eid, eid])
+                stats[0] += 1
+                stats[2] = eid
+            elif stream == 'suppression' and key:
+                suppressed.add(group[:3])
+            sources.add((config['id'], gen, config['log']))
+            yield (eid, config['id'], gen, line, offset, now, event.pop('category'), severity, kind, code,
+                   stream, key, event.pop('sim_time_s'), json.dumps(event, ensure_ascii=False, separators=(',', ':')))
+    db.executemany('INSERT INTO events VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', rows())
+    db.executemany('INSERT OR IGNORE INTO sources VALUES(?,?,?)', sources)
+    db.executemany('INSERT OR IGNORE INTO suppressed VALUES(?,?,?)', suppressed)
+    db.executemany('INSERT INTO groups VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT DO UPDATE SET '
+                   'printed_count=printed_count+excluded.printed_count,last_evidence_id=excluded.last_evidence_id,'
+                   'first_observed_epoch=min(first_observed_epoch,excluded.first_observed_epoch),'
+                   'last_observed_epoch=max(last_observed_epoch,excluded.last_observed_epoch)',
+                   ((*key, *stats, now, now) for key, stats in groups.items()))
 
 
-def _read(db, f, cur, config, final, now):
+EVENT_SELECT = ('SELECT e.*, s.path AS source_path FROM events e JOIN sources s USING(run_id,generation)')
+
+
+def unpack(row):
+    event = json.loads(row['payload'])
+    if 'body_at' in event:
+        event['message'] = event['raw'][event.pop('body_at'):]
+    for key in ('source_path', 'run_id', 'generation', 'line', 'byte_offset', 'category', 'severity', 'kind'):
+        event[key] = row[key]
+    for key in ('problem_key', 'code'):
+        if (row[key] is not None or (key, row['kind']) in
+                {('code', 'native_message'), ('problem_key', 'suppression')}):
+            event[key] = row[key]
+    event.update(schema_version=parser.SCHEMA_VERSION, sim_time_s=row['sim_time'])
+    return event
+
+
+def _read(batch, f, cur, final):
     """Index complete lines from the cursor; True when a partial last line waits."""
     f.seek(cur['offset'])
     used = 0
-    while used < TICK_BYTES:
+    cur['retry_nul'] = False
+    while used < TICK_BYTES and len(batch) < 2048:
         start = f.tell()
         chunk = f.readline(MAX_LINE + 1)
         if not chunk:
             return False
+        if b'\0' in chunk:
+            cur['retry_nul'] = True
+            return True
         if cur['dropping']:
             used += len(chunk)
             cur['offset'] = f.tell()
@@ -243,35 +366,64 @@ def _read(db, f, cur, config, final, now):
             if b'Spectre (R) Circuit Simulator' in chunk and cur['parser']['banner_seen']:
                 cur['generation'] += 1
                 cur['parser'] = parser.initial()
+                cur['records'] = 0
                 cur['limited'] = False
             records = parser.parse(chunk.decode('utf-8', 'replace'), cur['parser'], cur['line'])
         for event in records:
-            _insert(db, event, config, cur, start, now)
+            if event['category'] == 'testbench':
+                cur['records'] = cur.get('records', 0) + 1
+            batch.append((cur['generation'], cur['line'], start, event))
     return False
 
 
-def scan(db, config, final=False):
+def scan(db, config, final=False, sidecars=None):
+    try:
+        return _scan(db, config, final, sidecars)
+    except Exception:
+        db.rollback()
+        raise
+
+
+def _scan(db, config, final, sidecars):
     """One bounded, transactional indexing step for one run."""
     now = time.time()
-    db.execute('BEGIN IMMEDIATE')
-    row = db.execute('SELECT cursor FROM runs WHERE id=?', (config['id'],)).fetchone()
+    batch = []
+    row = db.execute('SELECT * FROM runs WHERE id=?', (config['id'],)).fetchone()
+    encoded_config = json.dumps(config, ensure_ascii=False)
+    stamp = None
+    # Watch has already gated due work in memory. A standalone scan can use the
+    # last committed fingerprint too, including when it runs in a new process.
+    if sidecars is None:
+        stamp = json.dumps([final] + [fingerprint(config[k]) for k in ('log', 'state', 'log_status', 'raw')
+                                     if config.get(k)])
+        if (row and row['input_stamp'] == stamp and row['config'] == encoded_config
+                and 0 <= now - row['updated'] < 300):
+            cur = json.loads(row['cursor'])
+            return dict(json.loads(row['summary']), run_id=config['id'], generation=cur['generation'],
+                        parser=cur['parser'], retry_nul=False)
     cur = json.loads(row['cursor']) if row else None
-    if cur:
-        # Parser state keys added after this cursor was written start at their defaults.
-        cur['parser'] = {**parser.initial(), **cur['parser']}
     source = Path(config['log'])
     try:
-        st = source.stat()
         with source.open('rb') as f:
+            st = os.fstat(f.fileno())
             if _replaced(cur, source, st, f):
-                cur = _new_generation(cur, source, st, f)
-            pending = _read(db, f, cur, config, final, now)
+                cur = _new_generation(cur, source, st)
+            pending = _read(batch, f, cur, final)
+            st = os.fstat(f.fileno())
+            if st.st_size < cur['offset']:
+                raise OSError('source truncated during read; retrying')
+            # Pending bytes may change in place before the writer finishes the line.
+            prefix_len = min(cur['offset'], 4096)
+            if prefix_len > cur['prefix_len']:
+                f.seek(0)
+                cur['prefix_hash'] = hashlib.sha256(f.read(prefix_len)).hexdigest()
+                cur['prefix_len'] = prefix_len
             f.seek(max(0, cur['offset'] - 128))
             cur['anchor_hash'] = hashlib.sha256(f.read(min(128, cur['offset']))).hexdigest()
-        st = source.stat()
-        integrity = inspect(config, cur['parser'], pending or cur['dropping'])
-        if cur.get('limited'):
-            integrity['coverage_limited'] = 'oversized_line_skipped'
+        integrity = inspect(config, cur['parser'], pending or cur['dropping'], sidecars)
+        if cur.get('limited') or cur['parser'].get('context_limited'):
+            integrity['coverage_limited'] = ('oversized_line_skipped' if cur.get('limited')
+                                             else 'parser_context_limit')
             if integrity['status'] == 'complete':
                 integrity['status'] = 'incomplete'
         backlog = cur['offset'] < st.st_size and not pending
@@ -281,10 +433,12 @@ def scan(db, config, final=False):
                    'source_mtime_epoch': st.st_mtime, 'indexed_bytes': cur['offset'],
                    'backlog': backlog, 'integrity': integrity, 'observed_epoch': now, 'error': None}
     except OSError as e:
+        batch.clear()
+        cur = json.loads(row['cursor']) if row else None
         cur = cur or _empty_cursor(source)
         # Managed queued/rejected jobs may never create a Spectre log. The
         # explicitly bound state remains evidence even when that file is absent.
-        integrity = inspect(config, cur['parser'])
+        integrity = inspect(config, cur['parser'], False, sidecars)
         if integrity['status'] == 'complete':
             integrity['status'] = 'incomplete'
         not_started = (isinstance(e, FileNotFoundError) and cur['offset'] == 0
@@ -292,11 +446,24 @@ def scan(db, config, final=False):
                        and integrity['execution_status'] in ('queued', 'submitted', 'waiting', 'starting'))
         summary = {'source_path': str(source), 'integrity': integrity,
                    'backlog': False, 'observed_epoch': now, 'error': None if not_started else str(e)}
-    db.execute('INSERT OR REPLACE INTO runs(id,config,cursor,summary,updated) VALUES(?,?,?,?,?)',
-               (config['id'], json.dumps(config, ensure_ascii=False), json.dumps(cur, ensure_ascii=False),
-                json.dumps(summary, ensure_ascii=False), now))
+    db.execute('BEGIN IMMEDIATE')
+    prior = db.execute('SELECT rev FROM runs WHERE id=?', (config['id'],)).fetchone()
+    if (prior[0] if prior else None) != (row['rev'] if row else None):
+        db.rollback()
+        raise RuntimeError('concurrent scan: cursor advanced during read')
+    if batch:
+        _write_batch(db, batch, config, now)
+    db.execute('UPDATE revision SET seq=seq+1')
+    if (summary.get('error') or summary['backlog'] or cur.get('retry_nul')
+            or any(c['status'] == 'unavailable' for c in integrity['checks'])):
+        stamp = None
+    db.execute('INSERT OR REPLACE INTO runs(id,config,cursor,summary,updated,input_stamp,rev) '
+               'VALUES(?,?,?,?,?,?,(SELECT seq FROM revision))',
+               (config['id'], encoded_config, json.dumps(cur, ensure_ascii=False),
+                json.dumps(summary, ensure_ascii=False), now, stamp))
     db.commit()
-    return dict(summary, run_id=config['id'], generation=cur['generation'], parser=cur['parser'])
+    return dict(summary, run_id=config['id'], generation=cur['generation'], parser=cur['parser'],
+                retry_nul=cur.get('retry_nul', False))
 
 
 def record_error(db, config, exc):
@@ -308,7 +475,7 @@ def record_error(db, config, exc):
     if row:
         summary = json.loads(row['summary'])
         summary.update(collector_error=message, collector_error_epoch=now)
-        db.execute('UPDATE runs SET summary=?, updated=? WHERE id=?',
+        db.execute('UPDATE runs SET summary=?, updated=?, input_stamp=NULL WHERE id=?',
                    (json.dumps(summary, ensure_ascii=False), now, config['id']))
     else:
         summary = {'source_path': config['log'], 'integrity': {'status': 'unknown', 'checks': []},
@@ -317,6 +484,8 @@ def record_error(db, config, exc):
         db.execute('INSERT INTO runs(id,config,cursor,summary,updated) VALUES(?,?,?,?,?)',
                    (config['id'], json.dumps(config, ensure_ascii=False),
                     json.dumps(_empty_cursor(config['log'])), json.dumps(summary, ensure_ascii=False), now))
+    db.execute('UPDATE revision SET seq=seq+1')
+    db.execute('UPDATE runs SET rev=(SELECT seq FROM revision) WHERE id=?', (config['id'],))
     db.commit()
     return message
 
@@ -389,23 +558,27 @@ def _summary_text(event):
     return short(event.get('message') or event['raw'])
 
 
-def problem_groups(db, run, generation=None, after=0, limit=50):
+def problem_groups(db, run, generation=None, after=0, limit=50, new_only=False):
     """Printed messages grouped by key and native severity; never estimates of suppressed counts."""
     generation = current_generation(db, run) if generation is None else int(generation)
-    rows = db.execute(
-        'SELECT problem_key, severity, count(*) AS printed_count, min(id) AS first_evidence_id,'
-        ' max(id) AS last_evidence_id, min(observed) AS first_observed_epoch,'
-        ' max(observed) AS last_observed_epoch FROM events'
-        " WHERE run_id=? AND generation=? AND stream='problem' AND id>?"
-        f' GROUP BY problem_key, severity ORDER BY {SEVERITY_SQL}, first_evidence_id LIMIT ?',
-        (run, generation, int(after), min(max(int(limit), 1), 500))).fetchall()
+    args = (run, generation, int(after), min(max(int(limit), 1), 500))
+    if after and not new_only:
+        rows = db.execute(
+            'SELECT problem_key, severity, count(*) AS printed_count, min(id) AS first_evidence_id,'
+            ' max(id) AS last_evidence_id, min(observed) AS first_observed_epoch,'
+            ' max(observed) AS last_observed_epoch FROM events INDEXED BY events_run'
+            " WHERE run_id=? AND generation=? AND stream='problem' AND id>?"
+            f' GROUP BY problem_key, severity ORDER BY {SEVERITY_SQL}, first_evidence_id LIMIT ?',
+            args).fetchall()
+    else:
+        rows = db.execute('SELECT problem_key,severity,printed_count,first_evidence_id,last_evidence_id,'
+                          'first_observed_epoch,last_observed_epoch FROM groups WHERE run_id=? AND generation=?'
+                          f' AND first_evidence_id>? ORDER BY {SEVERITY_SQL},first_evidence_id LIMIT ?', args)
     suppressed = {r[0] for r in db.execute(
-        "SELECT DISTINCT problem_key FROM events WHERE run_id=? AND generation=?"
-        " AND stream='suppression' AND problem_key IS NOT NULL", (run, generation))}
+        'SELECT problem_key FROM suppressed WHERE run_id=? AND generation=?', (run, generation))}
     groups = []
     for row in rows:
-        event = json.loads(db.execute('SELECT payload FROM events WHERE id=?',
-                                      (row['first_evidence_id'],)).fetchone()[0])
+        event = unpack(db.execute(EVENT_SELECT + ' WHERE id=?', (row['first_evidence_id'],)).fetchone())
         first_time = event.get('sim_time_s')
         stop = event.get('analysis_stop_s')
         groups.append(dict(row) | {
@@ -461,15 +634,14 @@ def _run_state(db, row, now):
     groups = problem_groups(db, row['id'], gen, limit=500)
     by_severity = {}
     group_count = printed = last_problem = 0
-    for r in db.execute("SELECT severity, count(*) AS n, count(DISTINCT problem_key) AS g, max(id) AS last"
-                        " FROM events WHERE run_id=? AND generation=? AND stream='problem'"
+    for r in db.execute("SELECT severity, sum(printed_count) AS n, count(*) AS g, max(last_evidence_id) AS last"
+                        " FROM groups WHERE run_id=? AND generation=?"
                         ' GROUP BY severity', (row['id'], gen)):
         by_severity[r['severity']] = r['n']
         printed += r['n']
         group_count += r['g']
         last_problem = max(last_problem, r['last'])
-    records = db.execute("SELECT count(*) FROM events WHERE run_id=? AND generation=? AND category='testbench'",
-                         (row['id'], gen)).fetchone()[0]
+    records = cur.get('records', 0)
     last_event = db.execute('SELECT max(id) FROM events WHERE run_id=? AND generation=?',
                             (row['id'], gen)).fetchone()[0] or 0
     ended = status in ENDED or integrity.get('native_status', 'unknown') != 'unknown'
@@ -526,11 +698,42 @@ def _run_state(db, row, now):
     return run
 
 
-def snapshot(db, now=None):
+def snapshot(db, now=None, previous=None):
     """Internal view of every run, with baseline differences; status and wait derive from it."""
-    now = time.time() if now is None else now
-    runs = [_run_state(db, row, now)
-            for row in db.execute('SELECT id, config, cursor, summary FROM runs ORDER BY id').fetchall()]
+    owned = not db.in_transaction
+    if owned:
+        db.execute('BEGIN')
+    try:
+        return _snapshot(db, time.time() if now is None else now, previous)
+    finally:
+        if owned:
+            db.rollback()
+
+
+def _snapshot(db, now, previous):
+    seq = db.execute('SELECT seq FROM revision').fetchone()[0]
+    collector = collector_status(db, now)
+    if previous and previous['seq'] == seq and now < previous['quiet_deadline']:
+        if previous['collector']['alive'] == collector['alive']:
+            return dict(previous, generated_epoch=now, collector=collector)
+    cached = {r['run_id']: r for r in previous['runs']} if previous else {}
+    runs = []
+    deadlines = []
+    for ident, revision in db.execute('SELECT id,rev FROM runs ORDER BY id'):
+        old = cached.get(ident)
+        if old and old['rev'] == revision and now < old['quiet_deadline']:
+            run = dict(old)
+        else:
+            run = _run_state(db, _row(db, ident), now)
+            run['rev'] = revision
+        state = run['state']
+        deadline = math.inf
+        if (not state['ended'] and state['source_mtime_epoch'] is not None
+                and state['quiet_after_s'] and 'quiet' not in run['attention']):
+            deadline = state['source_mtime_epoch'] + state['quiet_after_s']
+        run['quiet_deadline'] = deadline
+        deadlines.append(deadline)
+        runs.append(run)
     by_id = {r['run_id']: r for r in runs}
     for run in runs:
         ref = by_id.get(run['baseline_ref'])
@@ -539,9 +742,8 @@ def snapshot(db, now=None):
             run['baseline'] = {'run_id': ref['run_id'], 'status': ref['state']['status'],
                                'keys_not_in_baseline': [{'problem_key': k, 'severity': s}
                                                         for k, s in sorted(missing)]}
-    collector = collector_status(db, now)
     last_event = db.execute('SELECT max(id) FROM events').fetchone()[0] or 0
-    return {'version': __version__, 'generated_epoch': now, 'collector': collector,
+    return {'seq': seq, 'quiet_deadline': min(deadlines, default=math.inf), 'version': __version__, 'generated_epoch': now, 'collector': collector,
             'last_event_id': last_event, 'token': _digest([r['token'] for r in runs], collector['alive']),
             'runs': runs}
 
@@ -685,7 +887,7 @@ def status(db, run_ids=None):
 def _key_set(db, run):
     gen = current_generation(db, run)
     return {(r[0], r[1]) for r in db.execute(
-        "SELECT DISTINCT problem_key, severity FROM events WHERE run_id=? AND generation=? AND stream='problem'",
+        "SELECT problem_key, severity FROM groups WHERE run_id=? AND generation=?",
         (run, gen))}
 
 
@@ -758,8 +960,7 @@ def measurement_page(db, run, after=0, limit=20, before=None, tail=None):
     probe = "SELECT 1 FROM events WHERE run_id=? AND generation=? AND category='testbench' AND id{}? LIMIT 1"
     older = bool(rows) and db.execute(probe.format('<'), (run, gen, rows[0]['e'])).fetchone() is not None
     newer = bool(rows) and db.execute(probe.format('>'), (run, gen, rows[-1]['e'])).fetchone() is not None
-    total = db.execute("SELECT count(*) FROM events WHERE run_id=? AND generation=? AND category='testbench'",
-                       (run, gen)).fetchone()[0]
+    total = json.loads(_row(db, run)['cursor']).get('records', 0)
     out = _compact({'v': API, 'run': run, 'total': total, 'older': older, 'newer': newer})
     out['rows'] = rows
     return out
@@ -767,11 +968,11 @@ def measurement_page(db, run, after=0, limit=20, before=None, tail=None):
 
 def evidence(db, event_id):
     """One evidence record with its header, continuation and suppression lines and its group."""
-    row = db.execute('SELECT id, observed, stream, problem_key, severity, payload FROM events WHERE id=?',
+    row = db.execute(EVENT_SELECT + ' WHERE id=?',
                      (int(event_id),)).fetchone()
     if not row:
         return None
-    event = json.loads(row['payload'])
+    event = unpack(row)
     run, gen = event['run_id'], event['generation']
     current = db.execute('SELECT cursor FROM runs WHERE id=?', (run,)).fetchone()
     current = json.loads(current[0]) if current else {}
@@ -789,10 +990,10 @@ def evidence(db, event_id):
     suppression = db.execute(related, scope + ('suppression', event['line'], 1)).fetchone()
     group = None
     if row['stream'] == 'problem':
-        g = db.execute("SELECT count(*) AS n, min(id) AS first, max(id) AS last FROM events WHERE run_id=?"
-                       " AND generation=? AND stream='problem' AND problem_key=? AND severity=?",
+        g = db.execute("SELECT printed_count AS n, first_evidence_id AS first, last_evidence_id AS last FROM groups WHERE run_id=?"
+                       " AND generation=? AND problem_key=? AND severity=?",
                        (run, gen, row['problem_key'], row['severity'])).fetchone()
-        later = db.execute("SELECT 1 FROM events WHERE run_id=? AND generation=? AND stream='suppression'"
+        later = db.execute("SELECT 1 FROM suppressed WHERE run_id=? AND generation=?"
                            ' AND problem_key=? LIMIT 1', (run, gen, row['problem_key'])).fetchone()
         group = _compact({'n': g['n'], 'sup': later is not None, 'first': g['first'], 'last': g['last']})
     t, stop = event.get('sim_time_s'), event.get('analysis_stop_s')
@@ -888,16 +1089,30 @@ def events(db, run=None, after=0, limit=100, category=None, severity=None, gener
             clauses.append(key + '=?')
             args.append(value)
     args.append(min(max(int(limit), 1), 500))
-    rows = db.execute('SELECT id, observed, payload FROM events WHERE ' + ' AND '.join(clauses)
+    rows = db.execute(EVENT_SELECT + ' WHERE ' + ' AND '.join(clauses)
                       + ' ORDER BY id LIMIT ?', args)
-    return [dict(json.loads(r['payload']), event_id=r['id'], observed_epoch=r['observed']) for r in rows]
+    return [dict(unpack(r), event_id=r['id'], observed_epoch=r['observed']) for r in rows]
 
 
 # ---------------------------------------------------------------- waiting
 
 def detect_changes(db, base, after, run_ids=None, notices=False, repeats=False):
+    owned = not db.in_transaction
+    if owned:
+        db.execute('BEGIN')
+    try:
+        return _changes(db, base, after, run_ids, notices, repeats)
+    finally:
+        if owned:
+            db.rollback()
+
+
+def _changes(db, base, after, run_ids, notices, repeats):
     """Typed differences between an earlier snapshot and now, plus problems after an evidence ID."""
-    current = snapshot(db)
+    current = snapshot(db, previous=base)
+    if (current['seq'] == base['seq'] and after >= current['last_event_id']
+            and current['token'] == base['token']):
+        return current, []
     old_runs = {r['run_id']: r for r in base['runs']}
     changes = []
     for run in current['runs']:
@@ -905,6 +1120,9 @@ def detect_changes(db, base, after, run_ids=None, notices=False, repeats=False):
         if run_ids and rid not in run_ids:
             continue
         old = old_runs.get(rid)
+        if (old and old['rev'] == run['rev'] and old['token'] == run['token']
+                and run['problems']['last_problem_id'] <= after):
+            continue
         if old is None:
             changes.append({'type': 'run_added', 'run': rid})
         else:
@@ -919,11 +1137,12 @@ def detect_changes(db, base, after, run_ids=None, notices=False, repeats=False):
                 if flag in run['attention'] and flag not in old['attention']:
                     changes.append({'type': flag, 'run': rid, 'error': run['state'][field]})
         seen = {r[0] for r in db.execute(
-            "SELECT DISTINCT problem_key FROM events WHERE run_id=? AND generation=? AND stream='problem'"
-            ' AND id<=?', (rid, run['generation'], int(after)))}
+            "SELECT DISTINCT problem_key FROM groups WHERE run_id=? AND generation=?"
+            ' AND first_evidence_id<=?', (rid, run['generation'], int(after)))}
         ruled = {h['problem_key'] for h in run['rule_hits']}
         new = {}
-        for group in problem_groups(db, rid, run['generation'], after=after, limit=500):
+        for group in (problem_groups(db, rid, run['generation'], after=after, limit=500, new_only=not repeats)
+                      if run['problems']['last_problem_id'] > after else ()):
             if group['problem_key'] not in seen:
                 if notices or group['severity'] != 'NOTICE' or group['problem_key'] in ruled:
                     new[group['problem_key']] = {'type': 'new', 'run': rid, **brief(group)}
@@ -976,4 +1195,5 @@ def wait_for_change(path, cursor=None, run_ids=None, timeout=3600.0, interval=2.
             return out, 0
         if clock() >= deadline:
             return {'v': API, 'changed': False, 'reason': 'timeout', 'cursor': cursor_of(current)}, 3
+        base, after = current, current['last_event_id']
         sleep(interval)

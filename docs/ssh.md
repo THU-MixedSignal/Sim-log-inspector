@@ -70,10 +70,10 @@ on the server allows an absolute executable path without depending on a shell's
 working directory. For example, after that environment has been installed:
 
 ```sh
-ssh -T spectre-box /home/sim_reader/tools/spectre-log-inspector/.venv/bin/simcheck --db /home/sim_reader/simcheck-work/index.sqlite status --json
+ssh -T spectre-box /home/sim_reader/tools/spectre-log-inspector/.venv/bin/simcheck --db /local/simcheck-work/index.sqlite status --json
 ```
 
-Paths/user are illustrative; substitute operator-provided values. wait, show
+Use an operator-confirmed local disk for the SQLite WAL database. The writer rejects known network mount types on Linux and remote drives on Windows. Other layouts require checking the mount. Source logs can live on the shared filesystem. Paths/user are illustrative; substitute operator-provided values. wait, show
 and evidence use the same form. Keep wait timeouts within the calling tool's
 timeout and save returned cursors. If invoking source directly, set the remote
 repository working directory for that invocation.

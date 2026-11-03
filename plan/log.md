@@ -1,5 +1,13 @@
 # Implementation log
 
+## 2026-11-03 — Performance review and takeover
+
+Checked local branches, worktrees and GitHub heads. The native Spectre work was already in main at e6f49c9. The four performance steps in the preceding review were proposals. The user assigned this worker all performance work.
+
+Implemented schema 4 aggregates, compact evidence, atomic cursor/group revisions, version-aware wait snapshots, bounded read/parse outside the SQLite write lock, fingerprint gating, independent due times and one-level directory discovery. Active parser summaries hold up to 128 analysis names and 128 setting keys. Exceeding either cap preserves event evidence and marks coverage limited. No read pool was justified by a shared-mount measurement. The local implementation is single-threaded for collection. A blocked filesystem call can still delay its heartbeat.
+
+Compared against e6f49c9 with scripts/benchmark_queries.py. On the million-event checkpoint status fell from 4816 ms to 1.54 ms, steady wait detection from 5109 ms to 0.028 ms, and checkpointed database size from 796 MB to 263 MB. See docs/validation.md for the workload and limits. All 106 tests passed. Compared 4,196 events across all 28 fixture logs, excluding wall-clock observation times. CLI, HTTP and the dashboard evidence expansion were checked. No actual shared-mount measurement yet.
+
 ## 2026-11-03 — Native-review follow-ups: meter, frames, tags, generations, phases
 
 The user asked me to commit the live campaign work first, then fix the five issues its review found. Read README.md, plan/v1.md and the collector design notes first. The pending work was committed on branch `live-spectre-fixes`, not pushed:
