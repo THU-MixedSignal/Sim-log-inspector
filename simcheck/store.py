@@ -15,9 +15,10 @@ import re
 import sqlite3
 import time
 from pathlib import Path
+from urllib.parse import quote, unquote
 
 from . import __version__, parser
-from .integrity import fingerprint, inspect
+from .integrity import VALID_STATES, fingerprint, inspect
 
 SCHEMA = 4
 API = 4
@@ -77,6 +78,16 @@ def validate_rules(rules):
                 or not set(rule) & {'code', 'key', 'severity', 'text'}):
             raise ValueError('watch rule needs a name and at least one of code/key/severity/text: '
                              + json.dumps(rule, ensure_ascii=False))
+        for field in ('name', 'code', 'key', 'text'):
+            if field in rule and not (isinstance(rule[field], str) and rule[field].strip()):
+                raise ValueError(f'watch rule {rule["name"]!r}: {field} must be a nonempty string')
+        if 'severity' in rule:
+            values = rule['severity'] if isinstance(rule['severity'], list) else [rule['severity']]
+            if not values or any(not isinstance(v, str) or v not in SEV_ORDER for v in values):
+                raise ValueError(f'watch rule {rule["name"]!r}: severity must use {", ".join(SEV_ORDER)}')
+        count = rule.get('min_count', 1)
+        if type(count) is not int or count < 1:
+            raise ValueError(f'watch rule {rule["name"]!r}: min_count must be a positive integer')
 
 
 def discover(root, base, cache):
@@ -524,7 +535,7 @@ def current_generation(db, run):
 
 
 def _row(db, run):
-    return db.execute('SELECT id, config, cursor, summary FROM runs WHERE id=?', (run,)).fetchone()
+    return db.execute('SELECT id, config, cursor, summary, rev FROM runs WHERE id=?', (run,)).fetchone()
 
 
 def collector_status(db, now=None):
@@ -561,27 +572,33 @@ def _summary_text(event):
 def problem_groups(db, run, generation=None, after=0, limit=50, new_only=False):
     """Printed messages grouped by key and native severity; never estimates of suppressed counts."""
     generation = current_generation(db, run) if generation is None else int(generation)
-    args = (run, generation, int(after), min(max(int(limit), 1), 500))
+    args = (run, generation, int(after), -1 if limit is None else min(max(int(limit), 1), 500))
     if after and not new_only:
-        rows = db.execute(
+        grouped = (
             'SELECT problem_key, severity, count(*) AS printed_count, min(id) AS first_evidence_id,'
             ' max(id) AS last_evidence_id, min(observed) AS first_observed_epoch,'
             ' max(observed) AS last_observed_epoch FROM events INDEXED BY events_run'
             " WHERE run_id=? AND generation=? AND stream='problem' AND id>?"
-            f' GROUP BY problem_key, severity ORDER BY {SEVERITY_SQL}, first_evidence_id LIMIT ?',
-            args).fetchall()
+            ' GROUP BY problem_key, severity')
     else:
-        rows = db.execute('SELECT problem_key,severity,printed_count,first_evidence_id,last_evidence_id,'
-                          'first_observed_epoch,last_observed_epoch FROM groups WHERE run_id=? AND generation=?'
-                          f' AND first_evidence_id>? ORDER BY {SEVERITY_SQL},first_evidence_id LIMIT ?', args)
+        grouped = ('SELECT * FROM groups WHERE run_id=? AND generation=? AND first_evidence_id>?')
+    rows = db.execute(
+        'SELECT e.*, s.path AS source_path, g.first_evidence_id, g.last_evidence_id, g.printed_count,'
+        ' g.first_observed_epoch, g.last_observed_epoch'
+        f' FROM ({grouped} ORDER BY {SEVERITY_SQL}, first_evidence_id LIMIT ?) g'
+        ' JOIN events e ON e.id=g.first_evidence_id JOIN sources s ON s.run_id=e.run_id AND s.generation=e.generation'
+        f' ORDER BY {SEVERITY_SQL.replace("CASE severity", "CASE e.severity")}, g.first_evidence_id', args)
     suppressed = {r[0] for r in db.execute(
         'SELECT problem_key FROM suppressed WHERE run_id=? AND generation=?', (run, generation))}
     groups = []
     for row in rows:
-        event = unpack(db.execute(EVENT_SELECT + ' WHERE id=?', (row['first_evidence_id'],)).fetchone())
+        event = unpack(row)
         first_time = event.get('sim_time_s')
         stop = event.get('analysis_stop_s')
-        groups.append(dict(row) | {
+        groups.append({
+            'problem_key': row['problem_key'], 'severity': row['severity'], 'printed_count': row['printed_count'],
+            'first_evidence_id': row['first_evidence_id'], 'last_evidence_id': row['last_evidence_id'],
+            'first_observed_epoch': row['first_observed_epoch'], 'last_observed_epoch': row['last_observed_epoch'],
             'code': event.get('code'), 'category': event['category'],
             'phase': event.get('analysis') or 'setup', 'first_sim_time_s': first_time,
             'analysis_stop_s': stop,
@@ -609,9 +626,37 @@ def _rule_matches(rule, group):
 def rule_hits(rules, groups):
     """User-defined watch rules matched against printed groups. The rule is the user's policy."""
     return [{'rule': rule['name'], 'problem_key': g['problem_key'], 'severity': g['severity'],
+             'min_count': int(rule.get('min_count', 1)),
              'printed_count': g['printed_count'], 'first_evidence_id': g['first_evidence_id'],
              'first_sim_time_s': g['first_sim_time_s'], 'first_fraction': g['first_fraction']}
             for rule in rules for g in groups if _rule_matches(rule, g)]
+
+
+def _set_rule_triggers(db, rid, generation, hits):
+    thresholds = {}
+    for hit in hits:
+        count = hit.pop('min_count')
+        hit['trigger'] = hit['first_evidence_id']
+        if count > 1:
+            by_count = thresholds.setdefault((hit['problem_key'], hit['severity']), {})
+            by_count.setdefault(count, []).append(hit)
+    if not thresholds:
+        return
+    # One ordered pass for all thresholds. Stop as soon as each crossing is found.
+    counts = {}
+    for eid, key, severity in db.execute(
+            "SELECT id,problem_key,severity FROM events WHERE run_id=? AND generation=? "
+            "AND stream='problem' ORDER BY id", (rid, generation)):
+        ident = (key, severity)
+        if ident not in thresholds:
+            continue
+        counts[ident] = counts.get(ident, 0) + 1
+        for hit in thresholds[ident].pop(counts[ident], []):
+            hit['trigger'] = eid
+        if not thresholds[ident]:
+            del thresholds[ident]
+            if not thresholds:
+                break
 
 
 def _digest(*parts):
@@ -622,6 +667,18 @@ def _keys(groups):
     return {(g['problem_key'], g['severity']) for g in groups}
 
 
+def _stored_integrity(stored):
+    """Apply the state requirement to snapshots indexed by previous releases too."""
+    integrity = stored.get('integrity') or {}
+    for check in integrity.get('checks', []):
+        if (check['check'] == 'state' and check['status'] == 'observed'
+                and str(check.get('reported_status')) not in VALID_STATES):
+            check['status'] = 'unknown'
+            if integrity.get('status') == 'complete':
+                integrity['status'] = 'incomplete'
+    return integrity
+
+
 def _run_state(db, row, now):
     """Everything known about one run; the compact outputs below are derived from it."""
     config = json.loads(row['config'])
@@ -629,9 +686,9 @@ def _run_state(db, row, now):
     stored = json.loads(row['summary'])
     p = cur['parser']
     gen = cur['generation']
-    integrity = stored.get('integrity') or {'status': 'unknown'}
+    integrity = _stored_integrity(stored)
     status = integrity.get('status', 'unknown')
-    groups = problem_groups(db, row['id'], gen, limit=500)
+    groups = problem_groups(db, row['id'], gen, limit=None)
     by_severity = {}
     group_count = printed = last_problem = 0
     for r in db.execute("SELECT severity, sum(printed_count) AS n, count(*) AS g, max(last_evidence_id) AS last"
@@ -648,7 +705,14 @@ def _run_state(db, row, now):
     mtime = stored.get('source_mtime_epoch')
     quiet_for = None if mtime is None else round(max(0.0, now - mtime), 1)
     quiet_after = config.get('quiet_after_s', QUIET_AFTER_S)
-    hits = rule_hits(config.get('watch', []), groups)
+    rules = config.get('watch', [])
+    try:
+        validate_rules(rules)
+    except ValueError as exc:
+        stored['collector_error'] = str(exc)
+        rules = []
+    hits = rule_hits(rules, groups)
+    _set_rule_triggers(db, row['id'], gen, hits)
     attention = []
     if status == 'failed':
         attention.append('failed')
@@ -686,7 +750,7 @@ def _run_state(db, row, now):
         'problems': {'printed_count': printed, 'group_count': group_count, 'by_severity': by_severity,
                      'last_problem_id': last_problem},
         'groups': groups,
-        'rule_hits': hits,
+        'rule_hits': hits, 'watch_rules': rules,
         'baseline': None,
         # records: every testbench line; frames: R4MEAS records the parser could read.
         'measurements': {'records': records, 'frames': p.get('frames', 0), 'last_frame': p.get('last_frame'),
@@ -694,7 +758,7 @@ def _run_state(db, row, now):
         'coverage': {'suppression_seen': p.get('suppression_seen', False),
                      'suppressed_totals': p.get('suppressed_totals', {}), 'limitations': limitations},
         'last_event_id': last_event}
-    run['token'] = _digest(gen, status, ended, attention, sorted((h['rule'], h['problem_key']) for h in hits))
+    run['token'] = _digest(gen, status, ended, attention, sorted((h['rule'], h['problem_key'], h['severity']) for h in hits))
     return run
 
 
@@ -891,9 +955,8 @@ def _key_set(db, run):
         (run, gen))}
 
 
-def show(db, run, full=False, limit=30, now=None):
-    """One run's problem groups, most severe first. NOTICE groups appear when a rule names them
-    or with full; full also lifts the line limit."""
+def show(db, run, full=False, limit=30, now=None, offset=0):
+    """Return one page of problem groups, including unmatched notices in full mode."""
     row = _row(db, run)
     if row is None:
         return None
@@ -916,13 +979,19 @@ def show(db, run, full=False, limit=30, now=None):
             'phase': g['phase'], 'rules': rules.get(key),
             'base_new': ref_keys is not None and g['severity'] != 'NOTICE' and key not in ref_keys})})
     st = r['state']
-    more = 0 if full else max(0, len(groups) - int(limit))
+    if offset < 0:
+        raise ValueError('offset must be nonnegative')
+    page_size = 500 if full else min(500, max(1, int(limit)))
+    end = offset + page_size
+    more = max(0, len(groups) - end)
     out = _compact({'v': API, 'run': run, 'state': st['status'], 'ended': st['ended'], 'flags': r['attention'],
                     'analysis': st['analysis'], 'stop': sig(st['stop_time_s']), **_progress(st),
                     'log_age': None if st['ended'] or st['quiet_for_s'] is None else round(st['quiet_for_s']),
                     'log': r['log'], 'baseline': ref if ref_keys is not None else None,
-                    'hidden_notices': hidden or None, 'more': more or None})
-    out['groups'] = groups if full else groups[:int(limit)]
+                    'hidden_notices': hidden or None, 'more': more or None,
+                    'next_offset': end if more else None, 'full': True if full and more else None,
+                    'revision': row['rev'] if more or offset else None})
+    out['groups'] = groups[offset:end]
     return out
 
 
@@ -1067,7 +1136,7 @@ def details(db, run):
         return None
     stored = json.loads(row['summary'])
     p = json.loads(row['cursor'])['parser']
-    integrity = stored.get('integrity') or {}
+    integrity = _stored_integrity(stored)
     checks = [{k: c[k] for k in CHECK_FIELDS if c.get(k) is not None} for c in integrity.get('checks', [])]
     return _compact({
         'v': API, 'run': run, 'status': integrity.get('status'), 'log': stored.get('source_path'),
@@ -1115,13 +1184,14 @@ def _changes(db, base, after, run_ids, notices, repeats):
         return current, []
     old_runs = {r['run_id']: r for r in base['runs']}
     changes = []
+    notifications = {}
     for run in current['runs']:
         rid = run['run_id']
         if run_ids and rid not in run_ids:
             continue
         old = old_runs.get(rid)
         if (old and old['rev'] == run['rev'] and old['token'] == run['token']
-                and run['problems']['last_problem_id'] <= after):
+                and current['last_event_id'] <= after):
             continue
         if old is None:
             changes.append({'type': 'run_added', 'run': rid})
@@ -1136,63 +1206,130 @@ def _changes(db, base, after, run_ids, notices, repeats):
             for flag, field in (('collector_error', 'collector_error'), ('source_error', 'error')):
                 if flag in run['attention'] and flag not in old['attention']:
                     changes.append({'type': flag, 'run': rid, 'error': run['state'][field]})
-        seen = {r[0] for r in db.execute(
-            "SELECT DISTINCT problem_key FROM groups WHERE run_id=? AND generation=?"
-            ' AND first_evidence_id<=?', (rid, run['generation'], int(after)))}
-        ruled = {h['problem_key'] for h in run['rule_hits']}
-        new = {}
-        for group in (problem_groups(db, rid, run['generation'], after=after, limit=500, new_only=not repeats)
-                      if run['problems']['last_problem_id'] > after else ()):
-            if group['problem_key'] not in seen:
-                if notices or group['severity'] != 'NOTICE' or group['problem_key'] in ruled:
-                    new[group['problem_key']] = {'type': 'new', 'run': rid, **brief(group)}
-            elif repeats:
-                changes.append({'type': 'more', 'run': rid, 'key': group['problem_key'],
-                                'sev': group['severity'], 'n': group['printed_count'],
-                                'last': group['last_evidence_id']})
-        if old is not None:
-            known = {(h['rule'], h['problem_key']) for h in old['rule_hits']}
+        if current['last_event_id'] > after:
+            _event_notifications(db, run, after, notices, repeats, notifications)
+        # Rule changes caused solely by a new manifest have no new evidence ID.
+        if old and old['rev'] != run['rev']:
+            known = {(h['rule'], h['problem_key'], h['severity']) for h in old['rule_hits']}
             for h in run['rule_hits']:
-                if (h['rule'], h['problem_key']) in known:
-                    continue
-                if h['problem_key'] in new:  # a new group that hits a rule: one line, not two
-                    new[h['problem_key']].setdefault('rules', []).append(h['rule'])
-                else:
-                    changes.append(_compact({'type': 'rule', 'run': rid, 'rule': h['rule'],
-                                             'key': h['problem_key'], 'e': h['first_evidence_id'],
-                                             't': sig(h['first_sim_time_s']), 'pct': pct(h['first_fraction'])}))
-        changes.extend(new.values())
+                ident = (h['rule'], h['problem_key'], h['severity'])
+                if ident not in known and h['trigger'] <= after:
+                    changes.append(_rule_change(rid, h))
     if base['collector']['alive'] and not current['collector']['alive']:
         changes.append(_compact({'type': 'collector_offline', 'hb': current['collector']['heartbeat_age_s']}))
+    changes.extend(notifications[e] for e in sorted(notifications))
     return current, changes
+
+
+def _rule_change(run, hit):
+    return _compact({'type': 'rule', 'run': run, 'rule': hit['rule'], 'sev': hit['severity'],
+                     'key': hit['problem_key'], 'e': hit['first_evidence_id'],
+                     'trigger': hit['trigger'], 't': sig(hit['first_sim_time_s']), 'pct': pct(hit['first_fraction'])})
+
+
+def _event_notifications(db, run, after, notices, repeats, out):
+    """Reconstruct notifications from durable evidence, including generations closed between waits."""
+    rid, gen = run['run_id'], run['generation']
+    generations = [(gen, run['groups'], run['rule_hits'])]
+    for (older,) in db.execute('SELECT DISTINCT generation FROM groups WHERE run_id=?'
+                               ' AND generation<? AND last_evidence_id>?', (rid, gen, after)):
+        groups = problem_groups(db, rid, older, limit=None)
+        old_hits = rule_hits(run['watch_rules'], groups)
+        _set_rule_triggers(db, rid, older, old_hits)
+        generations.append((older, groups, old_hits))
+    for generation, groups, hits in generations:
+        scope = {'gen': generation} if generation != gen else {}
+        for g in groups:
+            first = g['first_evidence_id']
+            if first > after and (notices or g['severity'] != 'NOTICE'):
+                out[first] = {'type': 'new', 'run': rid, **scope, **brief(g)}
+        if repeats:
+            # One row per repeated occurrence keeps the resume position exact, even
+            # when different groups interleave. Only the next page is needed.
+            rows = db.execute(
+                "SELECT e.id,e.problem_key,e.severity FROM events e JOIN groups g ON "
+                "(e.run_id,e.generation,e.problem_key,e.severity)="
+                "(g.run_id,g.generation,g.problem_key,g.severity) "
+                "WHERE e.run_id=? AND e.generation=? AND e.stream='problem' AND e.id>? "
+                "AND e.id>g.first_evidence_id ORDER BY e.id LIMIT ?", (rid, generation, after, MAX_CHANGES + 1))
+            for eid, key, severity in rows:
+                out[eid] = {'type': 'more', 'run': rid, 'key': key, 'sev': severity, 'n': 1, 'last': eid, **scope}
+        lookup = {(g['problem_key'], g['severity']): g for g in groups} if hits else {}
+        for h in hits:
+            trigger = h['trigger']
+            if trigger <= after:
+                continue
+            if trigger == h['first_evidence_id'] and trigger not in out:
+                out[trigger] = {'type': 'new', 'run': rid, **scope, **brief(lookup[h['problem_key'], h['severity']])}
+            if trigger not in out:
+                out[trigger] = _rule_change(rid, h) | scope
+            out[trigger].setdefault('rules', []).append(h['rule'])
+
+
+def _delivery_id(change):
+    if change['type'] == 'new':
+        return change['e']
+    if change['type'] == 'more':
+        return change['last']
+    if change['type'] == 'rule':
+        return change['trigger']
+    return 0
+
+
+def _state_page(snap, run_ids, last_run, limit):
+    # State transitions without evidence IDs cannot be reconstructed after a
+    # disconnect. For a large burst, reconcile observed states by stable run ID.
+    runs = [r for r in snap['runs'] if r['run_id'] > last_run and (not run_ids or r['run_id'] in run_ids)]
+    page = [_compact({'type': 'state_snapshot', 'run': r['run_id'], 'to': r['state']['status'],
+                      'gen': r['generation'], 'flags': r['attention'],
+                      'error': r['state']['collector_error'] or r['state']['error']}) for r in runs[:limit]]
+    return page, len(runs) - len(page)
 
 
 def wait_for_change(path, cursor=None, run_ids=None, timeout=3600.0, interval=2.0,
                     notices=False, repeats=False, clock=time.monotonic, sleep=time.sleep):
-    """Block until something needs attention. Returns (result, exit_code): 0 change, 3 timeout,
-    4 no live collector. Pass the returned cursor to the next call so nothing is missed between calls."""
+    """Drain indexed notifications before reporting an offline collector. Resume with the returned cursor."""
     deadline = clock() + max(0.0, timeout)
-    after, token = parse_cursor(cursor) if cursor else (None, None)
+    position, marker, last_run = (cursor or '').partition('~')
+    after, token = parse_cursor(position) if position else (None, None)
+    last_run = unquote(last_run) if marker else None
     with open_readonly(path) as db:
         base = snapshot(db)
     if after is None:
         after = base['last_event_id']
-    if not base['collector']['alive']:
-        return ({'v': API, 'changed': False, 'reason': 'collector_offline',
-                 'collector': collector_brief(base['collector']), 'cursor': cursor_of(base)}, 4)
     first = True
     while True:
         with open_readonly(path) as db:
             current, changes = detect_changes(db, base, after, run_ids, notices, repeats)
-        if first and token and token != base['token']:
-            # Status-level state moved between the caller's cursor and this call.
+        if first and token and token != base['token'] and current['collector']['alive']:
             changes.insert(0, {'type': 'state_changed'})
         first = False
-        if changes:
-            out = {'v': API, 'changed': True, 'changes': changes[:MAX_CHANGES], 'cursor': cursor_of(current)}
-            if len(changes) > MAX_CHANGES:
-                out['more'] = len(changes) - MAX_CHANGES
+        states = [c for c in changes if _delivery_id(c) <= after]
+        events = [c for c in changes if _delivery_id(c) > after]
+        state_remaining = 0
+        if last_run is not None or len(states) > MAX_CHANGES:
+            if token != current['token']:
+                last_run = None
+            budget = MAX_CHANGES // 2 if events else MAX_CHANGES
+            states, state_remaining = _state_page(current, run_ids, last_run or '', budget)
+        if states or events:
+            page = (states + events)[:MAX_CHANGES]
+            left = len(states) + len(events) - len(page) + state_remaining
+            unread_events = len(states) + len(events) > len(page)
+            last = max([after] + [_delivery_id(c) for c in page]) if unread_events else current['last_event_id']
+            next_cursor = f"{last}.{current['token']}"
+            if state_remaining:
+                next_cursor += '~' + quote(states[-1]['run'], safe='')
+            out = {'v': API, 'changed': True, 'changes': page, 'cursor': next_cursor}
+            if not current['collector']['alive']:
+                out['collector'] = collector_brief(current['collector'])
+            if left:
+                out['more'] = left
             return out, 0
+        last_run = None
+        if not current['collector']['alive']:
+            return {'v': API, 'changed': False, 'reason': 'collector_offline',
+                    'collector': collector_brief(current['collector']), 'cursor': cursor_of(current)}, 4
         if clock() >= deadline:
             return {'v': API, 'changed': False, 'reason': 'timeout', 'cursor': cursor_of(current)}, 3
         base, after = current, current['last_event_id']

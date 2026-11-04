@@ -34,7 +34,7 @@ python -m simcheck --version
 python -m simcheck --db .runtime/onboarding.sqlite scan examples/real-fixtures.json --json
 ```
 
-The current application version is 0.5.0 (API 4, DB schema 4). Expected states:
+The current application version is 0.5.1 (API 4, DB schema 4). Expected states:
 a_fft/b_fft/noise/static complete; minstep/compile/output_limit/license failed.
 scan exits 0 when indexing/querying succeeds, including when a simulated run
 failed. Check the returned states rather than treating the command exit as a
@@ -74,7 +74,9 @@ duplicate. run adds the local dashboard; --port 0 selects an available port and
 --open opens a browser on the machine running the command. serve only reads DB.
 
 Use agent-handoff.md for the status -> wait -> show -> evidence loop and exit
-codes. Only the collector updates the index. Missing logs, inaccessible paths,
+codes. You can omit `watch` on your first scan. The inspector captures unfamiliar
+codes in supported Spectre warning lines and shows them in **Problems**.
+Only the collector updates the index. Missing logs, inaccessible paths,
 unknown/incomplete results or an offline collector are not passing evidence.
 Do not start, stop, pause, modify or resubmit a simulation.
 

@@ -2,14 +2,14 @@
 
 Spectre Log Inspector reads Spectre logs as they grow. The dashboard shows which runs need attention, where a problem first appeared, and the original lines behind it. Agents can query the same evidence through the CLI or local HTTP API. The inspector reads simulation outputs and writes a separate SQLite index. Simulation scheduling and electrical acceptance remain with the operator.
 
-**Release v0.5.0** requires Python 3.10 or later with the standard `sqlite3` module. The runtime has no third-party dependencies. This release uses API 4 and database schema 4.
+**Release v0.5.1** requires Python 3.10 or later with the standard `sqlite3` module. The runtime has no third-party dependencies. This release uses API 4 and database schema 4.
 
 ## Try it with the included logs
 
 Clone the tagged release from an account with read access to the private repository. The example runs use sanitized logs and require neither Spectre nor a simulator license. On Linux or macOS, use `python3` if that is how Python is installed.
 
 ```sh
-git clone --branch v0.5.0 https://github.com/chenzc24/spectre-log-inspector.git
+git clone --branch v0.5.1 https://github.com/chenzc24/spectre-log-inspector.git
 cd spectre-log-inspector
 python -m simcheck --version
 python -m simcheck --db .runtime/demo.sqlite scan examples/real-fixtures.json --json
@@ -55,7 +55,9 @@ Keep one directory per run. Give each run a unique ID and a path to its Spectre 
 }
 ```
 
-Only `id` and `log` are required. Specify a `baseline` by the ID of another run in the same manifest to identify additional problem keys. Watch rules can filter by code or key pattern, severity, text and minimum count. For a farm with one subdirectory per run, a `roots` entry can discover runs automatically. [Manifest and evidence fields](docs/schema.md)
+Only `id` and `log` are required. A configured state file must report a recognized status for the run to be marked complete. Specify a `baseline` by the ID of another run in the same manifest to identify additional problem keys. Each watch rule needs a name and at least one code pattern, key pattern, severity or text filter. If supplied, `min_count` must be a positive integer. Manifest validation reports invalid fields before indexing begins. For a farm with one subdirectory per run, a `roots` entry can discover runs automatically. [Manifest and evidence fields](docs/schema.md)
+
+**Unfamiliar Spectre warning codes are captured by default.** For example, a line such as `WARNING (XYZ-1234): Example diagnostic` appears under **Problems** with its original code and severity, even when the manifest omits `watch`. The parser recognizes the Spectre diagnostic format without a list of known codes. An optional rule such as `{"name": "SOA limit", "code": "CMI-275*"}` marks matching groups for attention. Warnings with other codes are still collected.
 
 ```sh
 python -m simcheck --db .runtime/project.sqlite run manifest.json --open
@@ -82,6 +84,8 @@ python -m simcheck --db .runtime/demo.sqlite details noise
 1. Read `status` for the runs needing attention and a cursor. Use `show RUN` for grouped diagnostics and their evidence IDs.
 2. Pass an ID from that database to `evidence ID` to retrieve the original lines. A suppressed count measures printed occurrences. A missing timestamp remains unknown.
 3. With a collector running, call `wait --cursor CURSOR` using the actual cursor from `status`. Save the returned cursor for the next wait. Exit code 0 indicates a change, 3 a timeout, and 4 an offline collector. Use `--repeats` or `--notices` when those events should wake the caller.
+
+When a wait returns `more`, call it again with the returned cursor and the same filters. Each page holds up to 20 notifications. A collector that has exited can still have unread indexed events. Wait delivers them before returning exit code 4. For runs with many diagnostic codes, `show --all` includes notices and returns up to 500 groups per page. Pass `--offset` with the returned `next_offset` for the next page. Watch rules evaluate every group.
 
 Set `SIMCHECK_DB` to avoid repeating the database path. Commands return compact text by default and support `--json`. The localhost viewer exposes `/api/status`, `/api/show`, `/api/evidence`, `/api/measurements`, `/api/details`, and `/api/health`. To download a report, request `/api/export?run=RUN&format=html`, using `json` or `txt` for the other formats. [Agent contract](docs/agent-handoff.md) · [New-machine quickstart](docs/agent-quickstart.md) · [Copyable handoff prompt](docs/agent-prompt.md)
 

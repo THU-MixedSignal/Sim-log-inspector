@@ -184,7 +184,8 @@ def cmd_wait(args):
 
 def cmd_show(args):
     with open_readonly(args.db) as db:
-        data = show(db, args.run, full=args.all, limit=args.limit)
+        db.execute('BEGIN')
+        data = show(db, args.run, full=args.all, limit=args.limit, offset=args.offset)
     if data is None:
         raise LookupError(f'unknown run: {args.run}')
     emit(args, data, render.show)
@@ -247,7 +248,8 @@ def build_parser():
     a.add_argument('--repeats', action='store_true', help='also wake on more occurrences of known groups')
     a = command('show', 'problem groups of one run with evidence IDs')
     a.add_argument('run')
-    a.add_argument('--all', action='store_true', help='include NOTICE groups and lift the line limit')
+    a.add_argument('--all', action='store_true', help='include NOTICE groups, up to 500 per page')
+    a.add_argument('--offset', type=int, default=0, help='skip this many groups in the same view')
     a.add_argument('--limit', type=int, default=30)
     a = command('evidence', 'raw log lines of one evidence ID with path:line')
     a.add_argument('id', type=evidence_id, metavar='eID')

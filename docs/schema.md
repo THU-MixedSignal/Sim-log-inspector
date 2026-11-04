@@ -32,13 +32,13 @@ CLI 默认输出文本；`--json` 和 HTTP 输出同样内容的 JSON，都带 `
 
 组摘要：`e`（首条证据）、`sev`（原生级别，测试台为 INFO）、`key`（原生编号；无编号消息为“级别:数字掩码后的正文”；工具记录为 premature_termination、line_size_limit；测试台为 TB:…，其中 Spectre 头行块外未编号的 `ERROR:` 等行为 `TB:reported_ERROR` 等，级别为 INFO，不计为 Spectre 错误）、`n`（已打印次数）、`sup`（之后被逐码抑制）、`t`、`pct`（首条消息头行给出的仿真时间）、`msg`（摘要，status 里最长 120 字，show 里 160 字）。
 
-`cursor` 形如 `3795.654c760c1427`：最新证据 ID 加状态摘要。把它传给 `wait`，两次调用之间的变化不会丢。
+`cursor` 形如 `3795.654c760c1427`：已交付的证据位置加状态摘要；状态分页期间还能包含续页信息。游标应视为不透明值，原样传给下一次 `wait`。
 
 ## show（GET /api/show?run=ID&full=1）
 
 运行头（`state`、`flags`、`analysis`、`stop`、`t`、`pct`、`log_age`、`log` 日志路径、`baseline`）加 `groups`。每组是组摘要加：`last`（末条证据，多于一条时）、`phase`（分析名，读入阶段为 setup）、`rules`（命中的规则名）、`base_new`（参考运行中没有）。
 
-排序：错误、警告、测试台、提示；同一级里分析阶段先于读入阶段，再按日志顺序。默认不列未命中规则的 NOTICE 组（`hidden_notices` 给数量），最多 30 组（`more` 给剩余数）；`--all` 或 `full=1` 全列。
+排序：错误、警告、测试台、提示；同一级里分析阶段先于读入阶段，再按日志顺序。默认不列未命中规则的 NOTICE 组（`hidden_notices` 给数量），最多 30 组（`more` 给待处理数的下界）；`--all` 或 `full=1` 包含 NOTICE，每页最多 500 组。所有组均参与规则判定和计数。有剩余组时，用返回的 `next_offset` 作为 `--offset` 或 HTTP `offset` 读取下一页；若多页的 `revision` 不同，应从第一页重新读取。
 
 ## evidence（GET /api/evidence?id=eNNN）
 
@@ -48,13 +48,14 @@ CLI 默认输出文本；`--json` 和 HTTP 输出同样内容的 JSON，都带 `
 
 `wait [--cursor C] [--run ID]... [--timeout 3600] [--interval 2] [--notices] [--repeats]`
 
-返回 `changed`、`changes`（最多 20 条，`more` 给剩余数）、`cursor`；没有变化时 `reason` 为 timeout 或 collector_offline。变化类型：
+返回 `changed`、`changes`（最多 20 条，`more` 给待处理数的下界）、`cursor`；没有变化时 `reason` 为 timeout 或 collector_offline。变化类型：
 
 - `new`：新问题组（组摘要；命中规则时带 `rules`）
 - `rule`：已有组新命中规则（`rule`、`key`、`e`、`t`、`pct`）
 - `status`（`from`、`to`），`restart`（`gen`），`quiet`（`log_age`），`collector_error`、`source_error`（`error`），`run_added`，`collector_offline`（`hb`）
 - `more`：已知组又出现（仅 `--repeats`）
-- `state_changed`：cursor 之后状态层面有变化，细节看 status
+- `state_changed`：cursor 之后状态层面有变化，细节看 status。状态变更超过一页时以 `state_snapshot` 分页核对当前状态。
+- `more` 非零时，使用返回游标和相同过滤条件继续调用 wait。采集器离线时先返回尚未读取的已入库告警，读完后返回退出码 4。
 
 退出码：0 有变化，3 超时，4 没有在线采集器。
 
@@ -66,7 +67,7 @@ CLI 默认输出文本；`--json` 和 HTTP 输出同样内容的 JSON，都带 `
 
 `status`、`log`、`indexed`、`size`（字节）、`spectre`（版本）、`stops`（有结束时间的瞬态分析：分析名到结束时间）、`footer`（errors、warnings、notices）、`suppressed`（原生汇总，不能分摊到编号）、`coverage`、`pending_line`、`checks`（state、log_status、raw 的观察结果）、`settings`（`name`、`req`、`eff`、`def`、`diff`）。
 
-## 另存（GET /api/export?run=ID&format=html|json）
+## 另存（GET /api/export?run=ID&format=html|json|txt）
 
 返回带 `Content-Disposition: attachment` 的 UTF-8 文件，默认 JSON。导出在一个
 SQLite 只读事务内完成；不重新读取源日志，不修改采集器、数据库或仿真。

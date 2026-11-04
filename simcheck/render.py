@@ -183,7 +183,8 @@ def show(d):
     lines = [' | '.join(p for p in head if p)]
     lines += [group_line(g, d.get('baseline')) for g in d['groups']]
     if d.get('more'):
-        lines.append(f"+{d['more']} more groups: simcheck show {d['run']} --all")
+        flag = ' --all' if d.get('full') else ''
+        lines.append(f"+{d['more']} more groups: simcheck show {d['run']}{flag} --offset {d['next_offset']}")
     if d.get('hidden_notices'):
         lines.append(f"{d['hidden_notices']} NOTICE groups hidden: simcheck show {d['run']} --all")
     if not d['groups'] and not d.get('hidden_notices'):
@@ -222,6 +223,8 @@ def evidence(d):
 
 def change_line(c):
     run, kind = c.get('run', ''), c['type']
+    if kind == 'state_snapshot':
+        return f"{run}: current state {c['to']} (generation {c['gen']})"
     if kind == 'status':
         return f"{run}: status {c['from']} -> {c['to']}"
     if kind == 'restart':
@@ -231,9 +234,10 @@ def change_line(c):
         return (f"{run}: new " + join(c['sev'], f"e{c['e']}", label(c), f"x{c['n']}{suppressed(c)}", at(c))
                 + rules + f": {c.get('msg', '')}")
     if kind == 'rule':
-        return f"{run}: rule {c['rule']} hit " + join(plain_key(c['key']), f"e{c['e']}", at(c))
+        return f"{run}: rule {', '.join(c.get('rules') or [c['rule']])} hit " + join(plain_key(c['key']), f"e{c['e']}", at(c))
     if kind == 'more':
-        return f"{run}: " + join(plain_key(c['key']), f"x{c['n']} more", f"last e{c['last']}")
+        rules = 'rule=' + ','.join(c['rules']) if c.get('rules') else ''
+        return f"{run}: " + join(plain_key(c['key']), f"x{c['n']} more", f"last e{c['last']}", rules)
     if kind == 'quiet':
         return f"{run}: log quiet for {age(c['log_age'])}, run not ended"
     if kind == 'collector_error':
@@ -254,7 +258,7 @@ def wait(d):
         lines = [f"{len(d['changes'])} change(s); cursor {d['cursor']}"]
         lines += [change_line(c) for c in d['changes']]
         if d.get('more'):
-            lines.append(f"+{d['more']} more changes: simcheck status")
+            lines.append(f"At least {d['more']} more changes; continue from the returned cursor.")
     elif d['reason'] == 'timeout':
         lines = [f"no change before timeout; cursor {d['cursor']}"]
     else:

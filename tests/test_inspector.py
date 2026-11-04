@@ -154,6 +154,32 @@ class Boundaries(unittest.TestCase):
         del self.c['state']
         self.assertEqual(scan(self.db, self.c)['integrity']['status'], 'unknown')
 
+    def test_configured_empty_state_cannot_confirm_completion(self):
+        self.write(FOOT)
+        state = self.p / 'state.json'
+        self.c['state'] = str(state)
+        for invalid in ({}, {'status': 'unrecognized'}, {'status': []}):
+            state.write_text(json.dumps(invalid))
+            result = scan(self.db, self.c)['integrity']
+            self.assertEqual(result['status'], 'incomplete')
+            self.assertEqual(result['checks'][0]['status'], 'unknown')
+        state.write_text('{"status":"complete","exit_code":0}')
+        self.assertEqual(scan(self.db, self.c)['integrity']['status'], 'complete')
+
+    def test_older_cached_state_is_checked_without_modifying_the_snapshot(self):
+        self.write(FOOT)
+        scan(self.db, self.c)
+        row = self.db.execute('SELECT summary FROM runs WHERE id=?', (self.c['id'],)).fetchone()
+        stored = json.loads(row[0])
+        state = stored['integrity']['checks'][0]
+        state.update(status='observed', reported_status='unknown')
+        original = json.dumps(stored)
+        self.db.execute('UPDATE runs SET summary=?', (original,))
+        self.db.commit()
+        result = brief(self.db, self.c['id'])
+        self.assertEqual(result['state']['status'], 'incomplete')
+        self.assertEqual(self.db.execute('SELECT summary FROM runs').fetchone()[0], original)
+
     def test_stop_metadata_without_raw_is_not_a_missing_raw_file(self):
         self.write(FOOT)
         self.c['expected_stop_s'] = 20e-9

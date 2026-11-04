@@ -352,6 +352,109 @@ class Waiting(unittest.TestCase):
             f.write(text)
         scan(self.db, self.c)
 
+    def drain(self, cursor, **options):
+        changes = []
+        for _ in range(64):
+            result, code = wait_for_change(self.path, cursor=cursor, timeout=0, **options)
+            if code in (3, 4):
+                return changes, code
+            self.assertEqual(code, 0)
+            self.assertLessEqual(len(result['changes']), store.MAX_CHANGES)
+            self.assertNotEqual(result['cursor'], cursor)
+            cursor = result['cursor']
+            changes.extend(result['changes'])
+        self.fail('wait did not finish paging')
+
+    def test_burst_paging_across_runs_even_if_collector_exits(self):
+        cursor = status(self.db)['cursor']
+        self.append(''.join(f'WARNING (L-{i}): live\n' for i in range(28)))
+        other = self.p / 'other.log'
+        other.write_text(''.join(f'WARNING (O-{i}): other\n' for i in range(24)))
+        scan(self.db, dict(id='other', log=str(other)))
+        first, code = wait_for_change(self.path, cursor=cursor, timeout=0)
+        self.assertEqual(code, 0)
+        self.assertGreater(first['more'], 0)
+        self.append('WARNING (LAST): final warning\n')
+        retire(self.db)
+        rest, code = self.drain(first['cursor'])
+        self.assertEqual(code, 4)
+        new = [c['e'] for c in first['changes'] + rest if c['type'] == 'new']
+        self.assertEqual(new, sorted(set(new)))
+        self.assertEqual(len(new), 53)
+        self.assertEqual(evidence(self.db, new[-1])['key'], 'LAST')
+
+    def test_notices_and_warnings_with_same_code_can_escalate(self):
+        self.append('ERROR (PREVIOUS): run has failed\nNOTICE (ABC): noticed\n')
+        cursor = status(self.db)['cursor']
+        self.append('WARNING (ABC): warning\nERROR (ABC): error\n')
+        changes, code = self.drain(cursor)
+        self.assertEqual(code, 3)
+        self.assertEqual([(c['key'], c['sev']) for c in changes if c['type'] == 'new'],
+                         [('ABC', 'WARNING'), ('ABC', 'ERROR')])
+
+    def test_rules_count_all_groups_and_show_pages_them(self):
+        self.c['watch'] = [{'name': 'target', 'code': 'T-520'}]
+        cursor = status(self.db)['cursor']
+        self.append(''.join(f'WARNING (T-{i}): group\n' for i in range(521)))
+        self.assertEqual(status(self.db)['runs'][0]['n']['W'], 522)
+        first = show(self.db, 'live', full=True)
+        second = show(self.db, 'live', full=True, offset=first['next_offset'])
+        self.assertEqual((len(first['groups']), first['more'], len(second['groups'])), (500, 22, 22))
+        self.assertEqual(first['revision'], second['revision'])
+        self.assertEqual(second['groups'][-1]['rules'], ['target'])
+        changes, _ = self.drain(cursor)
+        new = [c for c in changes if c['type'] == 'new']
+        self.assertEqual(len({c['e'] for c in new}), 521)
+        self.assertEqual(new[-1]['rules'], ['target'])
+
+    def test_repeat_cursor_and_minimum_count_trigger(self):
+        self.c['watch'] = [{'name': 'threshold', 'code': 'X-1', 'min_count': 24}]
+        cursor = status(self.db)['cursor']
+        self.append('WARNING (X-1): again\n' * 46)
+        changes, _ = self.drain(cursor, repeats=True)
+        repeats = [c for c in changes if c['type'] == 'more']
+        self.assertEqual(len({c['last'] for c in repeats}), 46)
+        self.assertEqual(sum(c['n'] for c in repeats), 46)
+        self.assertEqual([i for i,c in enumerate(repeats) if 'threshold' in c.get('rules', [])], [22])
+        changes, _ = self.drain(cursor)
+        hits = [c for c in changes if c['type'] == 'rule']
+        self.assertEqual([c['rule'] for c in hits], ['threshold'])
+        self.assertEqual(hits[0]['trigger'], repeats[22]['last'])
+
+    def test_unread_groups_survive_log_replacement(self):
+        cursor = status(self.db)['cursor']
+        self.append('WARNING (Z-OLD): first generation\n')
+        self.log.unlink()
+        self.log.write_text('WARNING (Z-NEW): second generation\n')
+        scan(self.db, self.c)
+        changes, _ = self.drain(cursor)
+        new = [c for c in changes if c['type'] == 'new']
+        self.assertEqual([c['key'] for c in new], ['Z-OLD', 'Z-NEW'])
+        self.assertEqual(new[0]['gen'], 1)
+        self.assertEqual(new[0]['rules'], ['Z rule'])
+
+    def test_more_than_twenty_state_transitions_are_reconciled(self):
+        cursor = status(self.db)['cursor']
+        def add_runs(_):
+            for i in range(25):
+                file = self.p / f'run-{i}.log'
+                file.write_text(FOOT)
+                scan(self.db, dict(id=f'run-{i}', log=str(file)))
+            self.append('WARNING (AFTER): still delivered\n')
+        result, code = wait_for_change(self.path, cursor=cursor, timeout=1, sleep=add_runs)
+        self.assertEqual(code, 0)
+        rest, _ = self.drain(result['cursor'])
+        changes = result['changes'] + rest
+        states = [c['run'] for c in changes if c['type'] == 'state_snapshot']
+        self.assertEqual(len(set(states)), 26)
+        self.assertEqual([c['key'] for c in changes if c['type'] == 'new'], ['AFTER'])
+
+    def test_invalid_rules_rejected_before_indexing(self):
+        for fields in [{'min_count': '3'}, {'min_count': 0}, {'min_count': True},
+                       {'text': []}, {'severity': 'warning'}, {'severity': []}, {'code': 42}]:
+            with self.subTest(fields=fields), self.assertRaisesRegex(ValueError, 'typo'):
+                store.validate_rules([{'name': 'typo', 'code': 'CMI-*', **fields}])
+
     def test_new_groups_wake_known_repeats_do_not(self):
         base = snapshot(self.db)
         after = base['last_event_id']

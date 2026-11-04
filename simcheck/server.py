@@ -121,7 +121,12 @@ def handler(database, started=None):
                 if path == '/api/status':
                     return status(db, [q['run']] if q.get('run') else None)
                 if path == '/api/show':
-                    result = show(db, _run(q), full=q.get('full') in ('1', 'true'), limit=_int(q, 'limit', 30))
+                    offset = _int(q, 'offset', 0)
+                    if offset < 0:
+                        raise ApiError(400, 'offset must be nonnegative')
+                    db.execute('BEGIN')
+                    result = show(db, _run(q), full=q.get('full') in ('1', 'true'), limit=_int(q, 'limit', 30),
+                                  offset=offset)
                 elif path == '/api/evidence':
                     result = evidence(db, _int(q, 'id', -1, evidence_id))
                 elif path == '/api/measurements':

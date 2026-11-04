@@ -10,6 +10,7 @@ from pathlib import Path
 LIMIT = 1024 * 1024
 FAILED_STATES = {'failed', 'limit_exceeded', 'rejected', 'cancelled', 'killed'}
 ACTIVE_STATES = {'running', 'starting', 'submitted', 'queued', 'waiting'}
+VALID_STATES = ACTIVE_STATES | FAILED_STATES | {'complete'}
 
 
 def small(path):
@@ -25,7 +26,10 @@ def check_state(path):
     data = json.loads(small(path))
     if not isinstance(data, dict):
         raise ValueError('state JSON is not an object')
-    check = {'check': 'state', 'status': 'observed', 'reported_status': data.get('status', 'unknown'),
+    reported = data.get('status')
+    recognized = isinstance(reported, str) and reported in VALID_STATES
+    check = {'check': 'state', 'status': 'observed' if recognized else 'unknown',
+             'reported_status': reported if isinstance(reported, str) else 'unknown',
              'exit_code': data.get('exit_code'), 'reason': data.get('reason'),
              'identity': 'user_bound_manifest_path'}
     return check
@@ -116,7 +120,7 @@ def inspect(config, parser, pending=False, cache=None):
     if state != 'failed':
         bad_status = any(c.get('last_status') in ('FAIL', 'FAILED', 'ERROR') for c in checks)
         incomplete = any(c.get('end_marker') is False or c.get('expected_stop_reached') is False
-                         or c['status'] in ('unavailable', 'unsupported') for c in checks)
+                         or c['status'] in ('unavailable', 'unsupported', 'unknown') for c in checks)
         required_unknown = any(c['check'] == 'log_status' and c['status'] != 'not_checked'
                                and c.get('last_status') != 'PASS' for c in checks)
         incomplete |= any(c['check'] == 'raw' and config.get('raw') and config.get('expected_stop_s') is not None

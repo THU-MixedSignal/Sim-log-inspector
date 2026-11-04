@@ -457,3 +457,13 @@ sources of 64 CDAC and comparator runs. All 64 reported complete, with state,
 logStatus and raw evidence observed for each. Verified HTML and JSON downloads
 and full-report copy on the nominal CDAC run. The release uses main and schema 4.
 The README, demo rule names, CLI diagnostics and release handoff use English.
+
+## 2026-11-04 — Document default warning capture
+
+The README and agent guides explain how a previously unseen Spectre warning code becomes a problem group without a watch rule. The handoff distinguishes the first occurrence reported by wait from repeat notifications.
+
+## Monitor review fixes
+
+Wait now drains evidence in ID order across pages, collector shutdown and replaced logs. Severity participates in group identity. Count-based rules have stable threshold evidence IDs. Large state-only bursts reconcile current states in bounded pages. Rule matching and counts use all groups; the CLI and HTTP page results and the dashboard follows consistent revisions. Unknown configured state files mark completion evidence incomplete, including on previously indexed snapshots. Manifest validation rejects invalid rule fields up front.
+
+Verified 116 tests, including burst, severity, late rule hit, repeat, offline, old-generation, pagination, cached-state and manifest regressions. Exercised HTTP and Chromium on 515 groups, including source expansion and the last group's rule. Read the 64-run SAR8 schema-4 snapshot with the patched CLI and verified the nominal CDAC warning and source evidence.

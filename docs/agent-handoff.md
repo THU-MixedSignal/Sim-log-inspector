@@ -1,4 +1,4 @@
-# Agent contract: Spectre Log Inspector 0.5.0 / API 4 / DB schema 4
+# Agent contract: Spectre Log Inspector 0.5.1 / API 4 / DB schema 4
 
 This is a read-only simulation evidence tool. Never start, stop, pause, modify
 or resubmit simulations through this handoff. Never edit source logs, PDKs or ADC
@@ -19,7 +19,7 @@ The operator supplies these values:
 
 ## Start and read
 
-`simcheck --version` should report 0.5.0. Use `--help` for syntax. These commands
+`simcheck --version` should report 0.5.1. Use `--help` for syntax. These commands
 use uppercase placeholders; substitute the supplied paths and actual handles.
 
 ```text
@@ -44,6 +44,14 @@ process-liveness probe. reported_valid is a testbench value, not an ADC oracle.
 
 ## Wait loop
 
+Start monitoring a new project even if you do not know its warning codes. With
+no manifest watch rules, a supported Spectre line such as `WARNING (XYZ-1234): Example diagnostic`
+creates a warning group the first time that code and severity appear in the
+run's current generation. If the group appears after your cursor, the default
+`wait` reports a `new` change. Use its evidence ID with `evidence` to read the
+original line. A matching `watch` rule adds a rule label. Use `--repeats` to
+receive changes for later occurrences of an existing group.
+
 Save status.cursor, then use a finite wait timeout compatible with the caller:
 
 ```text
@@ -56,9 +64,20 @@ simcheck --db DB wait --cursor CURSOR --timeout 30 --interval 2 --json
 - Exit 4: no live collector. Data is stale; report/check collection, not simulator health.
 - Exit 1/2: tool or argument error; inspect the error, do not interpret it as a run verdict.
 
-Keep each returned cursor and call wait again after handling the batch. If more
-is present, use status/show to inspect remaining facts. Default wait ignores
-known-group repeats and ordinary new NOTICE groups; --repeats/--notices opt in.
+Treat the cursor as opaque and keep the same run filters and notice/repeat options
+while draining pages. When `more` is present, pass the returned cursor to the
+next wait. The value of `more` gives a lower bound on the outstanding changes. Indexed
+warnings remain readable after collector shutdown or a log restart. A page
+returned with exit 0 may also report an offline collector. Exit 4 follows once
+the selected notifications have been drained.
+
+Evidence IDs identify printed occurrences. Severity changes create distinct
+groups. A count-based rule reports the evidence ID that reached its threshold
+in `trigger`; `e` identifies the first occurrence in the group. Simultaneous
+state changes exceeding a page produce `state_snapshot` records for the
+selected runs. These describe current states, which can change during recovery.
+By default, wait skips repeated occurrences and ordinary new NOTICE groups.
+Use `--repeats` or `--notices` to include them.
 Notices that match watch rules remain NOTICE. Do not invent an error severity.
 
 The host must return stdout/exit status to the Agent. This program does not send

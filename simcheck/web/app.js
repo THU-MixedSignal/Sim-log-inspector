@@ -210,6 +210,13 @@
       const cached = ui.shows.get(run.run);
       if (cached && cached.sig === sig) return;
       const data = await api('/api/show', { run: run.run, full: 1 });
+      let offset = data.next_offset;
+      while (offset !== undefined) {
+        const page = await api('/api/show', { run: run.run, full: 1, offset });
+        if (page.revision !== data.revision) return; // Retry a changing snapshot on the next tick.
+        data.groups.push(...page.groups);
+        offset = page.next_offset;
+      }
       const before = cached ? new Map(cached.data.groups.map((g) => [gkey(g), g])) : null;
       ui.shows.set(run.run, { sig, data });
       if (!ackKeys(run.run)) saveAck(run.run, new Set(data.groups.map(gkey)));
