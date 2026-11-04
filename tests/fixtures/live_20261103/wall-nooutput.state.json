@@ -1,0 +1,8 @@
+{
+  "status": "limit_exceeded",
+  "exit_code": 2,
+  "reason": "wall_time_limit",
+  "elapsed_seconds": 6.153783082962036,
+  "peak_rss_bytes": 79179776,
+  "output_bytes": 25131064
+}

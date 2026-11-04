@@ -15,6 +15,7 @@ from simcheck.store import connect, evidence, measurement_page, problem_groups, 
 FIX = Path(__file__).parent / 'fixtures' / 'live_20261103'
 GOLD = {
     'rc-normal': ('complete', None),
+    'syntax': ('failed', 'SFE-874'),
     'model-missing': ('failed', 'SFE-23'),
     'param-missing': ('failed', 'SFE-1997'),
     'include-missing': ('failed', 'SFE-868'),
@@ -26,6 +27,7 @@ GOLD = {
     'output-limit': ('failed', 'SPECTRE-27'),
     # This attempt reached the output cap first; it is NOT a wall-limit proof.
     'wall-limit': ('failed', 'SPECTRE-27'),
+    'wall-nooutput': ('failed', 'SPECTRE-25'),
     'soa': ('complete', 'CMI-2751'),
     'adc-a-tt': ('complete', None),
     'adc-b-tt': ('complete', 'CMI-2751'),
@@ -34,8 +36,10 @@ GOLD = {
 
 def config(name):
     analysis = 'tran_perf' if name.startswith('adc-') else 'tran_live'
+    stop = (359e-9 if name.startswith('adc-') else 1.0 if name in ('wall-limit', 'wall-nooutput')
+            else 10e-6 if name == 'output-limit' else 20e-9)
     c = dict(id=name, log=str(FIX / (name + '.log')), state=str(FIX / (name + '.state.json')),
-             analysis=analysis, expected_stop_s=359e-9 if name.startswith('adc-') else 20e-9)
+             analysis=analysis, expected_stop_s=stop)
     if (FIX / (name + '.logStatus')).exists():
         c['log_status'] = str(FIX / (name + '.logStatus'))
     if name == 'rc-normal':
@@ -76,6 +80,13 @@ class NativeCampaign(unittest.TestCase):
                         source_state = json.loads((FIX / (name + '.state.json')).read_text(encoding='utf-8'))
                         self.assertEqual(source_state['exit_code'], 0)
                         self.assertEqual(source_state['reason'], 'output_size_limit')
+                    if name == 'wall-nooutput':
+                        state_check = next(c for c in observed['integrity']['checks'] if c['check'] == 'state')
+                        self.assertEqual(state_check['reported_status'], 'limit_exceeded')
+                        self.assertEqual(state_check['reason'], 'wall_time_limit')
+                        source_state = json.loads((FIX / (name + '.state.json')).read_text(encoding='utf-8'))
+                        self.assertEqual(source_state['reason'], 'wall_time_limit')
+                        self.assertGreaterEqual(source_state['elapsed_seconds'], 6)
                     if name == 'tran-minstep':
                         run = status(db)['runs'][0]
                         self.assertAlmostEqual(run['t'], 5.00081e-9)

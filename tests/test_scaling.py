@@ -1,5 +1,6 @@
 """Performance invariants exercised through collection and the public query path."""
 import json
+import os
 import sqlite3
 import tempfile
 import time
@@ -58,6 +59,34 @@ class Scaling(unittest.TestCase):
         self.assertEqual([c['type'] for c in changes], ['quiet'])
         with patch.object(store.time, 'time', return_value=now + 20):
             self.assertIn('collector_offline', [c['type'] for c in store.detect_changes(self.db, quiet, 1)[1]])
+
+    def test_same_metadata_rewrite_invalidates_scan_and_sidecar_cache(self):
+        self.log.write_bytes(b'WARNING (X-1): a\n')
+        real_stat = self.log.stat()
+        with patch('simcheck.integrity.os.stat', return_value=real_stat):
+            store.scan(self.db, self.cfg)
+            self.log.write_bytes(b'WARNING (X-2): b\n')
+            self.assertEqual(store.scan(self.db, self.cfg)['generation'], 2)
+            before = self.db.total_changes
+            store.scan(self.db, self.cfg)
+            self.assertEqual(self.db.total_changes, before)
+        state = self.root / 'state.json'
+        state.write_text('{"status":"running"}', encoding='utf-8')
+        cfg = dict(self.cfg, state=str(state))
+        metadata = state.stat()
+        from simcheck.integrity import inspect
+        from simcheck.parser import initial
+        cache = {}
+        with patch('simcheck.integrity.os.stat', return_value=metadata):
+            self.assertEqual(inspect(cfg, initial(), cache=cache)['status'], 'running')
+            state.write_text('{"status":"waiting"}', encoding='utf-8')
+            self.assertEqual(len(state.read_bytes()), metadata.st_size)
+            self.assertEqual(inspect(cfg, initial(), cache=cache)['status'], 'waiting')
+        self.log.write_bytes(b'x' * 8192)
+        os.utime(self.log, (1, 1))
+        from simcheck.integrity import fingerprint
+        with patch('builtins.open', side_effect=AssertionError('stable large log was read')):
+            fingerprint(self.log)
 
     def test_nul_holds_offset_including_newline(self):
         self.log.write_bytes(WARNING + b'\x00\n' + FOOT)

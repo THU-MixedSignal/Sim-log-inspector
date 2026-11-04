@@ -1,0 +1,90 @@
+
+Spectre (R) Circuit Simulator
+Version 21.1.0.509.isr12 64bit -- 24 Sep 2022
+Copyright (C) 1989-2022 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: <user>   Host: <host>   HostID: <id>   PID: <pid>
+Memory  available: 64.8680 GB  physical: 134.5838 GB
+Linux   : CentOS Linux release 7.9.2009 (Core)
+CPU Type: Intel(R) Xeon(R) Gold 6248R CPU @ 3.00GHz
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3375.7] ( 48 ),  2 [3051.5] ( 50 ),  4 [3363.8] ( 52 )
+                 6 [3375.4] ( 54 ),  8 [3368.2] ( 56 ), 10 [3399.9] ( 58 )
+                12 [3368.2] ( 60 ), 14 [3370.2] ( 62 ), 16 [3363.8] ( 64 )
+                18 [3360.9] ( 66 ), 20 [2184.1] ( 68 ), 22 [3367.3] ( 70 )
+                24 [3263.3] ( 72 ), 26 [3368.6] ( 74 ), 28 [3363.5] ( 76 )
+                30 [3359.4] ( 78 ), 32 [3368.4] ( 80 ), 34 [3363.1] ( 82 )
+                36 [3372.6] ( 84 ), 38 [3367.5] ( 86 ), 40 [3372.1] ( 88 )
+                42 [3347.4] ( 90 ), 44 [3363.1] ( 92 ), 46 [3360.2] ( 94 )
+        1:       1 [3309.1] ( 49 ),  3 [3330.5] ( 51 ),  5 [3329.4] ( 53 )
+                 7 [1199.9] ( 55 ),  9 [3324.6] ( 57 ), 11 [3325.4] ( 59 )
+                13 [3329.2] ( 61 ), 15 [3321.0] ( 63 ), 17 [3299.9] ( 65 )
+                19 [3327.0] ( 67 ), 21 [3321.2] ( 69 ), 23 [3329.6] ( 71 )
+                25 [3330.1] ( 73 ), 27 [3325.9] ( 75 ), 29 [3320.6] ( 77 )
+                31 [3299.9] ( 79 ), 33 [3322.8] ( 81 ), 35 [3333.8] ( 83 )
+                37 [3329.4] ( 85 ), 39 [3305.4] ( 87 ), 41 [3299.6] ( 89 )
+                43 [3315.1] ( 91 ), 45 [3330.3] ( 93 ), 47 [3333.6] ( 95 )
+        
+System load averages (1min, 5min, 15min) : 62.3 %, 66.6 %, 81.2 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/redacted/test.scs' on simhost at 5:20:29 PM, Tue Nov 3, 2026 (process id: 317447).
+Current working directory: /redacted/inputs
+Command line:
+    /redacted/spectre -64  \
+        /redacted/test.scs  \
+        +escchars +log  \
+        /redacted/spectre.out  \
+        -format psfascii -raw  \
+        /redacted/raw  \
+        +preset=cx +mt=1 +lqtimeout 5 -preset_override -maxw 5 -maxn 5  \
+        +logstatus
+
+Licensing Information:
+[17:20:29.341417] Configured Lic search path (21.01-s002): <license-endpoint>
+
+Licensing Information:
+[17:20:29.419547] Periodic Lic check successful
+
+Loading /redacted/libinfineon_sh.so ...
+Loading /redacted/libphilips_o_sh.so ...
+Loading /redacted/libphilips_sh.so ...
+Loading /redacted/libsparam_sh.so ...
+Loading /redacted/libstmodels_sh.so ...
+Reading file:  /redacted/test.scs
+
+Notice from spectre during circuit read-in.
+    Pre_Configuration file used: /redacted/preset_over.precfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+    Pre_Configuration file used: /redacted/preset_over.cfg
+
+Reading file:  /redacted/spectre.cfg
+Reading file:  /redacted/preset_over.precfg
+Reading file:  /redacted/preset_over.cfg
+
+Error found by spectre during circuit read-in.
+    ERROR (SFE-874): "/redacted/test.scs" 4: Cannot run the simulation because syntax error `Unexpected end of line' was encountered at line 5, column 23. Correct the syntax error and rerun the simulation.
+
+Time for NDB Parsing: CPU = 146.866 ms, elapsed = 373.776 ms.
+Time accumulated: CPU = 314.973 ms, elapsed = 373.779 ms.
+Peak resident memory used = 63.8 Mbytes.
+
+Licensing Information:
+Lic Summary:
+[17:20:29.498690] Cdslmd servers:<license-endpoint>
+[17:20:29.498723] Feature usage summary:
+[17:20:29.498728] Virtuoso_Multi_mode_Simulation
+[17:20:29.498729] Spectre_X_MMSIM_Lk
+
+
+Aggregate audit (5:20:29 PM, Tue Nov 3, 2026):
+Time used: CPU = 316 ms, elapsed = 374 ms, util. = 84.3%.
+Time spent in licensing: elapsed = 45.8 ms, percentage of total = 12.2%.
+Peak memory used = 64 Mbytes.
+Simulation started at: 5:20:29 PM, Tue Nov 3, 2026, ended at: 5:20:29 PM, Tue Nov 3, 2026, with elapsed time (wall clock): 374 ms.
+spectre completes with 1 error, 0 warnings, and 3 notices.
+spectre terminated prematurely due to fatal error.

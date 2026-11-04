@@ -1,8 +1,10 @@
 """Bounded sidecar inspection. Does not validate full waveforms."""
+import hashlib
 import json
 import math
 import os
 import re
+import time
 from pathlib import Path
 
 LIMIT = 1024 * 1024
@@ -64,7 +66,18 @@ def check_raw(path, expected):
 def fingerprint(path):
     try:
         st = os.stat(path)
-        return st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns
+        stamp = (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+        # Some filesystems can give two rapid same-size writes identical times.
+        # Small sidecars/logs get a bounded content check; recently written large
+        # logs get head/tail checks. Stable large files still use metadata only.
+        if st.st_size <= 4096 or 0 <= time.time() - st.st_mtime < 2:
+            with open(path, 'rb') as f:
+                sample = f.read(min(st.st_size, 4096))
+                if st.st_size > 4096:
+                    f.seek(max(4096, st.st_size - 128))
+                    sample += f.read(128)
+            stamp += (hashlib.sha256(sample).hexdigest(),)
+        return stamp
     except OSError as exc:
         return ('unavailable', exc.errno)
 

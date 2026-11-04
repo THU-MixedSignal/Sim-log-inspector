@@ -28,3 +28,12 @@ observe at least one in-progress change with wait; check measurement separation,
 footer/exit conflicts and UI/API. Use bounded incremental log mirroring if the
 server lacks Python >=3.10. The mirror is an external test adapter, not a tool
 feature. Resource gates apply; queued is not executed.
+
+## Main-branch replay on November 3
+
+Replay the 14 completed cases on main at `96c8b33` using a new schema 4 index.
+Collect and curate the two subsequently completed runs, syntax and wall-nooutput.
+Check all 16 states, measurements, simulator settings, event evidence, wait
+responses, HTTP and the dashboard. Keep the original files and prior indexes
+intact. Store private receipts under `.runtime/live-spectre-latest-20261103-96c8b33/`.
+Record any reproduced regression and its fix in the validation report.

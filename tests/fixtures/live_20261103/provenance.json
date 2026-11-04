@@ -10,6 +10,15 @@
     "log_status_sha256": "847eb9bfdf8c1ca9e0a70237e4aa001c4f1503bf130bb229e68ad47b5e00f587",
     "raw_sha256": "0b61774446f7febb4a7a39eee43d0f2974eb876eb13f907e121745c9eb6c5c6f"
   },
+  "syntax": {
+    "source_run": "simcheck-live-syntax-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "cf2acf7218ef180d00cefa3c2426737089fe4d5b665bd068642e795c7ecefe10",
+    "log_sha256": "3e465dd8f62507ae46feb2ba8967392d621e71b8c8ec6391e651d2c08b990a04",
+    "state_sha256": "6a6872e0dd912dffbc262ddf3b3aa84e0fe3f2d4cb98a7bda74df5cdfc062773",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields"
+  },
   "model-missing": {
     "source_run": "simcheck-live-model-missing-20261103-v1",
     "analysis": "tran_live",
@@ -134,5 +143,15 @@
     "state_sha256": "e796f9bc05299e13c6b7bda9782c406cdaeb186436ab5c7c653b965a381d4e8e",
     "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
     "log_status_sha256": "7954798b4bd36a25763e6cad35386389604439fe8e9808fae6e49503313c1efc"
+  },
+  "wall-nooutput": {
+    "source_run": "simcheck-live-wall-nooutput-20261103-v1",
+    "analysis": "tran_live",
+    "source_kind": "new native Spectre 21.1.0.509 run; managed launcher",
+    "original_log_sha256": "8341d37cb0c47d35d223e7f549e693fe8b913bb017fbeaad6c5655ceba128334",
+    "log_sha256": "c4bec547485288abca8cea81908e30df1f3312013eb55954b58e53c7eee76c29",
+    "state_sha256": "a7540d02201e107ed49c12ef13ff6d17a756cc4438c5cb2f05c7abcbfa79b9cf",
+    "sanitization": "line-preserving environment/path/license redaction; diagnostic codes and numeric observations preserved; state retains only observed execution/resource fields",
+    "log_status_sha256": "0d4d6576d19acc8fde5ba96e9f248d9f15544e3a70b2aba7fc91b49bd5aa28c0"
   }
 }

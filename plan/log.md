@@ -1,5 +1,11 @@
 # Implementation log
 
+## 2026-11-03 — Native campaign retest
+
+Replayed the original 14 managed runs and added the syntax error (SFE-874) and wall timeout (SPECTRE-25, 6.1538 s). The 16-run index contained 406 events. A repeat scan produced no duplicates. SHA-256 matched for all 42 files compared with the managed copies.
+
+The full regression uncovered a same-size rewrite that retained identical metadata. Added bounded content fingerprints and regression tests for log and state rewrites, including the metadata-only path for stable large files. All 107 tests passed. CLI, API and browser checks passed on the replay. The SOA wait returned after about 0.217 s locally. The earlier viewer on port 50147 stayed in place after its restart was blocked by policy. The patched replay used a separate index on port 62091. Receipts are under the private runtime directory documented in the campaign plan.
+
 ## 2026-11-03 — Performance review and takeover
 
 Checked local branches, worktrees and GitHub heads. The native Spectre work was already in main at e6f49c9. The four performance steps in the preceding review were proposals. The user assigned this worker all performance work.
