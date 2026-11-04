@@ -88,6 +88,10 @@ class Export(unittest.TestCase):
                 scan(db, {'id': 'many', 'log': str(log)})
             saved = json.loads(self.save('many', path=path)[0])
             frames = [e['frame'] for e in saved['events'] if 'frame' in e]
+            text, _, kind = self.save('many', 'txt', path)
+            self.assertTrue(kind.startswith('text/plain'))
+            for event in saved['events']:
+                self.assertIn(f"e{event['event_id']}  {log}:{event['line']}  {event['raw']}\n", text)
             self.assertEqual(frames, list(range(503)))
             html = self.save('many', 'html', path)[0]
             self.assertIn('R4MEAS,502,24,8,8,8,16,24,1', html)

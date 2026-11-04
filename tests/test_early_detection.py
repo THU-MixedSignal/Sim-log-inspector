@@ -236,7 +236,7 @@ class Examples(unittest.TestCase):
         noise = {g['key']: g for g in show(self.db, 'noise')['groups']}
         self.assertTrue(noise['CMI-2751']['base_new'])
         self.assertNotIn('base_new', noise['SFE-1131'])
-        self.assertEqual(noise['CMI-2754']['rules'], ['SOA 越限（示例规则）'])
+        self.assertEqual(noise['CMI-2754']['rules'], ['SOA limit'])
 
     def test_text_points_to_handles_and_locations(self):
         minstep = self.by_id['minstep']

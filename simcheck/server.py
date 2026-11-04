@@ -77,8 +77,8 @@ def handler(database, started=None):
                     self._send(200, (WEB / name).read_bytes(), kind)
                 elif url.path == '/api/export':
                     format = q.get('format', 'json')
-                    if format not in ('html', 'json'):
-                        raise ApiError(400, 'format must be html or json')
+                    if format not in ('html', 'json', 'txt'):
+                        raise ApiError(400, 'format must be html, json or txt')
                     with open_readonly(database) as db:
                         file, name, kind = export_file(db, _run(q), format)
                     with file:

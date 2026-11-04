@@ -34,7 +34,7 @@ python -m simcheck --version
 python -m simcheck --db .runtime/onboarding.sqlite scan examples/real-fixtures.json --json
 ```
 
-The current application version is 0.4.0 (API 4, DB schema 4). Expected states:
+The current application version is 0.5.0 (API 4, DB schema 4). Expected states:
 a_fft/b_fft/noise/static complete; minstep/compile/output_limit/license failed.
 scan exits 0 when indexing/querying succeeds, including when a simulated run
 failed. Check the returned states rather than treating the command exit as a

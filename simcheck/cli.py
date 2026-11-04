@@ -125,8 +125,8 @@ def cmd_run(args):
         server = make_server(args.db, args.port)
     except OSError as exc:
         if exc.errno in (errno.EADDRINUSE, errno.EACCES) or getattr(exc, 'winerror', None) in (10048, 10013):
-            raise OSError(f'端口 {args.port} 已被占用（可能已有查看器在运行）。'
-                          '用 --port 0 自动选择空闲端口，或用 /api/health 查看占用者的版本和 PID。') from None
+            raise OSError(f'Port {args.port} is already in use. Choose a free port with --port 0 '
+                          'or check the viewer version and PID at /api/health.') from None
         raise
     try:
         with connect(args.db):

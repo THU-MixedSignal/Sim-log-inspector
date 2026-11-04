@@ -169,8 +169,8 @@ def _schema(db):
 
 
 def _schema_error(path, version):
-    return SchemaError(f'{path} 由其他版本创建（schema {version or "1/2"}，当前需要 {SCHEMA}）。'
-                       '数据库只是源日志的派生索引：请换一个新的 --db 路径重新采集，旧库保持不动。')
+    return SchemaError(f'{path} uses database schema {version or "1/2"}. This release requires schema {SCHEMA}. '
+                       'Choose a new --db path and scan the original logs to build a fresh index.')
 
 
 def network_fs(path):
@@ -220,7 +220,7 @@ def open_readonly(path):
     """Reader connection; never creates or upgrades a database."""
     p = Path(path).resolve()
     if not p.is_file():
-        raise FileNotFoundError(f'数据库不存在：{p}（先运行 run/watch/scan 采集）')
+        raise FileNotFoundError(f'Database does not exist: {p}. Run scan, watch or run to collect evidence first.')
     db = sqlite3.connect(p.as_uri() + '?mode=ro', uri=True, timeout=5, factory=Connection)
     db.row_factory = sqlite3.Row
     version = db.execute('PRAGMA user_version').fetchone()[0]

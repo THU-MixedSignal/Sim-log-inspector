@@ -1,4 +1,4 @@
-# Agent contract: Spectre Log Inspector 0.4.0 / API 4 / DB schema 4
+# Agent contract: Spectre Log Inspector 0.5.0 / API 4 / DB schema 4
 
 This is a read-only simulation evidence tool. Never start, stop, pause, modify
 or resubmit simulations through this handoff. Never edit source logs, PDKs or ADC
@@ -19,7 +19,7 @@ The operator supplies these values:
 
 ## Start and read
 
-`simcheck --version` should report 0.4.0. Use `--help` for syntax. These commands
+`simcheck --version` should report 0.5.0. Use `--help` for syntax. These commands
 use uppercase placeholders; substitute the supplied paths and actual handles.
 
 ```text

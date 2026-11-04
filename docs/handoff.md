@@ -1,4 +1,4 @@
-# Install and hand off Spectre Log Inspector 0.4.0
+# Install and hand off Spectre Log Inspector 0.5.0
 
 For an Agent that can access the Git repository, the default is to clone and
 follow docs/agent-quickstart.md from the repository root; no ZIP or pip install
@@ -18,7 +18,7 @@ containing the wheel and INSTALL.md, then run:
 
 ```powershell
 py -3 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --no-index --no-deps .\spectre_log_inspector-0.4.0-py3-none-any.whl
+.\.venv\Scripts\python.exe -m pip install --no-index --no-deps .\spectre_log_inspector-0.5.0-py3-none-any.whl
 .\.venv\Scripts\simcheck.exe --version
 .\.venv\Scripts\simcheck.exe --db .\work\demo.sqlite run .\demo\manifest.json --port 0 --open
 ```
@@ -35,7 +35,7 @@ From the extracted folder:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install --no-index --no-deps ./spectre_log_inspector-0.4.0-py3-none-any.whl
+.venv/bin/python -m pip install --no-index --no-deps ./spectre_log_inspector-0.5.0-py3-none-any.whl
 .venv/bin/simcheck --db ./work/demo.sqlite run ./demo/manifest.json --port 0
 ```
 

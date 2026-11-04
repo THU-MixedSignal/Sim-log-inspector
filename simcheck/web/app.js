@@ -112,11 +112,11 @@
     try { localStorage.setItem('simcheck.closed', JSON.stringify([...ui.closed])); return true; }
     catch (_) { return false; }
   }
-  function focusHistory(id, action = 'button') {
+  function focusHistory(id) {
     if ($('run-select').getClientRects().length) {
       (id ? $('run-select') : $('restore-runs')).focus();
     } else {
-      (ui.rows.get(id)?.[action] || $('restore-runs')).focus();
+      (ui.rows.get(id)?.button || $('restore-runs')).focus();
     }
   }
   function closeRun(id) {
@@ -130,7 +130,7 @@
     render();
     refreshPanel();
     const remaining = railOrder(openRuns());
-    focusHistory(remaining[Math.min(index, remaining.length - 1)]?.r.run, 'close');
+    focusHistory(remaining[Math.min(index, remaining.length - 1)]?.r.run);
     announce(`Closed ${id} from the list. Evidence kept.${saved ? '' : ' Browser storage unavailable; closed for this session only.'}`);
   }
   function restoreRuns() {
@@ -156,7 +156,7 @@
     for (const format of ['html', 'json']) {
       $('save-' + format).href = '/api/export?' + new URLSearchParams({ run: id, format });
     }
-    menu.setAttribute('aria-label', `Save ${id}`);
+    menu.setAttribute('aria-label', `Download report for ${id}`);
     menu.hidden = false;
     const rect = button.getBoundingClientRect();
     menu.style.left = `${Math.max(8, Math.min(rect.left, document.documentElement.clientWidth - menu.offsetWidth - 8))}px`;
@@ -328,9 +328,7 @@
   function countItems(run) {
     const n = run.n || {};
     return COUNTS.filter(([letter]) => n[letter]).map(([letter, sev]) => {
-      const span = el('span', 'count');
-      span.append(glyph(sev), el('span', 'sr-only', sevOf(sev).name), document.createTextNode(String(n[letter])));
-      return span;
+      return el('span', 'count count-' + sevOf(sev).cls, sevOf(sev).name + ' ' + n[letter]);
     });
   }
   function rowFor(id) {
@@ -346,22 +344,20 @@
     button.append(name, side, counts, mini);
     button.addEventListener('click', () => select(id));
     const actions = el('div', 'run-actions');
-    const save = el('button', 'icon-button', '↓');
-    save.type = 'button';
+    const save = $('save-current').cloneNode(true);
+    const close = $('close-current').cloneNode(true);
+    save.removeAttribute('id');
+    close.removeAttribute('id');
+    save.disabled = close.disabled = false;
     save.dataset.saveRun = id;
-    save.setAttribute('aria-label', `Save ${id}`);
-    save.setAttribute('aria-haspopup', 'menu');
     save.setAttribute('aria-expanded', 'false');
-    save.title = 'Save run';
+    save.setAttribute('aria-label', `Download report for ${id}`);
+    close.setAttribute('aria-label', `Close ${id} from list`);
     save.addEventListener('click', () => showSaveMenu(id, save));
-    const close = el('button', 'icon-button', '×');
-    close.type = 'button';
-    close.setAttribute('aria-label', `Close ${id}`);
-    close.title = 'Close from list; keep evidence';
     close.addEventListener('click', () => closeRun(id));
     actions.append(save, close);
     li.append(button, actions);
-    row = { li, button, name, side, counts, mini, save, close };
+    row = { li, button, name, side, counts, mini };
     ui.rows.set(id, row);
     return row;
   }
@@ -411,7 +407,7 @@
     picker.disabled = !runs.length;
     $('save-current').disabled = $('close-current').disabled = !runs.length;
     $('save-current').dataset.saveRun = ui.selected || '';
-    $('save-current').setAttribute('aria-label', `Save ${ui.selected || 'run'}`);
+    $('save-current').setAttribute('aria-label', `Download report for ${ui.selected || 'run'}`);
     $('close-current').setAttribute('aria-label', `Close ${ui.selected || 'run'}`);
     const closed = ui.data.runs.filter(isClosed).length;
     $('history-tools').hidden = !closed;
@@ -538,6 +534,7 @@
 
   // ---------------------------------------------------------------- run header
   function renderHead(run) {
+    if ($('run-title').textContent !== run.run) $('copy-status').textContent = '';
     $('run-title').textContent = run.run;
     const state = $('run-state');
     state.textContent = stateText(run);
@@ -632,10 +629,8 @@
     head.type = 'button';
     head.dataset.group = id;
     head.setAttribute('aria-expanded', ui.expanded.has(id) ? 'true' : 'false');
-    const sev = el('span', 'g-sev');
-    sev.title = g.sev;
-    sev.append(glyph(g.sev));
-    if (!uncoded(g)) sev.append(el('span', 'sr-only', sevOf(g.sev).name));
+    const severity = sevOf(g.sev);
+    const sev = el('span', 'g-sev count-' + severity.cls, severity.name);
     const count = el('span', 'g-count');
     if (g.n > 1 || g.sup) {
       count.textContent = `×${g.n}${g.sup ? '+' : ''}`;
@@ -649,7 +644,7 @@
     if ((g.sev !== 'NOTICE' || g.rules) && !seen.has(gkey(g))) flags.append(chip('New', 'new'));
     const msg = el('span', 'g-msg', g.msg);
     msg.title = g.msg;
-    const key = el('span', 'g-key', uncoded(g) ? sevOf(g.sev).name : g.key);
+    const key = el('span', 'g-key', uncoded(g) ? '' : g.key);
     key.title = uncoded(g) ? g.sev : g.key;
     head.append(sev, key, count, when, flags, msg);
     head.addEventListener('click', () => toggleGroup(run, g, li, head));
@@ -989,6 +984,24 @@
         sync();
       });
     }
+    $('copy-full').addEventListener('click', async () => {
+      const run = ui.selected;
+      const button = $('copy-full');
+      button.disabled = true;
+      $('copy-status').textContent = 'Copying…';
+      try {
+        const response = await fetch('/api/export?' + new URLSearchParams({ run, format: 'txt' }));
+        if (!response.ok) throw new Error('Report unavailable (HTTP ' + response.status + ')');
+        const text = await response.text();
+        if (ui.selected !== run) return;
+        await navigator.clipboard.writeText(text);
+        if (ui.selected === run) $('copy-status').textContent = 'Copied';
+      } catch (err) {
+        if (ui.selected === run) $('copy-status').textContent = 'Copy failed: ' + err.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
     $('ack').addEventListener('click', () => { const run = currentRun(); if (run) acknowledge(run); });
     $('run-select').addEventListener('change', (e) => select(e.target.value));
     $('restore-runs').addEventListener('click', restoreRuns);
@@ -1003,7 +1016,7 @@
       if (e.key === 'Escape') { e.preventDefault(); closeSaveMenu(true); }
       else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) {
         e.preventDefault();
-        const links = [...$('save-menu').querySelectorAll('a')];
+        const links = [...$('save-menu').querySelectorAll('[role=menuitem]')];
         const index = links.indexOf(document.activeElement);
         const next = e.key === 'Home' ? 0 : e.key === 'End' ? links.length - 1
           : (index + (e.key === 'ArrowUp' ? -1 : 1) + links.length) % links.length;

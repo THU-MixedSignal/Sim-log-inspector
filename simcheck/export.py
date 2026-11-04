@@ -51,6 +51,16 @@ def _json_chunks(db, data):
     yield '],"export_complete":true}\n'
 
 
+def _text_chunks(db, data):
+    yield f"{data['run']} · generation {data['scope']['generation']} · {data['saved_at']}\n\n"
+    yield render.show(data['problems']) + '\n\n' + render.details(data['details']) + '\n'
+    for note in data['coverage']['limitations']:
+        yield f'Coverage: {note}\n'
+    yield f"\nStored evidence ({data['scope']['events']})\n"
+    for event in _events(db, data['run'], data['scope']['generation']):
+        yield f"e{event['event_id']}  {event['source_path']}:{event['line']}  {event['raw']}\n"
+
+
 def _raw_evidence(db, event_id, label):
     item = evidence(db, event_id)
     if item is None:
@@ -131,8 +141,11 @@ def export_file(db, run, format='json'):
     explicit, and original input files are never opened. The spool moves to disk
     above 1 MiB so large event histories do not require a second in-memory copy.
     """
-    if format not in ('html', 'json'):
-        raise ValueError('format must be html or json')
+    formats = {'html': (_html_chunks, 'text/html'), 'json': (_json_chunks, 'application/json'),
+               'txt': (_text_chunks, 'text/plain')}
+    if format not in formats:
+        raise ValueError('format must be html, json or txt')
+    chunks, kind = formats[format]
     if not db.in_transaction:
         db.execute('BEGIN')
     now = time.time()
@@ -153,11 +166,10 @@ def export_file(db, run, format='json'):
     name = f'{safe_name}-g{generation}-{stamp:%Y%m%dT%H%M%SZ}.{format}'
     file = tempfile.SpooledTemporaryFile(max_size=1024 * 1024, mode='w+b')
     try:
-        for chunk in (_html_chunks if format == 'html' else _json_chunks)(db, data):
+        for chunk in chunks(db, data):
             file.write(chunk.encode('utf-8'))
         file.seek(0)
     except Exception:
         file.close()
         raise
-    kind = 'text/html' if format == 'html' else 'application/json'
     return file, name, kind + '; charset=utf-8'

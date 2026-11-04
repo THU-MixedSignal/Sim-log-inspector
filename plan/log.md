@@ -444,3 +444,16 @@ show noise 2475 B, evidence 454 B, one wait result 209 B. End to end, wait woke
 1.26 s after a CMI-2753 line was appended. Details in docs/validation.md. Preview
 viewer restarted on the new code (.runtime/preview.sqlite). Committed at the
 user's request on branch v0.4-agent-output; main not moved, nothing pushed.
+
+## 2026-11-04 — Dashboard and v0.5.0 release
+
+Kept the three compact detail tabs after testing a flat report layout. Problem
+rows and sidebar counts now spell out severity. Sidebar download and close
+controls appear on selection, hover and keyboard focus. The header copies a
+plain-text report for the selected generation, including every indexed event.
+
+Validated the main worktree on a fresh schema 4 index built from the original
+sources of 64 CDAC and comparator runs. All 64 reported complete, with state,
+logStatus and raw evidence observed for each. Verified HTML and JSON downloads
+and full-report copy on the nominal CDAC run. The release uses main and schema 4.
+The README, demo rule names, CLI diagnostics and release handoff use English.

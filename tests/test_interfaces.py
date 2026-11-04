@@ -104,7 +104,7 @@ class Cli(unittest.TestCase):
         finally:
             blocker.close()
         self.assertEqual(code, 1)
-        self.assertIn('已被占用', out)
+        self.assertIn('already in use', out)
         self.assertFalse(Path(self.db).exists())
 
 
