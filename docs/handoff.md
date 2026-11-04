@@ -98,7 +98,7 @@ an electrical/code verdict; absent/incomplete evidence must not become a pass.
 Developers may copy/unzip/clone the repository and run `python -m pip install .`
 or `python -m pip install -e .`. That source install needs its setuptools build
 dependency; the recipient wheel install above does not. Source is hosted at
-https://github.com/chenzc24/spectre-log-inspector. There is no public PyPI release;
+https://github.com/THU-MixedSignal/Sim-log-inspector. There is no public PyPI release;
 do not assume a package-index project with this name is this artifact.
 
 With Python/pip and setuptools>=68 already available, run from the source tree:

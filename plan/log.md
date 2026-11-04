@@ -467,3 +467,10 @@ The README and agent guides explain how a previously unseen Spectre warning code
 Wait now drains evidence in ID order across pages, collector shutdown and replaced logs. Severity participates in group identity. Count-based rules have stable threshold evidence IDs. Large state-only bursts reconcile current states in bounded pages. Rule matching and counts use all groups; the CLI and HTTP page results and the dashboard follows consistent revisions. Unknown configured state files mark completion evidence incomplete, including on previously indexed snapshots. Manifest validation rejects invalid rule fields up front.
 
 Verified 116 tests, including burst, severity, late rule hit, repeat, offline, old-generation, pagination, cached-state and manifest regressions. Exercised HTTP and Chromium on 515 groups, including source expansion and the last group's rule. Read the 64-run SAR8 schema-4 snapshot with the patched CLI and verified the nominal CDAC warning and source evidence.
+
+## 2026-11-04 — Organization repository transfer
+
+Verified that the repository transfer resolves to THU-MixedSignal/Sim-log-inspector.
+Main and v0.5.1 both retain commit 62dfa7d. Updated origin, main's tracking branch,
+and the current README and Agent handoff clone URLs to the organization repository.
+The README clone command explicitly names the directory used by its next command.

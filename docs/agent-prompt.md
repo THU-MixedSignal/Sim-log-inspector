@@ -7,7 +7,7 @@ read access on the receiving machine. Pin the commit supplied by the sender if
 reproducibility is needed; otherwise record the cloned HEAD.
 
 ```text
-Repository: https://github.com/chenzc24/spectre-log-inspector
+Repository: https://github.com/THU-MixedSignal/Sim-log-inspector
 Revision: <sender-supplied commit, or record the cloned HEAD>
 
 Clone into a separate writable workspace. Read AGENTS.md, README.md,

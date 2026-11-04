@@ -6,10 +6,10 @@ Spectre Log Inspector reads Spectre logs as they grow. The dashboard shows which
 
 ## Try it with the included logs
 
-Clone the tagged release from an account with read access to the private repository. The example runs use sanitized logs and require neither Spectre nor a simulator license. On Linux or macOS, use `python3` if that is how Python is installed.
+Clone the tagged release from the organization repository. The example runs use sanitized logs and require neither Spectre nor a simulator license. On Linux or macOS, use `python3` if that is how Python is installed.
 
 ```sh
-git clone --branch v0.5.1 https://github.com/chenzc24/spectre-log-inspector.git
+git clone --branch v0.5.1 https://github.com/THU-MixedSignal/Sim-log-inspector.git spectre-log-inspector
 cd spectre-log-inspector
 python -m simcheck --version
 python -m simcheck --db .runtime/demo.sqlite scan examples/real-fixtures.json --json

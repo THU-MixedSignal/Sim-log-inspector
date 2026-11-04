@@ -18,7 +18,7 @@ obtain the authorized SSH alias and the paths on that server; see ssh.md.
 
 ## Clone and establish the baseline
 
-The source repository is https://github.com/chenzc24/spectre-log-inspector.
+The source repository is https://github.com/THU-MixedSignal/Sim-log-inspector.
 Private repositories require read access on the receiving machine; GitHub access
 and simulation-server SSH access are independent. Clone into a new writable
 directory; do not overlay an unrelated ADC workspace. If the operator
@@ -26,7 +26,7 @@ supplies a tag/commit, check it out and record it. The commands below use python
 substitute the Python command available on that machine.
 
 ```sh
-git clone https://github.com/chenzc24/spectre-log-inspector.git spectre-log-inspector
+git clone https://github.com/THU-MixedSignal/Sim-log-inspector.git spectre-log-inspector
 cd spectre-log-inspector
 git rev-parse HEAD
 python --version
